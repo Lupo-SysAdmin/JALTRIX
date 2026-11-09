@@ -1,7 +1,7 @@
 {
   "date": "2026-11-09",
   "version": "1.2.0",
-  "scope": "New installations in owner VMs; actual local UDP detection; independent collector; subsequent boot verification. Not a rerun of the full automated matrix.",
+  "scope": "New installations in owner VMs, native Polkit, local UDP detection, independent collector, subsequent power cycle and final source suite with real engines. Other original matrix VMs were not rerun.",
   "systems": {
     "kali": {
       "os": "Kali Linux 2026.3",
@@ -18,7 +18,12 @@
         "new_udp_alerts": 2,
         "stored_events": 6,
         "sqlite_quick_check": "ok"
-      }
+      },
+      "final_suite": {
+        "passed": 61,
+        "skipped": 0
+      },
+      "final_deb_upgrade": "PASS; sensor remains active/enabled"
     },
     "parrot": {
       "os": "Parrot Security 7.4",
@@ -35,7 +40,13 @@
         "new_udp_alerts": 2,
         "stored_events": 6,
         "sqlite_quick_check": "ok"
-      }
+      },
+      "final_suite": {
+        "passed": 61,
+        "skipped": 0
+      },
+      "final_deb_upgrade": "PASS; sensor remains active/enabled"
     }
-  }
+  },
+  "final_deb_lintian": "PASS in Parrot; no output"
 }

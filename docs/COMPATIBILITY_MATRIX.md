@@ -1,6 +1,6 @@
 # Compatibilidad 1.2.0 — 2026-11-09
 
-La tabla describe la matriz automática original. Posteriormente se completaron instalaciones nuevas con Snort real y encendido posterior en dos VM adicionales: Kali 2026.3 / Snort 3.12.2.0 y Parrot Security 7.4 / Snort 3.1.82.0. Sensor, recolección y alertas posteriores al arranque: PASS. No se volvió a ejecutar la suite completa en esas VM; los SKIP históricos de abajo conservan su significado. Ver [validación adicional](VALIDATION.md) y [tutoriales](TUTORIALS.md).
+La tabla describe la matriz automática original. Posteriormente se completaron instalaciones nuevas con Snort real y encendido posterior en dos VM adicionales: Kali 2026.3 / Snort 3.12.2.0 y Parrot Security 7.4 / Snort 3.1.82.0. Sensor, recolección y alertas posteriores al arranque: PASS. La suite completa del cierre obtuvo **61 PASS en cada una de esas dos VM adicionales**, con Snort instalado. Los SKIP históricos de las VM originales de abajo conservan su significado. Ver [validación adicional](VALIDATION.md) y [tutoriales](TUTORIALS.md).
 
 | Plataforma amd64 | Entorno | Suite | GUI instalada + mapa + asistente | Motor / sistema |
 |---|---|---|---|---|

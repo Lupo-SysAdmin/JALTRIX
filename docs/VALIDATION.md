@@ -3,10 +3,13 @@
 ## Cierre de publicación: instalaciones nuevas y encendido posterior
 
 - Kali 2026.3 (VM del propietario, Snort 3.12.2.0 / DAQ 3.0.24) y Parrot Security 7.4 (VM del propietario, Snort 3.1.82.0 / DAQ 3.0.22): instalación del DEB, motor separado, alta del sensor y autorizaciones nativas Polkit completadas por el operador: PASS.
-- Sensor en `lo`, HOME_NET `127.0.0.0/8`, regla UDP benigna: cuatro alertas reales por VM durante el tutorial. Cierre con Ctrl+Q, recolección independiente y reapertura LIVE: PASS. No se ejecutó toda la suite automática en estas dos VM; estos resultados no sustituyen los contadores de la matriz anterior.
+- Sensor en `lo`, HOME_NET `127.0.0.0/8`, regla UDP benigna: cuatro alertas reales por VM durante el tutorial. Cierre con Ctrl+Q, recolección independiente y reapertura LIVE: PASS. Después se instaló el DEB con los enlaces finales y se ejecutó la suite completa: **61 PASS en cada VM**, con su motor real. Son resultados adicionales; no se reescriben los contadores de las otras VM de la matriz original.
 - Tras apagar y volver a encender ambas VM, `jaltrix-sensor.service` estaba activo/habilitado y el recolector de usuario activo/habilitado al iniciar sesión. Un nuevo envío local produjo dos alertas adicionales: seis eventos en cada base, `PRAGMA quick_check=ok`. No fue necesario iniciar manualmente los servicios: PASS.
 - En Parrot se seleccionó `/usr/sbin/snort` desde el asistente. El servicio `snort.service` que acababa de habilitar el paquete de la distro se deshabilitó para usar únicamente el sensor de JALTRIX. Esto no es una instrucción para detener sensores preexistentes en uso.
 - [Evidencia resumida sin datos privados](evidence/1.2.0/commissioning.json) y [tutoriales editados](TUTORIALS.md). El encendido posterior se verificó aparte y no forma parte de la grabación original.
+
+- Paquete final DEB: instalación/actualización en ambas VM conservó el sensor activo y el arranque habilitado. Lintian ejecutado en Parrot: sin errores ni avisos. Desktop/AppStream y revisión de formato: PASS.
+- GitHub Actions valida Python 3.11–3.14. La primera ejecución detectó la ausencia de `libEGL.so.1` en el runner; el workflow instala las bibliotecas Qt necesarias. Consulta el resultado del commit publicado en [Actions](https://github.com/Lupo-SysAdmin/JALTRIX/actions). Las pruebas de Snort se omiten explícitamente en ese runner sin motor; la integración real se comprueba por separado.
 
 ## Matriz automática anterior al cierre
 
