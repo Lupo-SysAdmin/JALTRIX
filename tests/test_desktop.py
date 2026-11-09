@@ -318,6 +318,7 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
     from test_services import FakeManager
 
     fake_service = FakeManager()
+    controller.service_manager = fake_service
     monkeypatch.setattr("jaltrix.app.ServiceManager", lambda: fake_service)
     controller.serviceAction("start")
     assert controller.service_future is None  # Demo must not change the host.

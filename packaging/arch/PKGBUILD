@@ -1,7 +1,7 @@
 # Maintainer: Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>
 # Local source build; run from an exported source tree, not submitted to AUR.
 pkgname=jaltrix
-pkgver=1.1.0
+pkgver=1.2.0
 pkgrel=1
 pkgdesc='JALTRIX bilingual Snort 3 desktop console'
 arch=('any')

@@ -1,10 +1,12 @@
 # JALTRIX
 
+New installations open the **setup assistant**: detect Snort 3, follow official installation instructions, and connect existing alerts or create a dedicated service. Demo is an explicit choice. [First run](docs/SETUP.md#english).
+
 <img src="design/branding/jaltrix-logo.svg" alt="JALTRIX" width="220">
 
 [Español](README.md) · English
 
-**Version 1.1.0**, an independent native Linux investigation and response console for Snort 3, developed by **Jan Herrera**. GPL-3.0-or-later. [Developer profile](https://github.com/Lupo-SysAdmin).
+**Version 1.2.0**, an independent native Linux investigation and response console for Snort 3, developed by **Jan Herrera**. GPL-3.0-or-later. [Developer profile](https://github.com/Lupo-SysAdmin).
 
 American English and Latin American Spanish interfaces. Owner-supplied vector logo, scalable Linux shield icon, developer credits and component license notices. No affiliation with Cisco/Talos or Linux distributions is implied.
 
@@ -25,7 +27,7 @@ EDR isolation and restoration are **disabled**: no provider is configured. This 
 Requires Python >=3.11 and PySide6 >=6.8,<7. Install the native package matching a tested distribution. The GUI does not bundle Snort or commercial rule sets and does not automatically activate capture.
 
 ```sh
-sudo apt install ./jaltrix_1.1.0-1_all.deb
+sudo apt install ./jaltrix_1.2.0-1_all.deb
 jaltrix
 ```
 
@@ -39,7 +41,7 @@ Use Configuration → Save backup, or `jaltrix --backup /path/backup.zip`. Resto
 
 See [validation](docs/VALIDATION.md), [compatibility](docs/COMPATIBILITY_MATRIX.md), [release notes and limits](docs/RELEASE.md), [security](SECURITY.md) and [licenses](NOTICE). A successful GUI test is not a successful Snort integration test. The sensor starts at system boot only if explicitly enabled; the separate user collector starts at login.
 
-![JALTRIX 1.1.0 — DEMO](docs/screenshots/dashboard-es.png)
+![JALTRIX 1.2.0 — DEMO](docs/screenshots/dashboard-es.png)
 
 Keyboard: **Ctrl+Q** quits the desktop window using the native Qt Quit shortcut; independently running sensor/collector services keep their state. **Ctrl+K** focuses search.
 

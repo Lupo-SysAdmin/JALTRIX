@@ -480,3 +480,69 @@ EN_US.update(
         "Exportar alertas": "Export alerts",
     }
 )
+
+# First-run setup and remembered live sessions.
+EN_US.update(
+    {
+        "Inicio": "Getting started",
+        "Bienvenido a JALTRIX": "Welcome to JALTRIX",
+        "Conecta un sensor real o explora la demostración. Snort 3 se instala por separado.": "Connect a live sensor or explore the demo. Snort 3 is installed separately.",
+        "1 · Motor": "1 · Engine",
+        "2 · Sensor": "2 · Sensor",
+        "3 · Alertas": "3 · Alerts",
+        "Explorar demostración": "Explore demo",
+        "Motor Snort 3": "Snort 3 engine",
+        "Comprobando motor…": "Checking engine…",
+        "Snort no encontrado": "Snort not found",
+        "Snort 3 compatible": "Compatible Snort 3",
+        "Motor incompatible: se necesita Snort 3": "Incompatible engine: Snort 3 is required",
+        "No se pudo ejecutar el motor": "Could not run the engine",
+        "Volver a detectar": "Detect again",
+        "¿Ya tienes Snort? Selecciona su ejecutable y verifica la versión. No reemplazamos su configuración ni iniciamos otro sensor automáticamente.": "Already have Snort? Select its executable and check the version. We preserve its configuration and do not start another sensor automatically.",
+        "Si falta: consulta la guía oficial, instala Snort 3 y LibDAQ para tu distribución y vuelve a detectar. Un paquete llamado snort puede ser Snort 2; el asistente comprueba la versión.": "If missing: follow the official guide, install Snort 3 and LibDAQ for your distribution, then detect again. A package named snort may contain Snort 2; this assistant checks the version.",
+        "Verifica en una terminal: snort -V y snort --daq-list. Para crear el servicio de JALTRIX se requiere afpacket, systemd, Polkit y el paquete acl. Instala el motor en /usr o /opt con permisos de administrador.": "Check in a terminal: snort -V and snort --daq-list. Creating a JALTRIX service requires afpacket, systemd, Polkit, and the acl package. Install the engine under /usr or /opt with administrator permissions.",
+        "Guía oficial de instalación": "Official installation guide",
+        "Descargas de Snort 3": "Snort 3 downloads",
+        "Puedes conectar alertas de un sensor externo aunque el motor no esté instalado en este equipo.": "You can connect alerts from an external sensor without installing the engine on this computer.",
+        "Configurar sensor real": "Set up live sensor",
+        "Elige cómo conectar el sensor": "Choose how to connect your sensor",
+        "Sensor existente o externo: conserva su servicio y sus reglas; conecta un archivo alert_json que puedas leer. JALTRIX solo administra su propio servicio.": "Existing or external sensor: keep its service and rules, and connect a readable alert_json file. JALTRIX manages only its own service.",
+        "Conectar sensor existente": "Connect existing sensor",
+        "Servicio de JALTRIX": "JALTRIX service",
+        "Perfil existente conservado. Revisa la interfaz, HOME_NET y las reglas antes de iniciar.": "Existing profile preserved. Review the interface, HOME_NET, and rules before starting.",
+        "Revisar reglas": "Review rules",
+        "Crear un sensor nuevo de JALTRIX": "Create a new JALTRIX sensor",
+        "Se crearán un servicio y archivos propios. El motor y las configuraciones existentes se conservan. La creación requiere autorización del sistema y deja el servicio detenido.": "A dedicated service and files will be created. Your engine and existing configurations are preserved. Creation requires system authorization and leaves the service stopped.",
+        "Ya existe /etc/jaltrix: no se sobrescribirá. Revisa esa instalación o conecta su archivo de alertas.": "/etc/jaltrix already exists and will not be overwritten. Review that installation or connect its alert file.",
+        "HOME_NET en CIDR, por ejemplo 192.168.1.0/24": "HOME_NET in CIDR notation, e.g. 192.168.1.0/24",
+        "Pega tus reglas locales de Snort 3. Se validarán antes de crear el servicio. No se incluye una colección de reglas de protección.": "Paste your local Snort 3 rules. They will be validated before the service is created. No detection ruleset is bundled.",
+        "Reglas locales (.rules)": "Local rules (.rules)",
+        "Revisar y crear servicio": "Review and create service",
+        "Continuar a alertas": "Continue to alerts",
+        "Conectar alertas y elegir el arranque": "Connect alerts and choose startup behavior",
+        "Iniciar ahora y arrancar con el sistema son decisiones independientes. Cerrar JALTRIX no detiene el sensor.": "Starting now and starting at boot are independent choices. Closing JALTRIX does not stop the sensor.",
+        "Conectar alertas de JALTRIX": "Connect JALTRIX alerts",
+        "Seleccionar alert_json existente…": "Select existing alert_json…",
+        "Cómo configurar alert_json": "How to configure alert_json",
+        "Todavía no hay un archivo de alertas conectado.": "No alert file is connected yet.",
+        "La conexión se recordará al abrir la aplicación. Si el archivo desaparece o pierde permisos, verás el problema; no se sustituirá por datos demo.": "Your connection will be remembered when the app opens. If the file disappears or becomes unreadable, you will see the problem; demo data will not replace it.",
+        "Abrir consola real": "Open live console",
+        "Asistente de configuración": "Setup assistant",
+        "Datos simulados": "Simulated data",
+        "Sin alertas reales": "No live alerts",
+        "Configuración pendiente": "Setup pending",
+        "CONFIGURACIÓN DEL SENSOR · Conecta un archivo para ver alertas reales": "SENSOR SETUP · Connect a file to view live alerts",
+        "Archivo conectado; recibir cero alertas no significa que el sensor esté fallando.": "File connected; receiving zero alerts does not mean the sensor is failing.",
+        "No se pudo leer el archivo. Revisa la ruta y los permisos; no se activará demo.": "Could not read the file. Check its path and permissions; demo will not be activated.",
+    }
+)
+
+EN_US.update(
+    {
+        "Archivo de alertas conectado": "Alert file connected",
+        "Snort 3 compatible; conecta un archivo de alertas": "Compatible Snort 3; connect an alert file",
+        "Perfil administrado en /etc/jaltrix. Revisa interfaz, HOME_NET y reglas. La interfaz lo solo observa tráfico local.": "Managed profile in /etc/jaltrix. Review the interface, HOME_NET, and rules. The lo interface only observes local traffic.",
+    }
+)
+
+EN_US["Operación fallida"] = "Operation failed"

@@ -1,10 +1,12 @@
 # JALTRIX
 
+Una instalación nueva abre el **asistente de configuración**: detecta Snort 3, enlaza su instalación oficial y permite conectar alertas existentes o crear un servicio propio. El modo demo se elige explícitamente. [Primer inicio](docs/SETUP.md).
+
 <img src="design/branding/jaltrix-logo.svg" alt="JALTRIX" width="220">
 
 [English](README.en.md) · Español
 
-Consola nativa Linux de investigación y respuesta para Snort 3, desarrollada por **Jan Herrera**. [GitHub del desarrollador](https://github.com/Lupo-SysAdmin). Versión **1.1.0**, GPL-3.0-or-later.
+Consola nativa Linux de investigación y respuesta para Snort 3, desarrollada por **Jan Herrera**. [GitHub del desarrollador](https://github.com/Lupo-SysAdmin). Versión **1.2.0**, GPL-3.0-or-later.
 
 Interfaz **ES (español latinoamericano) / EN (inglés estadounidense)** con preferencia persistente, modo demo separado, icono propio y Acerca de con autoría, licencia y componentes. JALTRIX es independiente de Snort/Cisco/Talos. Su disponibilidad como marca no está certificada; [procedencia del emblema](docs/BRANDING.md).
 
@@ -32,7 +34,7 @@ QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software python3 -m pytest -q -ra
 python3 tools/build_deb.py
 ```
 
-Instalación Debian: `sudo apt install ./dist/jaltrix_1.1.0-1_all.deb`. El paquete **no instala automáticamente un sensor ni modifica reglas de Snort existentes**. El perfil opcional administrado usa `/etc/jaltrix`, separado de `/etc/snort`. Véanse [servicio](docs/SERVICE.md), [manual operativo](docs/USER_GUIDE.md) y [empaquetado](docs/PACKAGING.md).
+Instalación Debian: `sudo apt install ./dist/jaltrix_1.2.0-1_all.deb`. El paquete **no instala automáticamente un sensor ni modifica reglas de Snort existentes**. El perfil opcional administrado usa `/etc/jaltrix`, separado de `/etc/snort`. Véanse [servicio](docs/SERVICE.md), [manual operativo](docs/USER_GUIDE.md) y [empaquetado](docs/PACKAGING.md).
 
 Actualizaciones del paquete anterior: [guía de migración](docs/MIGRATION.md).
 
@@ -50,6 +52,6 @@ Esta versión no se presenta como certificación de producción ni de compatibil
 
 Copyright © 2026 Jan Herrera. [LICENSE](LICENSE) · [NOTICE](NOTICE) · [AUTHORS](AUTHORS). Snort se ejecuta como proceso separado; Qt, PySide6 y demás componentes conservan sus licencias. El inventario legal integrado declara componentes directos y procedencia, no una auditoría exhaustiva de dependencias transitivas.
 
-![JALTRIX 1.1.0 — DEMO](docs/screenshots/dashboard-es.png)
+![JALTRIX 1.2.0 — DEMO](docs/screenshots/dashboard-es.png)
 
 ![Mapa de amenazas JALTRIX — DEMO](docs/screenshots/map-es.png)

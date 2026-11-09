@@ -1,6 +1,6 @@
 """Qt bindings for independently testable investigation and collector modules."""
 
-from PySide6.QtCore import QObject, Property, Signal, Slot, QTimer, QUrl
+from PySide6.QtCore import Property, Signal, Slot, QTimer, QUrl
 from PySide6.QtGui import QDesktopServices
 from . import capture, continuous
 from .observations import topology, InterfaceSampler
@@ -12,7 +12,10 @@ from . import operations
 from .geomap import build_map
 
 
-class AdvancedController(QObject):
+from .onboarding import SetupController
+
+
+class AdvancedController(SetupController):
     advancedChanged = Signal()
     operationPlanned = Signal()
     ruleDraftReady = Signal(str)
@@ -227,7 +230,7 @@ class AdvancedController(QObject):
         elif kind == "operation":
             self._operation_result = result["result"]
             self._operation_plan = {}
-            self.refreshService()
+            self.refreshSetup()
         elif kind == "geo":
             self.geo_database = result["database"]
             self._geo_error = ""

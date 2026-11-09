@@ -1,5 +1,13 @@
 # Cambios
 
+## 1.2.0 — 2026-11-09
+
+- First-run assistant in es-419/en-US; demo is explicit, live connections persist.
+- Snort 3 version detection and official installation guidance; existing sensor logs can be connected without a local engine.
+- Optional isolated sensor creation with rule validation and native authorization; no service auto-start and no overwrites.
+- Separate service startup and boot preferences; missing log recovery stays in real mode.
+
+
 ## 1.1.0 — 2026-11-09
 
 - Mapa mundial offline con marcadores, zoom, países y exploración paginada de alertas.

@@ -135,6 +135,8 @@ class Controller(AdvancedController):
             1440,
         )
         self.initAdvanced()
+        self.initSetup()
+        self.setupChanged.connect(self.changed.emit)
         self.refresh()
 
     @Property("QVariantMap", notify=serviceChanged)
@@ -180,6 +182,7 @@ class Controller(AdvancedController):
         self._status = "Servicio del sistema seleccionado"
         self.changeMode("live")
         self.refreshService()
+        self.rememberSession("service")
 
     @Slot(str)
     def serviceAction(self, action):
@@ -271,6 +274,7 @@ class Controller(AdvancedController):
             self.settings.sync()
             os.environ["JALTRIX_ENGINE"] = str(path.resolve())
             self.changed.emit()
+            self.refreshSetup()
 
     @Property("QVariantMap", notify=changed)
     def ruleResult(self):
@@ -390,6 +394,9 @@ class Controller(AdvancedController):
         return self.future is not None
 
     def changeMode(self, mode):
+        self._connected = False
+        self._setup_message = ""
+        self.setupChanged.emit()
         self.resetGeoSelection()
         self.category = "Todas"
         self._facets = []
@@ -442,6 +449,7 @@ class Controller(AdvancedController):
         self._status = "Datos de demostración"
         self._stored = 0
         self.changeMode("demo")
+        self.rememberSession("demo")
 
     def queryJob(self, source, mode, ingest=False):
         revision = self._query_revision
@@ -529,6 +537,7 @@ class Controller(AdvancedController):
         self._status = "Leyendo archivo…"
         self.changeMode("live" if follow else "replay")
         self.future = self.executor.submit(self.ingestJob, source, self._mode)
+        self._connection_future = self.future
         self.changed.emit()
         if follow:
             self.tail_timer.start()
@@ -537,6 +546,7 @@ class Controller(AdvancedController):
     def tailSource(self):
         if not self.busy and self._source:
             self.future = self.executor.submit(self.ingestJob, self._source, self._mode)
+            self._connection_future = self.future
             self.changed.emit()
 
     @Slot()
@@ -598,14 +608,18 @@ class Controller(AdvancedController):
                 if stats["more"] and not stats["inserted"]
                 else "Archivo leído; estado del sensor no verificado"
             )
+            self.connectionResult(True)
             self.refresh()
             # Drain bounded batches on later event-loop turns; never block the GUI.
             if stats["more"] and stats["inserted"] + stats["rejected"] > 0:
                 self.tailSource()
         except Exception as exc:
-            self._status = "Error de lectura"
+            reading = getattr(self, "_connection_future", None) is future
+            if reading:
+                self.connectionResult(False)
+            self._status = "Error de lectura" if reading else "Operación fallida"
             self.changed.emit()
-            self.notice.emit(self.translate("Error de lectura") + ": " + str(exc))
+            self.notice.emit(self.translate(self._status) + ": " + str(exc))
 
     def close(self):
         self._geo_visible = False
@@ -780,11 +794,14 @@ class Controller(AdvancedController):
 
     @Property(str, notify=changed)
     def sensorStatus(self):
-        return (
-            "Instalado; conexión no configurada"
-            if find_engine()
-            else "Snort no instalado"
-        )
+        if self._connected:
+            return "Archivo de alertas conectado"
+        return {
+            "compatible": "Snort 3 compatible; conecta un archivo de alertas",
+            "missing": "Snort no instalado",
+            "incompatible": "Motor incompatible: se necesita Snort 3",
+            "error": "No se pudo ejecutar el motor",
+        }.get(self._setup_engine["state"], "Comprobando motor…")
 
     def refresh(self):
         rows = (
@@ -960,6 +977,9 @@ def main():
     parser.add_argument(
         "--map", action="store_true", help="Open the offline threat map"
     )
+    parser.add_argument(
+        "--setup", action="store_true", help="Open the first-run setup assistant"
+    )
     parser.add_argument("--screenshot", type=Path)
     parser.add_argument("--language", choices=["es-419", "en-US"])
     parser.add_argument("--about", action="store_true")
@@ -1037,6 +1057,17 @@ def main():
     if args.language:
         controller.setLanguage(args.language)
     app.installTranslator(controller.translator)
+    if args.setup or not any(
+        (
+            args.log,
+            args.pcap,
+            args.service,
+            args.screenshot,
+        )
+    ):
+        controller.restoreStartup()
+    if args.setup:
+        controller.openSetup()
     engine = QQmlApplicationEngine()
     controller.languageChanged.connect(engine.retranslate)
     engine.rootContext().setContextProperty("soc", controller)
@@ -1065,6 +1096,7 @@ def main():
         def capture(window=engine.rootObjects()[0]):
             if (
                 controller.busy
+                or controller.setupInfo["busy"]
                 or (controller._geo_visible and controller.geoMap["busy"])
                 or controller.service.get("busy")
                 or controller.service_refresh_future is not None

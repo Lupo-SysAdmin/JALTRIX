@@ -1,0 +1,35 @@
+{
+  "version": "1.2.0",
+  "date": "2026-11-09",
+  "suite": {
+    "Kali": {
+      "passed": 61,
+      "skipped": 0
+    },
+    "Ubuntu": {
+      "passed": 61,
+      "skipped": 0
+    },
+    "Arch": {
+      "passed": 58,
+      "skipped": 3
+    },
+    "Fedora": {
+      "passed": 58,
+      "skipped": 3
+    },
+    "Parrot": {
+      "passed": 58,
+      "skipped": 3
+    }
+  },
+  "skip_reason": "Snort engine absent in Arch/Fedora/Parrot lab VMs",
+  "first_run": "PASS: empty real setup, explicit demo, version 3/2/missing/invalid detection, remembered LIVE connection, missing-source recovery, ES/EN small window",
+  "installed_gui": "PASS: installed About/map/setup ES+EN in four full desktop VMs",
+  "new_sensor": "PASS Ubuntu: invalid rules rejected, new service stays inactive/disabled, existing profiles protected, actual benign UDP alert readable by operator",
+  "authentication": "Native pkexec channel reused; privileged new setup tested under sudo in disposable VM, not by automating the new Polkit dialog",
+  "engine_installation": "Manual with official installation guide; no engine downloaded or bundled automatically",
+  "historical_evidence": "1.1.0 ingestion/load/firewall and other tests retained; not claimed rerun in 1.2.0",
+  "publication": "Not published; GitHub Actions not run",
+  "EDR": "Unconfigured and disabled by owner decision"
+}

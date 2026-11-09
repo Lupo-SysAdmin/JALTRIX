@@ -62,10 +62,10 @@ else:
   - mkdir -p /home/jaltrix/build
   - tar -xzf /mnt/jaltrix/source.tar.gz -C /home/jaltrix/build
   - chown -R jaltrix:jaltrix /home/jaltrix/build
-  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/jaltrix-1.1.0/packaging/arch/jaltrix-1.1.0.tar.gz
-  - chown jaltrix:jaltrix /home/jaltrix/build/jaltrix-1.1.0/packaging/arch/jaltrix-1.1.0.tar.gz
-  - su - jaltrix -c 'cd build/jaltrix-1.1.0/packaging/arch && makepkg --noconfirm'
-  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/jaltrix-1.1.0/packaging/arch/*.pkg.tar.zst'
+  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/jaltrix-1.2.0.tar.gz
+  - chown jaltrix:jaltrix /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/jaltrix-1.2.0.tar.gz
+  - su - jaltrix -c 'cd build/jaltrix-1.2.0/packaging/arch && makepkg --noconfirm'
+  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/*.pkg.tar.zst'
 """
 common += (
     commands

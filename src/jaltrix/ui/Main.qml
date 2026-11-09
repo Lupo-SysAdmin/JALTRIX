@@ -8,7 +8,7 @@ ApplicationWindow {
     width: 1480; height: 920; minimumWidth: 1080; minimumHeight: 720
     visible: true; title: "JALTRIX · Jan Herrera · " + soc.mode.toUpperCase()
     color: "#090e19"
-    property string page: "Dashboard"
+    property string page: soc.showSetup ? "Inicio" : "Dashboard"
     onPageChanged: soc.setGeoVisible(page === "Dashboard" || page === "Mapa de amenazas")
     Component.onCompleted: soc.setGeoVisible(true)
     property bool inspector: true
@@ -47,9 +47,10 @@ ApplicationWindow {
     FileDialog { id: csvDialog; title: win.tr("Exportar CSV"); fileMode: FileDialog.SaveFile; nameFilters: ["CSV (*.csv)"]; defaultSuffix: "csv"; onAccepted: soc.export(selectedFile) }
     Shortcut { sequence: "Ctrl+K"; onActivated: search.forceActiveFocus() }
     Shortcut { sequence: "Ctrl+Q"; context: Qt.ApplicationShortcut; onActivated: win.close() }
+    Connections { target: soc; function onSetupRequested() { win.page="Inicio"; } }
     Connections { target: soc; function onGeoAlertOpened() { win.inspector=true; win.page="Alertas"; } }
     Connections { target: soc; function onCaseOpened() { caseNotes.text = soc.caseDetail.notes; caseStatus.currentIndex = ["new", "investigating", "resolved", "closed"].indexOf(soc.caseDetail.status); caseDialog.open(); } function onNotice(message) { toast.text = message; toast.visible = true; toastTimer.restart() } }
-    Timer { interval: 5000; repeat: true; running: win.page === "Servicio" || soc.mode !== "demo"; onTriggered: soc.refreshService() }
+    Timer { interval: 5000; repeat: true; running: (win.page === "Servicio" || win.page === "Inicio") || soc.mode !== "demo"; onTriggered: soc.refreshService() }
     Timer { id: toastTimer; interval: 5000; onTriggered: toast.visible = false }
 
 
@@ -195,7 +196,7 @@ ApplicationWindow {
                 Btn { objectName: "about-button"; text: win.tr("Acerca de"); onClicked: aboutDialog.open() }
             }
         }
-        Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 30; color: "#302448"; Txt { anchors.centerIn: parent; text: win.tr(soc.mode === "demo" ? "DATOS DE DEMOSTRACIÓN  ·  Fixture del 09 nov 2026, UTC  ·  Sin captura ni cambios de red" : soc.mode === "live" ? "LECTURA DE ARCHIVO  ·  Sin captura propia  ·  Salud del sensor no verificada" : "REPRODUCCIÓN / IMPORTACIÓN  ·  Alertas reales del archivo seleccionado"); color: "#d7bdff"; font.pixelSize: 12 } }
+        Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 30; color: "#302448"; Txt { anchors.centerIn: parent; text: win.tr(soc.mode === "demo" ? "DATOS DE DEMOSTRACIÓN  ·  Fixture del 09 nov 2026, UTC  ·  Sin captura ni cambios de red" : soc.mode === "live" && !soc.sourcePath ? "CONFIGURACIÓN DEL SENSOR · Conecta un archivo para ver alertas reales" : soc.mode === "live" ? "LECTURA DE ARCHIVO  ·  Sin captura propia  ·  Salud del sensor no verificada" : "REPRODUCCIÓN / IMPORTACIÓN  ·  Alertas reales del archivo seleccionado"); color: "#d7bdff"; font.pixelSize: 12 } }
         RowLayout {
             Layout.fillWidth: true; Layout.fillHeight: true; spacing: 0
             Rectangle {
@@ -217,7 +218,7 @@ ApplicationWindow {
                         }
                     }
                     Item { Layout.fillHeight: true }
-                    Panel { Layout.fillWidth: true; implicitHeight: 78; ColumnLayout { anchors.fill: parent; anchors.margins: 12; Txt { text: soc.mode === "demo" ? win.tr("●  MODO DEMO") : "●  " + soc.mode.toUpperCase(); color: "#c29aff" } Txt { text: soc.mode === "demo" ? win.tr("Captura desactivada") : win.tr(soc.service.active); color: win.muted; font.pixelSize: 11 } Txt { text: soc.mode === "demo" ? win.tr("Motor no conectado") : win.tr("Servicio del sensor"); color: win.muted; font.pixelSize: 11 } } }
+                    Panel { Layout.fillWidth: true; implicitHeight: 78; ColumnLayout { anchors.fill: parent; anchors.margins: 12; Txt { text: soc.mode === "demo" ? win.tr("●  MODO DEMO") : "●  " + soc.mode.toUpperCase(); color: "#c29aff" } Txt { text: soc.mode === "demo" ? win.tr("Datos simulados") : win.tr(soc.service.active); color: win.muted; font.pixelSize: 11 } Txt { text: soc.mode === "demo" ? win.tr("Sin alertas reales") : win.tr("Servicio del sensor"); color: win.muted; font.pixelSize: 11 } } }
                 }
             }
             ColumnLayout {
@@ -245,6 +246,14 @@ ApplicationWindow {
                             }
                         }
                     }
+                }
+                SetupView {
+                    controller:soc; visible:win.page==="Inicio"; Layout.fillWidth:true; Layout.fillHeight:true
+                    onEngineRequested:engineDialog.open()
+                    onLogRequested: { win.followFile=true; logDialog.open(); }
+                    onProfileRequested:sensorConfigDialog.open()
+                    onRulesRequested:win.page="Reglas"
+                    onDashboardRequested:win.page="Dashboard"
                 }
                 ColumnLayout {
                     visible: win.page === "Dashboard" || win.page === "Alertas"
@@ -508,7 +517,7 @@ ApplicationWindow {
                         width: serviceScroll.availableWidth; spacing: 16
                         Txt { text: win.tr("Servicio del sensor"); font.pixelSize: 22 }
                         Txt { text: "jaltrix-sensor.service"; font.pixelSize: 17; color: win.accent }
-                        Txt { text: win.tr("Perfil administrado en /etc/jaltrix. El perfil inicial usa lo y una regla de laboratorio; no protege toda la red."); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
+                        Txt { text: win.tr("Perfil administrado en /etc/jaltrix. Revisa interfaz, HOME_NET y reglas. La interfaz lo solo observa tráfico local."); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
                         Btn { objectName: "manage-real-service"; visible: soc.mode === "demo"; text: win.tr("Administrar servicio real"); onClicked: soc.manageRealService() }
                         Btn { text: win.tr("Configurar interfaz y HOME_NET"); enabled: soc.mode !== "demo" && soc.operationsAvailable && !soc.busy; onClicked: sensorConfigDialog.open() }
                         Txt { objectName: "service-status"; text: win.tr("Estado: ") + win.tr(soc.service.active) + " · " + win.tr("Arranque: ") + win.tr(soc.service.boot); font.pixelSize: 18 }
@@ -623,6 +632,7 @@ ApplicationWindow {
                         Txt { text: win.page === "Reportes" ? win.tr("Exportación con procedencia") : win.tr("Entorno y capacidades"); font.pixelSize: 22 }
                         Txt { text: win.tr("Motor: ") + win.tr(soc.sensorStatus) + "\n" + win.tr(soc.ingestionStatus) + "\n" + soc.sourcePath; Layout.fillWidth: true; wrapMode: Text.WrapAnywhere; color: win.muted; lineHeight: 1.5 }
                         Txt { text: win.tr("Registros guardados: ") + (soc.mode === "demo" ? soc.summary.total : soc.storedCount) + (soc.mode === "demo" ? "" : win.tr(" · Consultas paginadas de 500 registros")); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
+                        Btn { text: win.tr("Asistente de configuración"); visible:win.page === "Configuración"; onClicked:soc.openSetup() }
                         Btn { text: win.tr("Guardar copia de seguridad"); visible: win.page === "Configuración"; enabled: !soc.busy; onClicked: backupDialog.open() }
                         RowLayout { visible: win.page === "Configuración"
                             Btn { text: win.tr("Seleccionar motor…"); enabled: !soc.busy; onClicked: engineDialog.open() }

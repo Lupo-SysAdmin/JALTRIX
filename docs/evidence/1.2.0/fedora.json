@@ -1,0 +1,15 @@
+{
+  "hostname": "jaltrix-fedora",
+  "os": "NAME=\"Fedora Linux\"\nVERSION=\"44 (Cloud Edition)\"\nRELEASE_TYPE=stable\nID=fedora\nVERSION_ID=44\nVERSION_CODENAME=\"\"\nPRETTY_NAME=\"Fedora Linux 44 (Cloud Edition)\"\nANSI_COLOR=\"0;38;2;60;110;180\"\nLOGO=fedora-logo-icon\nCPE_NAME=\"cpe:/o:fedoraproject:fedora:44\"\nHOME_URL=\"https://fedoraproject.org/\"\nDOCUMENTATION_URL=\"https://docs.fedoraproject.org/en-US/fedora/f44/\"\nSUPPORT_URL=\"https://ask.fedoraproject.org/\"\nBUG_REPORT_URL=\"https://bugzilla.redhat.com/\"\nREDHAT_BUGZILLA_PRODUCT=\"Fedora\"\nREDHAT_BUGZILLA_PRODUCT_VERSION=44\nREDHAT_SUPPORT_PRODUCT=\"Fedora\"\nREDHAT_SUPPORT_PRODUCT_VERSION=44\nSUPPORT_END=2027-05-19\nVARIANT=\"Cloud Edition\"\nVARIANT_ID=cloud\n",
+  "kernel": "6.19.10-300.fc44.x86_64",
+  "python": "3.14.3",
+  "tests_exit": 0,
+  "gui_exit": 0,
+  "map_exit": 0,
+  "setup_exit": {
+    "es-419": 0,
+    "en-US": 0
+  },
+  "scope": "KVM with full desktop; source suite offscreen plus installed GUI on real desktop display",
+  "engine": null
+}

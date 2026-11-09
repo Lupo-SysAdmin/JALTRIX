@@ -1,3 +1,10 @@
+jaltrix (1.2.0-1) unstable; urgency=medium
+
+  * Add first-run setup and persistent live connections.
+  * Validate Snort 3 and create isolated sensors on request.
+
+ -- Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>  Mon, 09 Nov 2026 16:00:00 -0500
+
 jaltrix (1.1.0-1) unstable; urgency=medium
 
   * Add an offline interactive threat map with country grouping and alert drilldown.

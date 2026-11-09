@@ -24,8 +24,8 @@ if not key.exists():
     )
 share = ROOT / ".runtime/vms/share"
 share.mkdir(exist_ok=True)
-shutil.copyfile(ROOT / "dist/jaltrix_1.1.0-1_all.deb", share / "jaltrix.deb")
-shutil.copyfile(ROOT / "dist/jaltrix-1.1.0.tar.gz", share / "source.tar.gz")
+shutil.copyfile(ROOT / "dist/jaltrix_1.2.0-1_all.deb", share / "jaltrix.deb")
+shutil.copyfile(ROOT / "dist/jaltrix-1.2.0.tar.gz", share / "source.tar.gz")
 seed = VM / "seed"
 seed.mkdir(exist_ok=True)
 (seed / "meta-data").write_text(

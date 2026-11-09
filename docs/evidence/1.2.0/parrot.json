@@ -1,0 +1,15 @@
+{
+  "hostname": "jaltrix-parrot",
+  "os": "PRETTY_NAME=\"Parrot Security 7.4 (echo)\"\nNAME=\"Parrot Security\"\nVERSION_ID=\"7.4\"\nVERSION=\"7.4 (echo)\"\nVERSION_CODENAME=echo\nDEBIAN_VERSION_FULL=13.6\nID=parrot\nID_LIKE=debian\nHOME_URL=\"https://www.parrotsec.org/\"\nSUPPORT_URL=\"https://www.parrotsec.org/docs\"\nBUG_REPORT_URL=\"https://gitlab.com/parrotsec/\"\n",
+  "kernel": "7.1.13+parrot7-amd64",
+  "python": "3.13.5",
+  "tests_exit": 0,
+  "gui_exit": 0,
+  "map_exit": 0,
+  "setup_exit": {
+    "es-419": 0,
+    "en-US": 0
+  },
+  "scope": "KVM with full desktop; source suite offscreen plus installed GUI on real desktop display",
+  "engine": null
+}

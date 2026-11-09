@@ -42,3 +42,7 @@ También se puede ejecutar `jaltrix --backup /ruta/copia.zip`. Para recuperar, c
 ## Mapa, pestañas y barra de estado
 
 Ver [GEOIP.md](GEOIP.md) para importar una base local, explorar países/marcadores y abrir alertas, distinguir demo de ubicaciones reales y entender el alcance de los contadores y estados del sensor.
+
+## Primer inicio (1.2.0)
+
+Consulta [SETUP.md](SETUP.md). El asistente abre en instalaciones nuevas y puede reabrirse desde Configuración; la consola recuerda la última conexión LIVE correcta.

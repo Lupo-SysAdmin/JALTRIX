@@ -1,14 +1,14 @@
-# Compatibilidad 1.1.0 — 2026-11-09
+# Compatibilidad 1.2.0 — 2026-11-09
 
-| Plataforma amd64 | Entorno | Suite | GUI instalada + mapa | Motor / sistema |
+| Plataforma amd64 | Entorno | Suite | GUI instalada + mapa + asistente | Motor / sistema |
 |---|---|---|---|---|
-| Kali 2026.3 rolling | Host real, DEB, Wayland | 55 PASS | PASS; ES/EN e icono propio | Snort 3.13.2.0, migración nativa del sensor sin cambiar reglas/estado |
-| Ubuntu 26.04.1 LTS | KVM, Xfce/Xorg, DEB | 55 PASS | PASS | Snort real, migración del sensor activo, reglas/rollback y firewall aislado |
-| Arch rolling, imagen 20261101 y actualización 2026-11-09 | KVM, Xfce/Xorg, makepkg | 52 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
-| Fedora 44 Cloud 1.7 | KVM, Xfce/Xorg, RPM | 52 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
-| Parrot 7.4 Home | KVM, KDE, DEB | 52 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
+| Kali 2026.3 rolling | Host real, DEB, Wayland | 61 PASS | PASS; ES/EN e icono propio | Snort 3.13.2.0, migración nativa del sensor sin cambiar reglas/estado |
+| Ubuntu 26.04.1 LTS | KVM, Xfce/Xorg, DEB | 61 PASS | PASS | Snort real, migración del sensor activo, reglas/rollback y firewall aislado |
+| Arch rolling, imagen 20261101 y actualización 2026-11-09 | KVM, Xfce/Xorg, makepkg | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
+| Fedora 44 Cloud 1.7 | KVM, Xfce/Xorg, RPM | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
+| Parrot 7.4 Home | KVM, KDE, DEB | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
 
-Evidencia: `artifacts/<distro>-vm-tests-v110.log`, screenshots `*-installed-v110.png` y resultados de ciclo de paquete. Las pruebas automáticas de la fuente usan offscreen; además el ejecutable instalado se abre en un escritorio gráfico real. No confundir estas dos verificaciones.
+Evidencia: `artifacts/<distro>-vm-tests-v120.log`, screenshots `*-installed-v120.png` y resultados de ciclo de paquete. Las pruebas automáticas de la fuente usan offscreen; además el ejecutable instalado se abre en un escritorio gráfico real. No confundir estas dos verificaciones.
 
 Las imágenes proceden de servidores oficiales y se verificaron contra SHA-256 publicados: Ubuntu cloud-images.ubuntu.com, Arch geo.mirror.pkgbuild.com/images, Fedora dl.fedoraproject.org y Parrot deb.parrot.sh/parrot/iso/7.4. Eso no es una auditoría de la cadena de suministro ni una certificación de distribución.
 
@@ -21,3 +21,5 @@ Parrot: la suspensión automática de la VM interrumpió el montaje 9p del labor
 El arranque tras reboot y el firewall host dentro de Ubuntu VM se verificaron en 1.0.0; en 1.0.1 se repitieron la migración y las comprobaciones indicadas arriba. Ctrl+Q está incluido en la suite gráfica.
 
 1.1.0: el mapa se abrió desde el paquete instalado en las cuatro VMs. La prueba de actualización usa fixtures nuevas en el mismo arranque; no se atribuye cobertura nueva de cambios de dispositivo/inodo ni de reinicio del sensor.
+
+1.2.0: asistente instalado ES/EN en las cuatro VMs; creación real del nuevo sensor validada en Ubuntu. Las otras tres VMs conservan los tres SKIP por motor ausente. La instalación de Snort se guía con documentación oficial, no con instalación automática universal.

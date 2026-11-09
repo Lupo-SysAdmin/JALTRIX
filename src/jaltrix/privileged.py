@@ -123,9 +123,213 @@ def restart_verified():
         raise RuntimeError("Sensor failed to remain active")
 
 
+SENSOR_UNIT = "[Unit]\nDescription=JALTRIX managed passive sensor\nDocumentation=https://www.snort.org/\nAfter=network-online.target\nWants=network-online.target\nConditionFileIsExecutable=/usr/local/lib/jaltrix-engine/bin/snort\nConditionPathExists=/etc/jaltrix/snort.lua\n\n[Service]\nType=simple\nUser=jaltrix-sensor\nGroup=jaltrix-sensor\nEnvironment=SNORT_CHECKSUM=all\nEnvironmentFile=/etc/jaltrix/sensor.env\nExecStartPre=/usr/local/lib/jaltrix-engine/bin/snort -T -c /etc/jaltrix/snort.lua -R /etc/jaltrix/local.rules -l /var/log/jaltrix\nExecStart=/usr/local/lib/jaltrix-engine/bin/snort -c /etc/jaltrix/snort.lua -R /etc/jaltrix/local.rules -i ${SNORT_INTERFACE} --daq afpacket --daq-mode passive --daq-batch-size 1 -A alert_json -l /var/log/jaltrix -U -k ${SNORT_CHECKSUM}\nRestart=on-failure\nRestartSec=5\nTimeoutStopSec=30\nUMask=0027\nLogsDirectory=jaltrix\nLogsDirectoryMode=0750\nNoNewPrivileges=yes\nCapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN\nAmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN\nProtectSystem=strict\nProtectHome=yes\nPrivateTmp=yes\nProtectKernelTunables=yes\nProtectKernelModules=yes\nProtectControlGroups=yes\nRestrictSUIDSGID=yes\nRestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_PACKET AF_NETLINK\nReadWritePaths=/var/log/jaltrix\n\n[Install]\nWantedBy=multi-user.target\n"
+
+
+def managed_engine():
+    path = CONFIG / "engine.path"
+    if path.exists():
+        trusted(path)
+        engine = Path(path.read_text().strip())
+        trusted(engine)
+        return engine
+    return ENGINE
+
+
+def initialize(request, actor):
+    """Create only a new isolated profile; never adopt or overwrite another service."""
+    import shutil
+
+    unit_path = Path("/etc/systemd/system") / UNIT
+    trusted(unit_path.parent)
+    trusted(CONFIG.parent)
+    if (
+        CONFIG.exists()
+        or CONFIG.is_symlink()
+        or unit_path.exists()
+        or unit_path.is_symlink()
+    ):
+        raise ValueError(
+            "Existing JALTRIX profile preserved; use configuration or connect its log"
+        )
+    state = run(
+        ["systemctl", "show", UNIT, "--property=LoadState", "--value"]
+    ).stdout.strip()
+    if state != "not-found":
+        raise ValueError("Existing service preserved")
+    engine = Path(request["engine"]).resolve(strict=True)
+    if not re.fullmatch(r"/[A-Za-z0-9_./+\-]+", str(engine)) or not str(
+        engine
+    ).startswith(("/usr/", "/opt/")):
+        raise ValueError(
+            "Install Snort under /usr or /opt before creating a system sensor"
+        )
+    trusted(engine)
+    lua, env = profile(request["interface"], request["network"])
+    rules_valid(request["rules"])
+    if not shutil.which("setfacl"):
+        raise ValueError("Install the acl package before creating the sensor")
+    operator = pwd.getpwuid(int(actor))
+    try:
+        owner = pwd.getpwnam("jaltrix-sensor")
+    except KeyError:
+        run(
+            [
+                "useradd",
+                "--system",
+                "--user-group",
+                "--no-create-home",
+                "--shell",
+                "/usr/sbin/nologin",
+                "jaltrix-sensor",
+            ]
+        )
+        owner = pwd.getpwnam("jaltrix-sensor")
+    if owner.pw_uid == 0 or owner.pw_dir not in (
+        "/home/jaltrix-sensor",
+        "/home/snort-soc",
+        "/nonexistent",
+        "/",
+        "/var/lib/jaltrix",
+    ):
+        raise ValueError("Unexpected sensor account")
+    execution = dict(
+        user=owner.pw_uid,
+        group=owner.pw_gid,
+        extra_groups=[],
+        env={"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "TZ": "UTC"},
+    )
+    version = run([str(engine), "-V"], **execution).stdout
+    if not re.search(r"Version\s+3\.", version) or "Snort" not in version:
+        raise ValueError("Snort 3 is required")
+    if "afpacket" not in run([str(engine), "--daq-list"], **execution).stdout:
+        raise ValueError("This sensor requires the afpacket DAQ module")
+    with tempfile.TemporaryDirectory(prefix="setup-", dir=STATE) as temp:
+        folder = Path(temp)
+        os.chown(folder, owner.pw_uid, owner.pw_gid)
+        for name, content in {
+            "snort.lua": lua,
+            "local.rules": request["rules"],
+        }.items():
+            (folder / name).write_text(content)
+            (folder / name).chmod(0o644)
+        run(
+            [
+                str(engine),
+                "-T",
+                "-c",
+                str(folder / "snort.lua"),
+                "-R",
+                str(folder / "local.rules"),
+                "-l",
+                str(folder),
+            ],
+            **execution,
+        )
+    log = Path("/var/log/jaltrix")
+    # Ubuntu permits the syslog group to write /var/log. Anchor privileged
+    # mutations to descriptors instead of following replaceable child paths.
+    trusted(log.parent.parent)
+    parent_stat = log.parent.lstat()
+    if (
+        log.parent.is_symlink()
+        or parent_stat.st_uid != 0
+        or parent_stat.st_mode & 0o002
+    ):
+        raise PermissionError("Unexpected log parent permissions")
+    if log.exists() or log.is_symlink():
+        raise ValueError("Existing log directory preserved; manual review required")
+    unit = SENSOR_UNIT.replace("/usr/local/lib/jaltrix-engine/bin/snort", str(engine))
+    made_config = made_log = made_unit = False
+    log_identity = None
+    try:
+        CONFIG.mkdir(mode=0o755)
+        made_config = True
+        write_files(
+            {"snort.lua": lua, "sensor.env": env, "local.rules": request["rules"]}
+        )
+        (CONFIG / "engine.path").write_text(str(engine) + "\n")
+        (CONFIG / "engine.path").chmod(0o644)
+        log.mkdir(mode=0o700)
+        made_log = True
+        log_fd = os.open(log, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            opened = os.fstat(log_fd)
+            log_identity = (opened.st_dev, opened.st_ino)
+            if opened.st_uid != 0 or opened.st_mode & 0o077:
+                raise PermissionError("New log directory changed during setup")
+            os.fchown(log_fd, owner.pw_uid, owner.pw_gid)
+            os.fchmod(log_fd, 0o750)
+            fd_path = f"/proc/self/fd/{log_fd}"
+            run(
+                ["setfacl", "-m", f"u:{operator.pw_uid}:rx", fd_path],
+                pass_fds=(log_fd,),
+            )
+            run(
+                ["setfacl", "-d", "-m", f"u:{operator.pw_uid}:rx", fd_path],
+                pass_fds=(log_fd,),
+            )
+            fd = os.open(
+                "alert_json.txt",
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW,
+                0o640,
+                dir_fd=log_fd,
+            )
+            try:
+                os.fchown(fd, owner.pw_uid, owner.pw_gid)
+                run(
+                    ["setfacl", "-m", f"u:{operator.pw_uid}:r", f"/proc/self/fd/{fd}"],
+                    pass_fds=(fd,),
+                )
+            finally:
+                os.close(fd)
+            current = log.lstat()
+            if (current.st_dev, current.st_ino) != log_identity:
+                raise PermissionError("Log directory moved during setup")
+        finally:
+            os.close(log_fd)
+        with unit_path.open("x") as output:
+            made_unit = True
+            output.write(unit)
+        unit_path.chmod(0o644)
+        run(["systemd-analyze", "verify", str(unit_path)])
+        run(["systemctl", "daemon-reload"])
+        boot = subprocess.run(
+            ["systemctl", "is-enabled", UNIT],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.strip()
+        if boot != "disabled" or active():
+            raise ValueError(
+                "Existing startup references detected; new service rolled back"
+            )
+    except Exception:
+        if made_unit:
+            unit_path.unlink()
+        if made_log and log.exists():
+            current = log.lstat()
+            if (current.st_dev, current.st_ino) == log_identity:
+                shutil.rmtree(log)
+        if made_config:
+            shutil.rmtree(CONFIG)
+        run(["systemctl", "daemon-reload"])
+        raise
+    return dict(
+        state="verified",
+        action="initialize",
+        active=False,
+        enabled=False,
+        engine=str(engine),
+        interface=request["interface"],
+        log=str(log / "alert_json.txt"),
+    )
+
+
 def deploy(request):
     trusted(CONFIG)
-    trusted(ENGINE)
+    engine = managed_engine()
+    trusted(engine)
     for name in ("local.rules", "snort.lua", "sensor.env"):
         trusted(CONFIG / name)
     before = snapshot()
@@ -154,7 +358,7 @@ def deploy(request):
             (directory / name).chmod(0o644)
         result = run(
             [
-                str(ENGINE),
+                str(engine),
                 "-T",
                 "-c",
                 str(directory / "snort.lua"),
@@ -388,7 +592,9 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:
             result = (
-                configure_firewall(request)
+                initialize(request, actor)
+                if request.get("action") == "initialize"
+                else configure_firewall(request)
                 if request.get("action") == "configure_firewall"
                 else firewall(request)
                 if request.get("action", "").startswith("firewall_")

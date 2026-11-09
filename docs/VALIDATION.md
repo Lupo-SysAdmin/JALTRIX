@@ -1,3 +1,12 @@
+# Validación 1.2.0 — 2026-11-09
+
+- Kali y Ubuntu: 61 pruebas aprobadas. Arch/Fedora/Parrot: 58 aprobadas, 3 omitidas por ausencia del motor real.
+- Primer inicio sin demo implícita, motor ausente/3/2/inválido, persistencia LIVE, recuperación ante archivo perdido, ES/EN y geometría 1080×720.
+- GUI instalada, mapa y asistente en ES/EN en los cuatro escritorios de VM.
+- Ubuntu, creación real: reglas inválidas rechazadas antes de escribir perfil, autorización de helper probado en contexto root del laboratorio, no sobrescritura, servicio detenido y arranque deshabilitado, posterior inicio y alerta UDP de loopback legible por el operador. El diálogo Polkit del alta no fue automatizado; se reutiliza el canal de autorización existente.
+- La cuenta heredada del laboratorio conservaba /home/snort-soc; se admite esa migración. Ubuntu permite al grupo syslog escribir /var/log; las modificaciones privilegiadas al nuevo registro se realizan mediante descriptores sin seguir enlaces. El fixture de laboratorio deshabilita y restaura su arranque previo para simular una instalación nueva.
+- Los ensayos de carga/rotación y otras integraciones de 1.1.0 son evidencia histórica, no ensayos nuevos de esta versión. No hay publicación ni ejecución de GitHub Actions.
+
 # Validación JALTRIX 1.1.0 — 2026-11-09
 
 - **55 PASS** en Kali y Ubuntu; **52 PASS / 3 SKIP** en Arch, Fedora y Parrot (motor Snort ausente en esas tres VMs).

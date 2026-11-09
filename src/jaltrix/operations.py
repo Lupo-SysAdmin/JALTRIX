@@ -22,7 +22,17 @@ def prepare(action, reason, **parameters):
     if not reason.strip():
         raise ValueError("A justification is required")
     request = dict(action=action, reason=reason, approved=True, **parameters)
-    if action in ("configure", "deploy_rules", "rollback"):
+    if action == "initialize":
+        profile(parameters["interface"], parameters["network"])
+        rules_valid(parameters["rules"])
+        if Path("/etc/jaltrix").exists():
+            raise ValueError(
+                "Existing profile preserved; use its configuration controls"
+            )
+        request["preview"] = (
+            "Create /etc/jaltrix, /var/log/jaltrix and jaltrix-sensor.service. Validate selected rules. Service stays stopped; automatic startup stays disabled."
+        )
+    elif action in ("configure", "deploy_rules", "rollback"):
         files = {
             name: (Path("/etc/jaltrix") / name).read_text()
             for name in ("local.rules", "snort.lua", "sensor.env")

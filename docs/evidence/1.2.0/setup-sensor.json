@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "scope": "New isolated sensor on Ubuntu VM: invalid rules reject before writes; creation stays inactive/disabled; existing profile protected; service start plus benign loopback UDP produces an alert readable by the operator",
+  "version": {
+    "state": "verified",
+    "action": "initialize",
+    "active": false,
+    "enabled": false,
+    "engine": "/usr/local/lib/jaltrix-engine/bin/snort",
+    "interface": "lo",
+    "log": "/var/log/jaltrix/alert_json.txt"
+  }
+}
