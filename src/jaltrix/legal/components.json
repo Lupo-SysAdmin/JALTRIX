@@ -70,5 +70,11 @@
     "license": "LGPL-2.1",
     "file": "LGPL-2.1.txt",
     "url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+  },
+  {
+    "name": "Natural Earth \u00b7 world land map",
+    "license": "Public domain",
+    "file": "NaturalEarth-NOTICE.txt",
+    "url": "https://www.naturalearthdata.com/about/terms-of-use/"
   }
 ]

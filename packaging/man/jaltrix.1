@@ -1,4 +1,4 @@
-.TH JALTRIX 1 "2026-11-09" "JALTRIX 1.0.1" "User Commands"
+.TH JALTRIX 1 "2026-11-09" "JALTRIX 1.1.0" "User Commands"
 .SH NAME
 jaltrix \- JALTRIX independent Snort investigation console
 .SH SYNOPSIS
@@ -21,6 +21,10 @@ explicitly in the service panel.
 .TP
 .B --pcap PATH --rules PATH
 Validate rules and replay a local PCAP or supported PCAPNG in an isolated profile.
+.TP
+.B --map
+Open the offline interactive threat map. Real IP locations require an imported
+local GeoIP CSV; demonstration locations are explicitly simulated.
 .TP
 .B --service
 Open managed sensor controls without starting or changing the service.

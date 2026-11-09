@@ -8,7 +8,7 @@ root = Path.home() / "jaltrix-validation"
 root.mkdir(exist_ok=True)
 with tarfile.open("/mnt/jaltrix/source.tar.gz") as archive:
     archive.extractall(root, filter="data")
-source = root / "jaltrix-1.0.1"
+source = root / "jaltrix-1.1.0"
 env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software")
 engine = Path("/usr/local/lib/jaltrix-engine/bin/snort")
 if engine.exists():
@@ -32,7 +32,13 @@ for process in Path("/proc").glob("[0-9]*"):
     try:
         if process.stat().st_uid == os.getuid() and any(
             name in (process / "cmdline").read_bytes()
-            for name in (b"/usr/bin/jaltrix", b"/usr/bin/snort-soc")
+            for name in (
+                b"/usr/bin/jaltrix",
+                b"/usr/bin/snort-soc",
+                b"plasmashell",
+                b"xfce4-session",
+                b"kwin_x11",
+            )
         ):
             values = dict(
                 part.split(b"=", 1)
@@ -62,6 +68,23 @@ with (root / "gui.log").open("w") as log:
         stderr=subprocess.STDOUT,
         timeout=30,
     )
+with (root / "map-gui.log").open("w") as log:
+    mapped = subprocess.run(
+        [
+            "/usr/bin/jaltrix",
+            "--map",
+            "--language",
+            "en-US",
+            "--data-dir",
+            str(root / "data"),
+            "--screenshot",
+            str(root / "installed-map.png"),
+        ],
+        env=env,
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        timeout=30,
+    )
 report = dict(
     hostname=platform.node(),
     os=Path("/etc/os-release").read_text(),
@@ -69,10 +92,11 @@ report = dict(
     python=platform.python_version(),
     tests_exit=tests.returncode,
     gui_exit=gui.returncode,
+    map_exit=mapped.returncode,
     scope="KVM with full desktop; source suite offscreen plus installed GUI on real desktop display",
     engine=str(engine) if engine.exists() else None,
 )
 (root / "report.json").write_text(json.dumps(report, indent=2))
 print(json.dumps(report, indent=2))
 print((root / "tests.log").read_text()[-2000:])
-assert tests.returncode == gui.returncode == 0
+assert tests.returncode == gui.returncode == mapped.returncode == 0

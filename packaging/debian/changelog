@@ -1,3 +1,11 @@
+jaltrix (1.1.0-1) unstable; urgency=medium
+
+  * Add an offline interactive threat map with country grouping and alert drilldown.
+  * Add complete-query geographic totals, native classification tabs and status strip.
+  * Preserve local GeoIP imports and add public-domain map attribution.
+
+ -- Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>  Mon, 09 Nov 2026 15:00:00 -0500
+
 jaltrix (1.0.1-1) unstable; urgency=medium
 
   * Rename package, launcher and desktop identity to JALTRIX.

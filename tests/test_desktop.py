@@ -17,6 +17,135 @@ from jaltrix.app import Controller
 from jaltrix.core import demo_events
 
 
+def test_map_clicks_categories_real_geo_and_small_window(tmp_path):
+    QQuickStyle.setStyle("Basic")
+    app = QGuiApplication.instance() or QGuiApplication([])
+    controller = Controller(tmp_path)
+    engine = QQmlApplicationEngine()
+    errors = []
+    engine.warnings.connect(
+        lambda warnings: errors.extend(w.toString() for w in warnings)
+    )
+    engine.rootContext().setContextProperty("soc", controller)
+    engine.rootContext().setContextProperty("eventModel", controller.model)
+    engine.load(
+        QUrl.fromLocalFile(str(Path(__file__).parents[1] / "src/jaltrix/ui/Main.qml"))
+    )
+    assert engine.rootObjects()
+    window = engine.rootObjects()[0]
+
+    def ready():
+        for _ in range(250):
+            wait(20)
+            if not controller.busy and not controller.geoMap["busy"]:
+                assert not controller.geoMap["error"]
+                return
+        raise AssertionError("Map did not finish")
+
+    def visual(item, name):
+        if item.objectName() == name and item.isVisible():
+            return item
+        for child in item.childItems():
+            found = visual(child, name)
+            if found is not None:
+                return found
+        return None
+
+    def click(name, window=window):
+        button = visual(window.contentItem(), name)
+        assert button is not None, name
+        position = button.mapToScene(QPointF(button.width() / 2, button.height() / 2))
+        assert (
+            0 <= position.x() <= window.width() and 0 <= position.y() <= window.height()
+        ), name
+        for kind, buttons in [
+            (QEvent.MouseButtonPress, Qt.LeftButton),
+            (QEvent.MouseButtonRelease, Qt.NoButton),
+        ]:
+            app.sendEvent(
+                window,
+                QMouseEvent(
+                    kind, position, position, Qt.LeftButton, buttons, Qt.NoModifier
+                ),
+            )
+        wait(30)
+
+    try:
+        ready()
+        assert controller.geoMap["located"] == 240
+        click("nav-Mapa de amenazas")
+        ready()
+        click("geo-country-BR")
+        ready()
+        assert controller.geoMap["matched"] == 40
+        assert len(controller.geoMap["markers"]) == 1
+        click("geo-marker-" + controller.geoMap["markers"][0]["key"])
+        ready()
+        event = controller.geoMap["events"][0]
+        click("geo-event-" + event["event_id"])
+        assert window.property("page") == "Alertas"
+        assert controller.selected["event_id"] == event["event_id"]
+        click("category-Web")
+        assert controller.categorySelection == "Web"
+        assert len(controller.model.rows) == 48
+        controller.selectCategory("Todas")
+        window.setProperty("page", "Mapa de amenazas")
+        ready()
+        for language in ("es-419", "en-US"):
+            controller.setLanguage(language)
+            window.resize(1080, 720)
+            wait(150)
+            countries = visual(window.contentItem(), "geo-countries")
+            events = visual(window.contentItem(), "geo-events")
+            assert countries.height() > 100 and events.height() >= 60
+            assert visual(window.contentItem(), "world-map").width() > 300
+            assert countries.width() <= 200
+            assert events.mapToScene(QPointF(0, events.height())).y() <= window.height()
+            assert window.grabWindow().save(
+                str(tmp_path / ("map-small-" + language + ".png"))
+            )
+        window.resize(1480, 920)
+        controller.selectGeoCountry("")
+        ready()
+        assert window.grabWindow().save(str(tmp_path / "map-demo.png"))
+        csv = tmp_path / "import.csv"
+        csv.write_text(
+            "network,country,latitude,longitude,source\n8.8.8.0/24,US,40,-74,Synthetic test data\n"
+        )
+        controller.loadGeoDatabase(QUrl.fromLocalFile(str(csv)))
+        ready()
+        assert (tmp_path / "geoip.csv").stat().st_mode & 0o077 == 0
+        csv.unlink()
+        source = tmp_path / "real.json"
+        source.write_text(
+            '{"rule":"1:42:1","src_addr":"8.8.8.8","class":"web-application-attack","priority":1}\n{"rule":"1:43:1","src_addr":"10.0.0.1","class":"attempted-admin","priority":2}\n'
+        )
+        controller.loadLog(QUrl.fromLocalFile(str(source)), False)
+        ready()
+        assert not controller.geoMap["demo"]
+        assert controller.geoMap["total"] == 2 and controller.geoMap["located"] == 1
+        assert controller.geoMap["unlocated"] == 1
+        assert controller.geoMap["selection_country"] == ""
+        assert {c["label"] for c in controller.categoryTabs} == {
+            "Todas",
+            "web-application-attack",
+            "attempted-admin",
+        }
+        controller.selectCategory("attempted-admin")
+        ready()
+        assert controller.geoMap["total"] == 1 and controller.geoMap["located"] == 0
+        assert (
+            len(controller.model.rows) == 1
+            and controller.model.rows[0]["classification"] == "attempted-admin"
+        )
+        assert not errors, errors
+    finally:
+        window.close()
+        del window, engine
+        app.processEvents()
+        controller.close()
+
+
 def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypatch):
     QQuickStyle.setStyle("Basic")
     app = QGuiApplication.instance() or QGuiApplication([])

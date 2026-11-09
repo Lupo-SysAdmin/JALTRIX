@@ -1,5 +1,14 @@
 # Cambios
 
+## 1.1.0 — 2026-11-09
+
+- Mapa mundial offline con marcadores, zoom, países y exploración paginada de alertas.
+- Totales geográficos sobre toda la consulta; distingue IP sin ubicación y demo sintética.
+- Importación GeoIP privada y persistente, con selección de la red más específica IPv4/IPv6.
+- Pestañas con contadores: categorías demo o clasificación original de Snort; filtro también aplicado a exportaciones y mapa.
+- Barra de estado del servicio local, modo, interfaz configurada, recolector y última alerta de la fuente.
+- Mejora de botones principales, diseño a 1080×720 y etiquetas ES/EN; cartografía Natural Earth con atribución.
+
 ## 1.0.1 — 2026-11-09
 
 - Añade Ctrl+Q mediante el atajo nativo de Qt para cerrar la ventana y liberar recursos.

@@ -55,7 +55,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-deb-") as temp:
     control = stage / "DEBIAN/control"
     control.parent.mkdir()
     control.write_text("""Package: jaltrix
-Version: 1.0.1-1
+Version: 1.1.0-1
 Section: net
 Priority: optional
 Architecture: all
@@ -102,7 +102,7 @@ Description: independent desktop console for Snort 3
             "--root-owner-group",
             "--build",
             str(stage),
-            str(OUT / "jaltrix_1.0.1-1_all.deb"),
+            str(OUT / "jaltrix_1.1.0-1_all.deb"),
         ],
         check=True,
         env=dict(os.environ, SOURCE_DATE_EPOCH=str(epoch)),

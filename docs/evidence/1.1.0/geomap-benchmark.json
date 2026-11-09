@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "events": 100000,
+  "overview_seconds": 0.2956,
+  "country_last_page_seconds": 0.131,
+  "whole_process_peak_rss_kib": 777612,
+  "scope": "Synthetic offline SQLite dataset; complete-query map and last country page; no network capture"
+}

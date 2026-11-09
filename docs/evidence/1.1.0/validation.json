@@ -1,0 +1,37 @@
+{
+  "version": "1.1.0",
+  "date": "2026-11-09",
+  "local_suite": {
+    "Kali": {
+      "passed": 55,
+      "skipped": 0
+    },
+    "Ubuntu": {
+      "passed": 55,
+      "skipped": 0
+    },
+    "Arch": {
+      "passed": 52,
+      "skipped": 3
+    },
+    "Fedora": {
+      "passed": 52,
+      "skipped": 3
+    },
+    "Parrot": {
+      "passed": 52,
+      "skipped": 3
+    }
+  },
+  "skip_reason": "Real Snort engine absent in Arch/Fedora/Parrot lab VMs",
+  "map": "PASS: complete-query aggregation, longest-prefix IPv4/IPv6, mode/source separation, unlocated private/reserved IPs, markers/countries/pagination, inspector clicks, ES/EN and 1080x720",
+  "classification": "PASS: native classification query and country filters; exact counters",
+  "installed_gui_and_map": "PASS all four full desktop VMs; source GUI tested on Kali",
+  "native_upgrade": "PASS: 1.0.1 to 1.1.0 in the same boot in four VMs; fresh fixtures preserve event IDs/checkpoints/cases/triage",
+  "geography": "Offline Natural Earth land; real IP lookup requires operator-supplied local CSV; synthetic demo explicitly labeled",
+  "status_strip": "Local service state, configured interface, independent collector, last source alert; no claim of verified capture",
+  "prior_integrations": "Sensor/firewall/backup/package lifecycle evidence retained under 1.0.1; these privileged operations are unchanged",
+  "remote_github_actions": "NOT RUN; no public repository changes",
+  "EDR": "NOT CONFIGURED; disabled by owner decision",
+  "scope": "Local desktop console; no legal or security certification"
+}

@@ -3,6 +3,43 @@
 from PySide6.QtCore import QTranslator
 
 EN_US = {
+    "Ubicación sintética de demostración": "Synthetic demo location",
+    "Mapa de amenazas": "Threat map",
+    "Todos los países": "All countries",
+    "DEMO · Ubicaciones simuladas; no representan actividad real.": "DEMO · Simulated locations; these do not represent real activity.",
+    "IP de origen · Ubicación aproximada; no identifica al atacante.": "Source IP · Approximate location; it does not identify an attacker.",
+    "alertas ubicadas": "located alerts",
+    "sin ubicación": "not located",
+    "Consulta completa": "Entire query",
+    "Actualizando mapa…": "Updating map…",
+    "Importa un CSV GeoIP para ubicar las IP públicas. Las IP privadas y desconocidas no se colocan en el mapa.": "Import a GeoIP CSV to locate public IPs. Private and unknown IPs are not placed on the map.",
+    "Países · % de alertas ubicadas": "Countries · % of located alerts",
+    "Sin ubicaciones": "No locations",
+    "Marcadores visibles limitados a los 1000 más frecuentes. Los totales y las alertas incluyen todos.": "Markers are limited to the 1,000 most frequent. Totals and alerts include all locations.",
+    "Explorar alertas": "Explore alerts",
+    "Marcador seleccionado": "Selected marker",
+    "Sin alertas geolocalizadas con estos filtros": "No geolocated alerts match these filters",
+    "Selecciona un país o marcador; pulsa una alerta para abrir su inspector.": "Select a country or marker; click an alert to open its inspector.",
+    "Sin consultas externas": "No external queries",
+    "Acercar mapa": "Zoom in",
+    "Alejar mapa": "Zoom out",
+    "Restablecer mapa": "Reset map",
+    "Explorar": "Explore",
+    "DEMO · Ubicaciones simuladas": "DEMO · Simulated locations",
+    "IP públicas · GeoIP local": "Public IPs · Local GeoIP",
+    "Abrir mapa de amenazas": "Open threat map",
+    "Categorías de demostración": "Demonstration categories",
+    "Clasificación original de Snort": "Original Snort classification",
+    "Sensor local": "Local sensor",
+    "Modo": "Mode",
+    "Interfaz configurada": "Configured interface",
+    "Recolector": "Collector",
+    "Última alerta UTC": "Last alert UTC",
+    "Estado del servicio local; no confirma captura de paquetes.": "Local service status; this does not confirm packet capture.",
+    "DEMO, lectura LIVE o importación REPLAY.": "DEMO, LIVE file reading or REPLAY import.",
+    "Interfaz del perfil local; no es una confirmación de captura.": "Local profile interface; this does not confirm packet capture.",
+    "Recolector independiente del usuario; no es el motor de captura.": "Independent user collector; this is not the capture engine.",
+    "Sin tiempo de alerta disponible para esta fuente.": "No alert time is available for this source.",
     "Dashboard": "Dashboard",
     "Alertas": "Alerts",
     "Investigación / Casos": "Investigation / Cases",
@@ -68,7 +105,7 @@ EN_US = {
     "Sin PCAP ni payload asociado.\nMITRE ATT&CK: sin mapeo.": "No associated PCAP or payload.\nMITRE ATT&CK: no mapping.",
     "Abrir / crear caso demo": "Open / create demo case",
     "PCAP · Firewall · EDR · Allowlist\nBlocklist · Crear regla\nNo disponibles en este hito": "PCAP · Firewall · EDR · Allowlist\nBlocklist · Create rule\nUnavailable in this milestone",
-    "Alertas por intervalo · consulta actual": "Alerts per interval · current query",
+    "Alertas por intervalo · página actual": "Alerts per interval · current page",
     "Intervalos de ": "Intervals of ",
     " min · tráfico no medido": " min · traffic not measured",
     "Fuentes más frecuentes · demo": "Most frequent sources · demo",
@@ -432,8 +469,8 @@ EN_US.update(
 )
 EN_US["source_missing"] = "Source removed; holding previous file"
 ES_419["source_missing"] = "Archivo retirado; conservando descriptor anterior"
-EN_US["Gráficas: página actual; exportación: consulta completa"] = (
-    "Charts: current page; export: entire query"
+EN_US["Tabla paginada; mapa y exportación: consulta completa"] = (
+    "Paged table; map and export: entire query"
 )
 
 EN_US.update(

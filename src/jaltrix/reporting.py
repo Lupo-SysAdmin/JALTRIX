@@ -63,6 +63,7 @@ def export_query(data_dir, mode, source, filters, destination, metadata):
                 filters["query"],
                 filters["severity"],
                 filters["minutes"],
+                category=filters.get("category", "Todas"),
             ):
                 state = triage.get(event["event_id"])
                 event.update(

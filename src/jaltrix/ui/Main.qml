@@ -9,6 +9,8 @@ ApplicationWindow {
     visible: true; title: "JALTRIX · Jan Herrera · " + soc.mode.toUpperCase()
     color: "#090e19"
     property string page: "Dashboard"
+    onPageChanged: soc.setGeoVisible(page === "Dashboard" || page === "Mapa de amenazas")
+    Component.onCompleted: soc.setGeoVisible(true)
     property bool inspector: true
     property bool logsOpen: false
     property bool showLegal: false
@@ -31,7 +33,8 @@ ApplicationWindow {
         background: Rectangle { radius: 6; color: b.highlighted ? "#53308b" : b.down ? "#654499" : b.hovered ? "#2d3b53" : "#1a2940"; border.color: b.activeFocus ? "#a978ff" : "#34435b" }
         contentItem: Txt { text: b.text; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; opacity: b.enabled ? 1 : .4 }
     }
-    function applyFilters() { soc.filter(search.text, ["Todas", "Crítica", "Alta", "Media", "Baja"][severity.currentIndex], ["Todas", "Web", "SSH", "DNS", "Malware", "Escaneo"][category.currentIndex], interval.currentIndex === 0 ? 15 : interval.currentIndex === 1 ? 60 : 1440) }
+    function severityColor(value) { return value === "Crítica" ? "#ff7785" : value === "Alta" ? "#f5c76c" : value === "Media" ? "#a6bfff" : value === "Baja" ? "#5edab8" : "#93a4bc"; }
+    function applyFilters() { soc.filter(search.text, ["Todas", "Crítica", "Alta", "Media", "Baja"][severity.currentIndex], soc.categorySelection, interval.currentIndex === 0 ? 15 : interval.currentIndex === 1 ? 60 : 1440) }
     FileDialog { id: backupDialog; title: win.tr("Guardar copia de seguridad"); fileMode: FileDialog.SaveFile; nameFilters: ["ZIP (*.zip)"]; defaultSuffix: "zip"; onAccepted: soc.backupData(selectedFile) }
     FileDialog { id: exportDialog; title: win.tr("Exportar alertas"); fileMode: FileDialog.SaveFile; nameFilters: ["JSON (*.json)"]; defaultSuffix: "json"; onAccepted: soc.export(selectedFile) }
     FileDialog { id: engineDialog; title: win.tr("Seleccionar ejecutable Snort"); fileMode: FileDialog.OpenFile; onAccepted: soc.setEnginePath(selectedFile) }
@@ -44,8 +47,9 @@ ApplicationWindow {
     FileDialog { id: csvDialog; title: win.tr("Exportar CSV"); fileMode: FileDialog.SaveFile; nameFilters: ["CSV (*.csv)"]; defaultSuffix: "csv"; onAccepted: soc.export(selectedFile) }
     Shortcut { sequence: "Ctrl+K"; onActivated: search.forceActiveFocus() }
     Shortcut { sequence: "Ctrl+Q"; context: Qt.ApplicationShortcut; onActivated: win.close() }
+    Connections { target: soc; function onGeoAlertOpened() { win.inspector=true; win.page="Alertas"; } }
     Connections { target: soc; function onCaseOpened() { caseNotes.text = soc.caseDetail.notes; caseStatus.currentIndex = ["new", "investigating", "resolved", "closed"].indexOf(soc.caseDetail.status); caseDialog.open(); } function onNotice(message) { toast.text = message; toast.visible = true; toastTimer.restart() } }
-    Timer { interval: 3000; repeat: true; running: win.page === "Servicio"; onTriggered: soc.refreshService() }
+    Timer { interval: 5000; repeat: true; running: win.page === "Servicio" || soc.mode !== "demo"; onTriggered: soc.refreshService() }
     Timer { id: toastTimer; interval: 5000; onTriggered: toast.visible = false }
 
 
@@ -60,7 +64,7 @@ ApplicationWindow {
                 TextArea { text: soc.operationPreview; readOnly: true; wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; color: "#e4eaf5" }
             }
             RowLayout {
-                Btn { text: win.tr("Confirmar y autorizar"); onClicked: { operationDialog.close(); soc.confirmOperation(); } }
+                Btn { highlighted:true; text: win.tr("Confirmar y autorizar"); onClicked: { operationDialog.close(); soc.confirmOperation(); } }
                 Btn { text: win.tr("Cancelar"); onClicked: { soc.cancelOperation(); operationDialog.close(); } }
             }
         }
@@ -198,12 +202,12 @@ ApplicationWindow {
                 Layout.preferredWidth: 194; Layout.fillHeight: true; color: "#0d1422"
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 12; spacing: 5
-                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 120 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
+                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 100 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
                     Repeater {
-                        model: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "PCAP", "Reglas", "Topología", "Correlación MITRE", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"]
+                        model: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "PCAP", "Reglas", "Mapa de amenazas", "Topología", "Correlación MITRE", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"]
                         delegate: Button {
                             required property string modelData
-                            property bool ready: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "Topología", "Correlación MITRE", "PCAP", "Reglas", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"].indexOf(modelData) >= 0
+                            property bool ready: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "Mapa de amenazas", "Topología", "Correlación MITRE", "PCAP", "Reglas", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"].indexOf(modelData) >= 0
                             Layout.fillWidth: true; implicitHeight: win.height < 830 ? 24 : 31; enabled: ready
                             text: win.tr(modelData); objectName: "nav-" + modelData; hoverEnabled: true
                             background: Rectangle { radius: 7; color: win.page === modelData ? "#53308b" : parent.hovered ? "#1c2940" : "transparent" }
@@ -219,7 +223,29 @@ ApplicationWindow {
             ColumnLayout {
                 Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 18; spacing: 14
                 RowLayout { Layout.fillWidth: true; Txt { text: win.tr(win.page); font.pixelSize: 24; font.bold: true } Item { Layout.fillWidth: true } Txt { text: "LOCAL  /  " + soc.mode.toUpperCase(); color: win.muted; font.pixelSize: 11 } }
-                Panel { Layout.fillWidth: true; implicitHeight: 40; RowLayout { anchors.fill: parent; anchors.margins: 12; Txt { text: "○  " + win.tr(soc.mode === "demo" ? soc.sensorStatus : soc.ingestionStatus); color: "#f5c76c" } Item { Layout.fillWidth: true } Txt { text: win.tr("Interfaz: —     Reglas cargadas: —     Paquetes/s: —"); color: win.muted; font.pixelSize: 11 } } }
+                Panel {
+                    Layout.fillWidth: true; implicitHeight: statusFlow.implicitHeight+16
+                    Flow {
+                        id: statusFlow; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 8; spacing: 8
+                        Repeater {
+                            model: [
+                                {label:"Sensor local", value:soc.mode === "demo" ? "DEMO" : win.tr(soc.service.active), tint:soc.mode !== "demo" && soc.service.active === "active" ? "#46d99b" : "#a69abf", tip:"Estado del servicio local; no confirma captura de paquetes."},
+                                {label:"Modo", value:soc.mode.toUpperCase(), tint:"#c29aff", tip:"DEMO, lectura LIVE o importación REPLAY."},
+                                {label:"Interfaz configurada", value:soc.mode === "demo" ? "—" : soc.configuredInterface, tint:"#35d5df", tip:"Interfaz del perfil local; no es una confirmación de captura."},
+                                {label:"Recolector", value:soc.mode === "demo" ? "—" : win.tr(soc.collector.fresh ? soc.collector.state : "unavailable"), tint:soc.mode !== "demo" && soc.collector.fresh ? "#46d99b" : "#93a4bc", tip:"Recolector independiente del usuario; no es el motor de captura."},
+                                {label:"Última alerta UTC", value:soc.lastSourceAlert ? soc.lastSourceAlert.slice(11,19) : "—", tint:"#b8c4d7", tip:soc.lastSourceAlert || "Sin tiempo de alerta disponible para esta fuente."}
+                            ]
+                            delegate: Rectangle {
+                                required property var modelData
+                                width: statusText.implicitWidth+24; height: 26; radius: 5; color:"#172235"
+                                Rectangle { x:8; anchors.verticalCenter: parent.verticalCenter; width:5; height:5; radius:3; color:modelData.tint }
+                                Txt { id:statusText; x:18; anchors.verticalCenter: parent.verticalCenter; text:win.tr(modelData.label)+": "+modelData.value; color:modelData.tint; font.pixelSize:11 }
+                                HoverHandler { id:statusHover }
+                                ToolTip.visible: statusHover.hovered; ToolTip.text:win.tr(modelData.tip)
+                            }
+                        }
+                    }
+                }
                 ColumnLayout {
                     visible: win.page === "Dashboard" || win.page === "Alertas"
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 14
@@ -235,41 +261,70 @@ ApplicationWindow {
                             }
                         }
                     }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        ComboBox { id: severity; displayText: win.tr(currentText); delegate: ItemDelegate { required property string modelData; width: parent.width; text: win.tr(modelData) } model: ["Todas", "Crítica", "Alta", "Media", "Baja"]; onActivated: win.applyFilters(); Accessible.name: win.tr("Severidad") }
-                        ComboBox { id: category; enabled: soc.mode === "demo"; displayText: win.tr(currentText); delegate: ItemDelegate { required property string modelData; width: parent.width; text: win.tr(modelData) } model: ["Todas", "Web", "SSH", "DNS", "Malware", "Escaneo"]; onActivated: win.applyFilters(); Accessible.name: win.tr("Categoría") }
+                    RowLayout { Layout.fillWidth:true; spacing:8
+                    Flickable {
+                        id: categoryFlick
+                        Layout.fillWidth: true; Layout.preferredHeight: 40; clip:true
+                        contentWidth: categoryRow.implicitWidth; contentHeight: height; boundsBehavior:Flickable.StopAtBounds
+                        Row {
+                            id: categoryRow; spacing:7
+                            Repeater { model:soc.categoryTabs
+                                delegate: Btn {
+                                    id: categoryButton
+                                    required property var modelData
+                                    objectName:"category-"+modelData.label
+                                    text:win.tr(modelData.label)+" ("+modelData.count+")"
+                                    highlighted:soc.categorySelection === modelData.label
+                                    implicitWidth:Math.min(240,Math.max(80,contentItem.implicitWidth+22))
+                                    implicitHeight:32
+                                    Accessible.name:text
+                                    onActiveFocusChanged: if (activeFocus) { if (x < categoryFlick.contentX) categoryFlick.contentX=x; else if (x+width > categoryFlick.contentX+categoryFlick.width) categoryFlick.contentX=x+width-categoryFlick.width; }
+                                    ToolTip {
+                                        id:categoryTip; visible:categoryButton.hovered; width:300
+                                        text:win.tr(modelData.label)+" · "+win.tr(soc.mode === "demo" ? "Categorías de demostración" : "Clasificación original de Snort")
+                                        background:Rectangle {color:"#1b2940"; border.color:"#607089"; radius:5}
+                                        contentItem:Text {text:categoryTip.text; textFormat:Text.PlainText; color:"#e4eaf5"; wrapMode:Text.WordWrap; font.pixelSize:11}
+                                    }
+                                    onClicked:soc.selectCategory(modelData.label)
+                                }
+                            }
+                        }
+                        ScrollBar.horizontal: ScrollBar { policy:ScrollBar.AsNeeded }
+                    }
+                        ComboBox { id: severity; implicitWidth:180; displayText: win.tr("Severidad")+": "+win.tr(currentText); delegate: ItemDelegate { required property string modelData; width: parent.width; text: win.tr(modelData) } model: ["Todas", "Crítica", "Alta", "Media", "Baja"]; onActivated: win.applyFilters(); Accessible.name: win.tr("Severidad") }
                         ComboBox { id: interval; displayText: win.tr(currentText); delegate: ItemDelegate { required property string modelData; width: parent.width; text: win.tr(modelData) } model: ["15 minutos", "1 hora", "24 horas"]; currentIndex: 2; onActivated: win.applyFilters(); Accessible.name: win.tr("Intervalo de la demostración") }
-                        Item { Layout.fillWidth: true }
                         Btn { text: win.inspector ? win.tr("Ocultar inspector") : win.tr("Ver inspector"); onClicked: win.inspector = !win.inspector }
                     }
                     RowLayout {
                         visible: soc.mode !== "demo"; Layout.fillWidth: true
                         Btn { text: win.tr("Anterior"); enabled: !soc.busy && soc.pagination.offset > 0; onClicked: soc.changePage(-1) }
-                        Txt { text: soc.pagination.offset + " — " + soc.pagination.next + " / " + soc.pagination.matched + " · " + win.tr("Gráficas: página actual; exportación: consulta completa"); Layout.fillWidth: true; color: win.muted; font.pixelSize: 11 }
+                        Txt { text: soc.pagination.offset + " — " + soc.pagination.next + " / " + soc.pagination.matched + " · " + win.tr("Tabla paginada; mapa y exportación: consulta completa"); Layout.fillWidth: true; color: win.muted; font.pixelSize: 11 }
                         Btn { text: win.tr("Siguiente"); enabled: !soc.busy && soc.pagination.next < soc.pagination.matched; onClicked: soc.changePage(1) }
                     }
                     RowLayout {
                         Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 260; spacing: 12
+                        ColumnLayout { Layout.fillWidth:true; Layout.fillHeight:true; spacing:14
                         Panel {
                             Layout.fillWidth: true; Layout.fillHeight: true
                             ColumnLayout {
                                 anchors.fill: parent; anchors.margins: 12; spacing: 8
                                 Txt { text: win.tr("ALERTAS DE DETECCIÓN  ·  ") + soc.summary.total; font.bold: true; font.pixelSize: 12 }
-                                RowLayout { Layout.fillWidth: true; spacing: 12; Txt { text: win.tr("HORA UTC"); Layout.preferredWidth: 65; color: win.muted; font.pixelSize: 10 } Txt { text: win.tr("SEVERIDAD"); Layout.preferredWidth: 65; color: win.muted; font.pixelSize: 10 } Txt { text: win.tr("FIRMA / ORIGEN → DESTINO"); Layout.fillWidth: true; color: win.muted; font.pixelSize: 10 } }
+                                RowLayout { Layout.fillWidth: true; spacing: 12; Txt { text: win.tr("HORA UTC"); Layout.preferredWidth: 65; color: win.muted; font.pixelSize: 10 } Txt { text: win.tr("SEVERIDAD"); Layout.preferredWidth: 78; color: win.muted; font.pixelSize: 10 } Txt { text: win.tr("FIRMA / ORIGEN → DESTINO"); Layout.fillWidth: true; color: win.muted; font.pixelSize: 10 } }
                                 ListView {
                                     id: alerts; objectName: "alerts"; Layout.fillWidth: true; Layout.fillHeight: true; clip: true; model: eventModel; spacing: 3; reuseItems: true
                                     ScrollBar.vertical: ScrollBar {}
                                     delegate: ItemDelegate {
                                         required property var event
                                         required property int index
-                                        width: ListView.view.width; height: 55
+                                        width: ListView.view.width; height: 45
                                         Accessible.name: event.time + win.tr(" ") + event.severity + win.tr(" ") + event.message
                                         background: Rectangle { radius: 6; color: soc.selected.event_id === event.event_id ? "#322449" : index % 2 ? "#142035" : "#111b2b"; border.color: soc.selected.event_id === event.event_id ? "#9f6de4" : "transparent" }
                                         contentItem: RowLayout {
                                             spacing: 12
                                             Txt { text: event.time; font.pixelSize: 11; Layout.preferredWidth: 65 }
-                                            Txt { text: win.tr(event.severity); font.pixelSize: 11; Layout.preferredWidth: 65; color: event.severity === "Crítica" ? "#ff7785" : event.severity === "Alta" ? "#f5c76c" : event.severity === "Media" ? "#a6bfff" : "#5edab8" }
+                                            Rectangle { Layout.preferredWidth:78; Layout.preferredHeight:22; radius:4; color:"#172133"; border.color:win.severityColor(event.severity)
+                                                Txt { anchors.fill:parent; anchors.margins:3; text:win.tr(event.severity); color:win.severityColor(event.severity); font.pixelSize:10; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
+                                            }
                                             ColumnLayout { Layout.fillWidth: true; spacing: 4; Txt { text: event.mode === "demo" ? win.tr(event.message) : event.message; Layout.fillWidth: true; font.pixelSize: 12 } Txt { text: event.src + win.tr(" → ") + event.dst + win.tr("   ·   ") + event.sid; Layout.fillWidth: true; color: win.muted; font.pixelSize: 10 } }
                                         }
                                         onClicked: soc.select(index)
@@ -279,6 +334,33 @@ ApplicationWindow {
                                 Txt { text: win.tr(soc.mode === "demo" ? "Selección conservada al filtrar · Datos sintéticos · UTC" : "Selección conservada al filtrar · UTC cuando está disponible"); color: win.muted; font.pixelSize: 10 }
                             }
                         }
+                    RowLayout {
+                        visible: win.page === "Dashboard" && win.height >= 830
+                        Layout.fillWidth: true; Layout.preferredHeight: 154; Layout.maximumHeight: 154; Layout.minimumHeight: 154; spacing: 12
+                        Panel {
+                            Layout.fillWidth: true; Layout.fillHeight: true
+                            ColumnLayout {
+                                anchors.fill: parent; anchors.margins: 14
+                                Txt { text: win.tr("Alertas por intervalo · página actual"); font.pixelSize: 12 }
+                                Row {
+                                    Layout.fillWidth: true; Layout.fillHeight: true; spacing: 2
+                                    Repeater { model: soc.summary.series; delegate: Item { required property var modelData; width: Math.min(32, Math.max(2, (parent.width - 2*soc.summary.series.length) / Math.max(1,soc.summary.series.length))); height: parent.height; Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: Math.max(1, modelData.count / Math.max(1, soc.summary.peak) * (parent.height-6)); color: "#9d6ae8"; radius: 2 } HoverHandler { id: barHover } ToolTip.visible: barHover.hovered; ToolTip.text: modelData.minute + " UTC: " + modelData.count } }
+                                }
+                                Txt { text: win.tr("Intervalos de ") + soc.summary.bin_minutes + win.tr(" min · tráfico no medido"); color: win.muted; font.pixelSize: 10 }
+                            }
+                        }
+                        Panel { Layout.preferredWidth: 220; Layout.fillHeight: true; ColumnLayout { anchors.fill: parent; anchors.margins: 14; spacing: 5; Txt { text: win.tr(soc.mode === "demo" ? "Fuentes más frecuentes · demo" : "Fuentes más frecuentes"); font.pixelSize: 12 } Repeater { model: soc.summary.top; delegate: RowLayout { required property var modelData; Layout.fillWidth: true; Txt { text: modelData.ip; color: win.muted; font.pixelSize: 11 } Item { Layout.fillWidth: true } Txt { text: modelData.count + win.tr(" alertas"); color: "#35d5df"; font.pixelSize: 11 } } } } }
+                        Panel {
+                            Layout.preferredWidth: Math.min(350,(win.width-270)*0.35); Layout.fillHeight:true
+                            ColumnLayout {
+                                anchors.fill:parent; anchors.margins:10; spacing:5
+                                RowLayout { Layout.fillWidth:true; Txt { text:win.tr("Mapa de amenazas"); Layout.fillWidth:true; font.pixelSize:12 } Btn { text:win.tr("Explorar"); implicitHeight:26; onClicked:win.page="Mapa de amenazas" } }
+                                WorldMap { controller:soc; compact:true; Layout.fillWidth:true; Layout.fillHeight:true; onMarkerSelected:key => { win.page="Mapa de amenazas"; soc.selectGeoMarker(key); } }
+                                Txt { text:win.tr(soc.mode === "demo" ? "DEMO · Ubicaciones simuladas" : "IP públicas · GeoIP local"); color:win.muted; font.pixelSize:10 }
+                            }
+                        }
+                    }
+                        }
                         Panel {
                             visible: win.inspector; Layout.preferredWidth: win.width < 1250 ? 290 : 330; Layout.fillHeight: true
                             ScrollView {
@@ -287,7 +369,8 @@ ApplicationWindow {
                                     width: parent.width; spacing: 12
                                     Txt { text: win.tr("INSPECTOR DEL EVENTO"); font.bold: true; color: win.accent; font.pixelSize: 12 }
                                     Txt { text: soc.selected.mode === "demo" ? win.tr(soc.selected.message) : soc.selected.message; Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 17; font.bold: true }
-                                    Txt { text: win.tr(soc.selected.severity) + " · " + (soc.mode === "demo" ? win.tr("  ·  Acción simulada") : soc.selected.action); color: "#f5c76c" }
+                                    Txt { text: win.tr(soc.selected.severity) + " · " + (soc.mode === "demo" ? win.tr("  ·  Acción simulada") : soc.selected.action); color:win.severityColor(soc.selected.severity) }
+                                    Btn { text: win.tr(soc.mode === "demo" ? "Abrir / crear caso demo" : "Abrir / crear caso"); enabled: !!soc.selected.event_id; objectName: "create-case"; highlighted:true; Layout.fillWidth: true; onClicked: soc.createCase() }
                                     Rectangle { Layout.fillWidth: true; height: 1; color: "#304057" }
                                     Repeater { model: ["Firma|" + soc.selected.sid, "Origen|" + soc.selected.src, "Destino|" + soc.selected.dst, "Protocolo|" + soc.selected.protocol, "Fecha UTC|" + (soc.selected.timestamp || "—"), "Estado|" + soc.selectedTriage.state, "Procedencia|" + (soc.mode === "demo" ? "Fixture determinista v1" : soc.selected.source), "Prioridad Snort|" + (soc.selected.priority === undefined ? "—" : soc.selected.priority), "Tiempo original|" + (soc.selected.original_timestamp || "—"), "Confianza temporal|" + (soc.selected.timestamp_confidence || "demo")]
                                         delegate: ColumnLayout { required property string modelData; Layout.fillWidth: true; spacing: 2; Txt { text: win.tr(modelData.split('|')[0]); color: win.muted; font.pixelSize: 10 } Txt { text: win.tr(modelData.split('|')[1]); Layout.fillWidth: true; font.pixelSize: 12 } }
@@ -297,7 +380,6 @@ ApplicationWindow {
                                     Txt { text: win.tr(soc.selectedTriage.state); color: win.accent }
                                     Txt { text: soc.selected.triage_exception ? win.tr("Excepción de triage: ")+soc.selected.triage_exception : ""; Layout.fillWidth: true; wrapMode: Text.WordWrap }
                                     Btn { text: win.tr("Investigar alerta"); enabled: !!soc.selected.event_id; Layout.fillWidth: true; onClicked: triageDialog.open() }
-                                    Btn { text: win.tr(soc.mode === "demo" ? "Abrir / crear caso demo" : "Abrir / crear caso"); enabled: !!soc.selected.event_id; objectName: "create-case"; Layout.fillWidth: true; onClicked: soc.createCase() }
                                     Flow { Layout.fillWidth: true; spacing: 6
                                         Btn { text: "PCAP"; onClicked: win.page = "PCAP" }
                                         Btn { text: win.tr("Paquete asociado"); enabled: !!soc.pcapInfo.imported_path && !!soc.selected.raw_record && !!soc.selected.raw_record.pkt_num; onClicked: { soc.inspectSelectedPacket(); win.page="PCAP"; } }
@@ -310,24 +392,8 @@ ApplicationWindow {
                             }
                         }
                     }
-                    RowLayout {
-                        visible: win.page === "Dashboard" && win.height >= 830
-                        Layout.fillWidth: true; Layout.preferredHeight: 154; Layout.maximumHeight: 154; Layout.minimumHeight: 154; spacing: 12
-                        Panel {
-                            Layout.fillWidth: true; Layout.fillHeight: true
-                            ColumnLayout {
-                                anchors.fill: parent; anchors.margins: 14
-                                Txt { text: win.tr("Alertas por intervalo · consulta actual"); font.pixelSize: 12 }
-                                Row {
-                                    Layout.fillWidth: true; Layout.fillHeight: true; spacing: 2
-                                    Repeater { model: soc.summary.series; delegate: Item { required property var modelData; width: Math.min(32, Math.max(2, (parent.width - 2*soc.summary.series.length) / Math.max(1,soc.summary.series.length))); height: parent.height; Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: Math.max(1, modelData.count / Math.max(1, soc.summary.peak) * (parent.height-6)); color: "#9d6ae8"; radius: 2 } HoverHandler { id: barHover } ToolTip.visible: barHover.hovered; ToolTip.text: modelData.minute + " UTC: " + modelData.count } }
-                                }
-                                Txt { text: win.tr("Intervalos de ") + soc.summary.bin_minutes + win.tr(" min · tráfico no medido"); color: win.muted; font.pixelSize: 10 }
-                            }
-                        }
-                        Panel { Layout.preferredWidth: 330; Layout.fillHeight: true; ColumnLayout { anchors.fill: parent; anchors.margins: 14; spacing: 5; Txt { text: win.tr(soc.mode === "demo" ? "Fuentes más frecuentes · demo" : "Fuentes más frecuentes"); font.pixelSize: 12 } Repeater { model: soc.summary.top; delegate: RowLayout { required property var modelData; Layout.fillWidth: true; Txt { text: modelData.ip; color: win.muted; font.pixelSize: 11 } Item { Layout.fillWidth: true } Txt { text: modelData.count + win.tr(" alertas"); color: "#35d5df"; font.pixelSize: 11 } } } } }
-                    }
                 }
+                GeoView { visible:win.page === "Mapa de amenazas"; controller:soc; Layout.fillWidth:true; Layout.fillHeight:true; onImportRequested:geoDialog.open() }
                 Panel {
                     visible: win.page === "Investigación / Casos"; Layout.fillWidth: true; Layout.fillHeight: true
                     ColumnLayout { anchors.fill: parent; anchors.margins: 24; spacing: 16; Txt { text: win.tr(soc.mode === "demo" ? "Casos locales de demostración" : "Casos locales"); font.pixelSize: 20 } Txt { text: win.tr("Persisten al cerrar la aplicación. Abre o crea un caso desde el inspector."); color: win.muted; Layout.fillWidth: true; wrapMode: Text.WordWrap } ListView { Layout.fillWidth: true; Layout.fillHeight: true; clip: true; model: soc.cases; spacing: 10; delegate: Panel { required property var modelData; width: ListView.view.width; height: 80; MouseArea { anchors.fill: parent; onClicked: soc.openCase(modelData.id); cursorShape: Qt.PointingHandCursor } ColumnLayout { anchors.fill: parent; anchors.margins: 14; Txt { text: modelData.id + win.tr(" · ") + modelData.title } Txt { text: modelData.event_id + win.tr(" · ") + modelData.created_at; color: win.muted; font.pixelSize: 11 } } } Txt { visible: soc.cases.length === 0; anchors.centerIn: parent; text: win.tr(soc.mode === "demo" ? "Todavía no hay casos demo" : "Todavía no hay casos"); color: win.muted } } }
@@ -388,13 +454,7 @@ ApplicationWindow {
                             }
                         }
                         Txt { text: win.tr("Grafo: hasta 24 IP; lista: hasta 200 relaciones de la página actual."); color: win.muted; font.pixelSize: 10 }
-                        RowLayout {
-                            Btn { text: win.tr("Base GeoIP local"); enabled: !soc.busy; onClicked: geoDialog.open() }
-                            Txt { text: win.tr("Ubicaciones aproximadas; solo IP públicas. Sin consultas externas."); color: win.muted; font.pixelSize: 11 }
-                        }
-                        ListView { Layout.fillWidth: true; Layout.preferredHeight: soc.geoLocations.length ? 120 : 0; clip: true; model: soc.geoLocations
-                            delegate: Txt { required property var modelData; width: ListView.view.width; height: 28; text: modelData.ip+" · "+modelData.country+" · "+modelData.latitude+", "+modelData.longitude+" · "+modelData.source }
-                        }
+                        Btn { text:win.tr("Abrir mapa de amenazas"); onClicked:win.page="Mapa de amenazas" }
                         ListView { Layout.fillWidth: true; Layout.fillHeight: true; clip: true; model: soc.observedEdges
                             delegate: Panel { required property var modelData; width: ListView.view.width; height: 52
                                 Txt { anchors.centerIn: parent; text: modelData.src + "  →  " + modelData.dst + "    ·    " + modelData.protocol + "    ·    " + modelData.alerts + " " + win.tr("alertas") }

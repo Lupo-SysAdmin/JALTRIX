@@ -126,14 +126,22 @@ class GeoDatabase:
                     )
                 )
         self.entries.sort(key=lambda p: p[0].prefixlen, reverse=True)
+        self.prefixes = {4: {}, 6: {}}
+        for network, entry in reversed(self.entries):
+            self.prefixes[network.version].setdefault(network.prefixlen, {})[
+                int(network.network_address)
+            ] = (network, entry)
         self.sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
 
     def lookup(self, address):
         ip = ipaddress.ip_address(address)
         if not ip.is_global:
             return None
-        for network, entry in self.entries:
-            if ip.version == network.version and ip in network:
+        for prefix in sorted(self.prefixes[ip.version], reverse=True):
+            bits = ip.max_prefixlen - prefix
+            found = self.prefixes[ip.version][prefix].get((int(ip) >> bits) << bits)
+            if found:
+                network, entry = found
                 return dict(
                     entry,
                     ip=str(ip),

@@ -6,13 +6,18 @@ from . import capture, continuous
 from .observations import topology, InterfaceSampler
 from .enrichment import MappingStore, GeoDatabase
 import getpass
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 from . import operations
+from .geomap import build_map
 
 
 class AdvancedController(QObject):
     advancedChanged = Signal()
     operationPlanned = Signal()
     ruleDraftReady = Signal(str)
+    geoChanged = Signal()
+    geoAlertOpened = Signal()
 
     def initAdvanced(self):
         self._technical_log = ""
@@ -22,6 +27,25 @@ class AdvancedController(QObject):
             self.data_dir / self._mode / "mappings.sqlite3"
         )
         self.geo_database = None
+        self._geo_error = ""
+        self._geo_path = self.data_dir / "geoip.csv"
+        if self._geo_path.is_file():
+            try:
+                self.geo_database = GeoDatabase(self._geo_path)
+            except (OSError, ValueError) as exc:
+                self._geo_error = str(exc)
+        self._geo = build_map(demo=[])
+        self._geo_future = None
+        self._geo_executor = ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="jaltrix-geo"
+        )
+        self._geo_visible = False
+        self._geo_revision = 0
+        self._geo_pending = False
+        self._geo_country = self._geo_marker = ""
+        self._geo_offset = 0
+        self._geo_selected_id = ""
+        self.poller.timeout.connect(self.pollGeo)
         self._collector = continuous.health(self.data_dir)
         self._packet_bytes = {}
         self._packet_rows = []
@@ -30,6 +54,7 @@ class AdvancedController(QObject):
         self._traffic = {}
         self._traffic_history = []
         self._interface = ""
+        self._configured_interface = "—"
         self._sampler = InterfaceSampler()
         self.advanced_timer = QTimer(self)
         self.advanced_timer.setInterval(2000)
@@ -56,6 +81,10 @@ class AdvancedController(QObject):
     def trafficHistory(self):
         return self._traffic_history
 
+    @Property(str, notify=advancedChanged)
+    def configuredInterface(self):
+        return self._configured_interface
+
     @Slot(str)
     def selectInterface(self, name):
         self._interface = name
@@ -65,6 +94,18 @@ class AdvancedController(QObject):
     @Slot()
     def updateAdvanced(self):
         before = dict(self._collector)
+        prior_interface = self._configured_interface
+        try:
+            self._configured_interface = next(
+                (
+                    line.split("=", 1)[1].strip()
+                    for line in Path("/etc/jaltrix/sensor.env").read_text().splitlines()
+                    if line.startswith("SNORT_INTERFACE=")
+                ),
+                "—",
+            )
+        except OSError:
+            self._configured_interface = "—"
         self._collector = continuous.health(self.data_dir)
         if self._interface:
             try:
@@ -75,7 +116,11 @@ class AdvancedController(QObject):
                     ]
             except (OSError, ValueError) as exc:
                 self._traffic = {"ready": False, "error": str(exc)}
-        if before != self._collector or self._interface:
+        if (
+            before != self._collector
+            or self._interface
+            or prior_interface != self._configured_interface
+        ):
             self.advancedChanged.emit()
 
     @Slot()
@@ -185,6 +230,8 @@ class AdvancedController(QObject):
             self.refreshService()
         elif kind == "geo":
             self.geo_database = result["database"]
+            self._geo_error = ""
+            self.resetGeoSelection()
         elif kind == "bytes":
             self._packet_bytes = result["bytes"]
         elif kind == "capture":
@@ -216,6 +263,115 @@ class AdvancedController(QObject):
                 pass
         return locations
 
+    @Property("QVariantMap", notify=geoChanged)
+    def geoMap(self):
+        return dict(
+            self._geo,
+            busy=self._geo_future is not None or self._geo_pending,
+            error=self._geo_error,
+            selection_country=self._geo_country,
+            selection_marker=self._geo_marker,
+        )
+
+    @Slot(bool)
+    def setGeoVisible(self, visible):
+        self._geo_visible = visible
+        if visible:
+            self.invalidateGeo()
+
+    def invalidateGeo(self):
+        self._geo_revision += 1
+        self._geo_pending = True
+        if self._geo_visible:
+            self.pollGeo()
+
+    def resetGeoSelection(self):
+        self._geo_selected_id = ""
+        self._geo_country = self._geo_marker = ""
+        self._geo_offset = 0
+        self._geo = build_map(demo=[])
+        self.invalidateGeo()
+        self.geoChanged.emit()
+
+    @Slot(str)
+    def selectGeoCountry(self, country):
+        if country and country not in {c["country"] for c in self._geo["countries"]}:
+            return
+        self._geo_country, self._geo_marker, self._geo_offset = country, "", 0
+        self.invalidateGeo()
+
+    @Slot(str)
+    def selectGeoMarker(self, key):
+        point = next((p for p in self._geo["markers"] if p["key"] == key), None)
+        if point:
+            self._geo_country, self._geo_marker, self._geo_offset = (
+                point["country"],
+                key,
+                0,
+            )
+            self.invalidateGeo()
+
+    @Slot(int)
+    def geoPage(self, direction):
+        if self._geo_future is not None or self._geo_pending:
+            return
+        self._geo_offset = (
+            self._geo["next"] if direction > 0 else max(0, self._geo["offset"] - 100)
+        )
+        self.invalidateGeo()
+
+    @Slot(str)
+    def openGeoAlert(self, identity):
+        if self._geo_future is not None or self._geo_pending:
+            return
+        event = next(
+            (e for e in self._geo["events"] if e["event_id"] == identity), None
+        )
+        if event:
+            self._selected = event
+            self._geo_selected_id = identity
+            self.changed.emit()
+            self.geoAlertOpened.emit()
+
+    @Slot()
+    def pollGeo(self):
+        if self._geo_future is not None and self._geo_future.done():
+            future, self._geo_future = self._geo_future, None
+            try:
+                revision, result = future.result()
+                if revision == self._geo_revision:
+                    self._geo, self._geo_error = result, ""
+            except Exception as exc:
+                self._geo_error = str(exc)
+            self.geoChanged.emit()
+        if self._geo_future is None and self._geo_pending and self._geo_visible:
+            from .core import filter_events
+
+            revision = self._geo_revision
+            options = dict(
+                database=self.geo_database,
+                mode=self.mode,
+                demo=filter_events(
+                    self.events, self.query, self.severity, self.category, self.minutes
+                )
+                if self.mode == "demo"
+                else None,
+                path=self.data_dir / self.mode / "alerts.sqlite3",
+                source=self._source,
+                query=self.query,
+                severity=self.severity,
+                minutes=self.minutes,
+                category=self.category,
+                country=self._geo_country,
+                marker=self._geo_marker,
+                offset=self._geo_offset,
+            )
+            self._geo_pending = False
+            self._geo_future = self._geo_executor.submit(
+                lambda: (revision, build_map(**options))
+            )
+            self.geoChanged.emit()
+
     @Slot(str, str, str, str, str)
     def saveMapping(self, signature, technique, title, confidence, reason):
         try:
@@ -230,9 +386,26 @@ class AdvancedController(QObject):
     def loadGeoDatabase(self, url):
         if self.busy:
             return
-        self.future = self.executor.submit(
-            lambda: dict(kind="geo", database=GeoDatabase(url.toLocalFile()))
-        )
+
+        def job():
+            import os, tempfile
+
+            with Path(url.toLocalFile()).open("rb") as source:
+                raw = source.read(8 * 1024 * 1024 + 1)
+            if len(raw) > 8 * 1024 * 1024:
+                raise ValueError("GeoIP CSV must be under 8 MiB")
+            fd, name = tempfile.mkstemp(prefix=".geoip-", dir=self.data_dir)
+            temp = Path(name)
+            try:
+                with os.fdopen(fd, "wb") as output:
+                    output.write(raw)
+                database = GeoDatabase(temp)
+                temp.replace(self._geo_path)
+                return dict(kind="geo", database=database)
+            finally:
+                temp.unlink(missing_ok=True)
+
+        self.future = self.executor.submit(job)
         self.changed.emit()
 
     @Property(bool, notify=advancedChanged)

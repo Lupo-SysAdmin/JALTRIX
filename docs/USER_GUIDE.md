@@ -4,7 +4,7 @@
 
 En Configuración, importar un `alert_json` o seguir un archivo accesible. El modo LIVE significa seguimiento de una fuente, no prueba por sí mismo que el sensor esté sano. DEMO usa datos separados. La fecha desconocida se conserva como desconocida; los filtros temporales no inventan fechas.
 
-Buscar texto libre, `src:192.0.2.0/24`, `dst:198.51.100.1`, `sid:1000001`, `gid:1`, `proto:UDP`, `port:9999`, o un CIDR sin prefijo para ambos extremos. Se combinan términos con AND. La tabla pagina por SQL; los resúmenes visuales abarcan esa página. Exportar JSON/CSV recorre la consulta completa y conserva filtros/procedencia. No exportar evidencia sensible sin revisar el destino.
+Buscar texto libre, `src:192.0.2.0/24`, `dst:198.51.100.1`, `sid:1000001`, `gid:1`, `proto:UDP`, `port:9999`, o un CIDR sin prefijo para ambos extremos. Se combinan términos con AND. La tabla pagina por SQL; las gráficas de intervalos/fuentes y topología abarcan esa página. El mapa y los contadores de clasificación abarcan la consulta completa. Exportar JSON/CSV recorre la consulta completa y conserva filtros/procedencia. No exportar evidencia sensible sin revisar el destino.
 
 Seleccionar una alerta permite triage con notas, etiquetas y favoritos; crear un caso conserva la asociación. Las excepciones de triage tienen firma/IP y vencimiento: anotan la coincidencia, sin ocultarla ni cambiar reglas de detección.
 
@@ -38,3 +38,7 @@ También se puede ejecutar `jaltrix --backup /ruta/copia.zip`. Para recuperar, c
 
 - **Ctrl+Q**: cerrar JALTRIX por la misma ruta de cierre que el botón de la ventana. No detiene el sensor ni el recolector independiente.
 - **Ctrl+K**: enfocar la búsqueda.
+
+## Mapa, pestañas y barra de estado
+
+Ver [GEOIP.md](GEOIP.md) para importar una base local, explorar países/marcadores y abrir alertas, distinguir demo de ubicaciones reales y entender el alcance de los contadores y estados del sensor.

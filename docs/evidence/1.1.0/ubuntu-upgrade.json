@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "scope": "native package upgrade 1.0.1 to 1.1.0",
+  "hostname": "jaltrix-ubuntu",
+  "checks": [
+    "events",
+    "checkpoints",
+    "cases",
+    "triage notes and bookmarks"
+  ]
+}

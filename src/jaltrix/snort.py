@@ -338,7 +338,15 @@ class AlertStore:
     def close(self):
         self.db.close()
 
-    def _where(self, mode, source_id=None, query="", severity="Todas", minutes=1440):
+    def _where(
+        self,
+        mode,
+        source_id=None,
+        query="",
+        severity="Todas",
+        minutes=1440,
+        category="Todas",
+    ):
         """Bounded SQL page over the full source, including records outside the old snapshot."""
         import shlex
         from datetime import timedelta
@@ -371,6 +379,11 @@ class AlertStore:
         if severity != "Todas":
             where.append("severity=?")
             values.append(severity)
+        if category != "Todas":
+            where.append(
+                "coalesce(nullif(json_extract(data,'$.classification'),''),'Sin información')=?"
+            )
+            values.append(category)
         anchor = (
             utc_now()
             if mode == "live"
@@ -429,9 +442,17 @@ class AlertStore:
         return clause, values
 
     def iter_query(
-        self, mode, source_id=None, query="", severity="Todas", minutes=1440
+        self,
+        mode,
+        source_id=None,
+        query="",
+        severity="Todas",
+        minutes=1440,
+        category="Todas",
     ):
-        clause, values = self._where(mode, source_id, query, severity, minutes)
+        clause, values = self._where(
+            mode, source_id, query, severity, minutes, category
+        )
         self.db.execute("BEGIN")
         try:
             for (raw,) in self.db.execute(
@@ -451,10 +472,13 @@ class AlertStore:
         minutes=1440,
         offset=0,
         limit=500,
+        category="Todas",
     ):
         if not 1 <= limit <= 1000 or offset < 0:
             raise ValueError("Invalid query bounds")
-        clause, values = self._where(mode, source_id, query, severity, minutes)
+        clause, values = self._where(
+            mode, source_id, query, severity, minutes, category
+        )
         # A read transaction gives count and rows a consistent snapshot while the collector writes.
         self.db.execute("BEGIN")
         try:
@@ -481,6 +505,18 @@ class AlertStore:
             )
         finally:
             self.db.rollback()
+
+    def categories(
+        self, mode, source_id=None, query="", severity="Todas", minutes=1440
+    ):
+        clause, values = self._where(mode, source_id, query, severity, minutes)
+        rows = self.db.execute(
+            "SELECT coalesce(nullif(json_extract(data,'$.classification'),''),'Sin información'),count(*) FROM events WHERE "
+            + clause
+            + " GROUP BY 1 ORDER BY count(*) DESC,1",
+            values,
+        )
+        return [dict(label=label, count=count) for label, count in rows]
 
     def retain(self, before, mode="live", protected=()):
         """Explicit retention by ingestion time; leave checkpoints to prevent reimport."""

@@ -1,10 +1,14 @@
-# Publicación JALTRIX 1.0.1
+# Publicación JALTRIX 1.1.0
 
 ## Alcance de la versión estable
 
 Consola **local, nativa y de un operador Linux**, con demo separada, investigación de alertas/capturas, recolección independiente, reglas y respuesta local autorizadas. Estable significa que las funciones documentadas superaron los controles de esta versión; no es una certificación comercial, legal o de detección completa.
 
 EDR real permanece fuera de alcance porque el propietario no dispone de proveedor. No se anuncia multiusuario/RBAC empresarial, aislamiento remoto, auditoría remota inmutable, cifrado propio, feed comercial de reglas ni soporte universal de distribuciones. MITRE es mapeo explícito del analista; GeoIP necesita un archivo local del operador. Estas capacidades se presentan con sus límites en UI y documentación.
+
+## Novedades 1.1.0
+
+Mapa mundial offline con marcadores, países y exploración paginada de alertas; base GeoIP local persistente; pestañas con contadores de clasificación; barra de estado y mejoras de legibilidad/acciones. Ver [GEOIP.md](GEOIP.md). Las localizaciones reales necesitan un CSV del operador; la cartografía de tierra viene incluida.
 
 ## Archivos que acompañan la publicación
 

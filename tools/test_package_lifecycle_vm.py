@@ -33,7 +33,7 @@ else:
         "pacman",
         "-U",
         "--noconfirm",
-        str(Path.home() / "renamebuild/jaltrix-1.0.1-1-any.pkg.tar.zst"),
+        str(Path.home() / "renamebuild/jaltrix-1.1.0-1-any.pkg.tar.zst"),
     ]
 try:
     run(remove)

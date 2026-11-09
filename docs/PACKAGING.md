@@ -1,4 +1,4 @@
-# Paquetes 1.0.1
+# Paquetes 1.1.0
 
 `python3 tools/build_deb.py` genera DEB con módulos privados `/usr/lib/jaltrix`, lanzador `/usr/bin/jaltrix`, menú, icono, AppStream, página man, documentación y licencias. No incluye motor, reglas comerciales ni activa servicios. `postinst` normaliza los permisos de directorios propios para actualizar instalaciones anteriores que eran escribibles por grupo; no cambia datos del usuario.
 
@@ -14,4 +14,4 @@ Validaciones: desktop-file-validate, AppStream sin red, inspección de permisos/
 
 El paquete se llama `jaltrix`, reemplaza el paquete anterior y distribuye icono SVG escalable además del PNG. El logo completo SVG se incluye en la interfaz. Debian incorpora copyright con formato DEP-5 y changelog de distribución; los textos legales íntegros siguen disponibles dentro de la aplicación. El mantenedor usa la dirección noreply elegida, no correo personal.
 
-Fuentes y DEB normalizan tiempos con SOURCE_DATE_EPOCH. La receta Arch dentro de las fuentes sigue admitiendo construcción local; la receta preparada para publicar en `dist/PKGBUILD-1.0.1` incluye el SHA-256 concreto de ese tarball, evitando una referencia circular al hash de un archivo que contiene su propia receta.
+Fuentes y DEB normalizan tiempos con SOURCE_DATE_EPOCH. La receta Arch dentro de las fuentes sigue admitiendo construcción local; la receta preparada para publicar en `dist/PKGBUILD-1.1.0` incluye el SHA-256 concreto de ese tarball, evitando una referencia circular al hash de un archivo que contiene su propia receta.

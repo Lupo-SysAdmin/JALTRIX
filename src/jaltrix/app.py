@@ -91,6 +91,8 @@ class Controller(AdvancedController):
         self._matched = 0
         self._next_offset = 0
         self._paged = False
+        self._facets = []
+        self._last_alert = ""
         self._pcap = {}
         self.executor = ThreadPoolExecutor(
             max_workers=1, thread_name_prefix="snort-ingest"
@@ -388,6 +390,10 @@ class Controller(AdvancedController):
         return self.future is not None
 
     def changeMode(self, mode):
+        self.resetGeoSelection()
+        self.category = "Todas"
+        self._facets = []
+        self._last_alert = ""
         self._operation_plan = {}
         self._operation_result = {}
         self._stored = 0
@@ -439,11 +445,12 @@ class Controller(AdvancedController):
 
     def queryJob(self, source, mode, ingest=False):
         revision = self._query_revision
-        query, severity, minutes, offset = (
+        query, severity, minutes, offset, category = (
             self.query,
             self.severity,
             self.minutes,
             self._page_offset,
+            self.category,
         )
         store = AlertStore(self.data_dir / mode / "alerts.sqlite3")
         try:
@@ -466,6 +473,7 @@ class Controller(AdvancedController):
                 severity=severity,
                 minutes=minutes,
                 offset=offset,
+                category=category,
             )
             return dict(
                 query_revision=revision,
@@ -473,6 +481,14 @@ class Controller(AdvancedController):
                 events=page["events"],
                 page=page,
                 count=store.count(mode, result["source_id"]),
+                facets=store.categories(
+                    mode, result["source_id"], query, severity, minutes
+                ),
+                last_alert=store.db.execute(
+                    "SELECT max(timestamp) FROM events WHERE mode=? AND source_id=?",
+                    (mode, result["source_id"]),
+                ).fetchone()[0]
+                or "",
             )
         finally:
             store.close()
@@ -558,6 +574,8 @@ class Controller(AdvancedController):
                 return
             selected_id = self._selected.get("event_id")
             self.events = result["events"]
+            self._facets = result.get("facets", [])
+            self._last_alert = result.get("last_alert", "")
             if "page" in result:
                 self._paged = True
                 self._matched = result["page"]["matched"]
@@ -566,7 +584,11 @@ class Controller(AdvancedController):
             self._stored = result["count"]
             self._selected = next(
                 (e for e in self.events if e["event_id"] == selected_id),
-                self.events[0] if self.events else self.emptySelection(),
+                self._selected
+                if self._geo_selected_id == selected_id
+                else self.events[0]
+                if self.events
+                else self.emptySelection(),
             )
             stats = result["result"]
             self._status = (
@@ -586,6 +608,8 @@ class Controller(AdvancedController):
             self.notice.emit(self.translate("Error de lectura") + ": " + str(exc))
 
     def close(self):
+        self._geo_visible = False
+        self._geo_executor.shutdown(wait=True, cancel_futures=True)
         self.advanced_timer.stop()
         self.mapping_store.close()
         self.triage_store.close()
@@ -690,6 +714,39 @@ class Controller(AdvancedController):
     def summary(self):
         return self._summary
 
+    @Property(str, notify=changed)
+    def categorySelection(self):
+        return self.category
+
+    @Property(str, notify=changed)
+    def lastSourceAlert(self):
+        return self._last_alert
+
+    @Property("QVariantList", notify=changed)
+    def categoryTabs(self):
+        if self.mode == "demo":
+            from collections import Counter
+            from .core import CATEGORIES
+
+            counts = Counter(
+                e["category"]
+                for e in filter_events(
+                    self.events, self.query, self.severity, "Todas", self.minutes
+                )
+            )
+            groups = [dict(label=c, count=counts[c]) for c in CATEGORIES]
+        else:
+            groups = self._facets
+        tabs = [dict(label="Todas", count=sum(c["count"] for c in groups)), *groups]
+        if self.category not in {c["label"] for c in tabs}:
+            tabs.append(dict(label=self.category, count=0))
+        return tabs
+
+    @Slot(str)
+    def selectCategory(self, category):
+        if category in {c["label"] for c in self.categoryTabs}:
+            self.filter(self.query, self.severity, category, self.minutes)
+
     @Property("QVariantList", notify=changed)
     def cases(self):
         return self.store.list()
@@ -757,6 +814,7 @@ class Controller(AdvancedController):
             row["tags"] = triage["tags"]
         self.model.replace(rows)
         self._summary = summarize(rows)
+        self.invalidateGeo()
         self.advancedChanged.emit()
         self.changed.emit()
 
@@ -779,6 +837,7 @@ class Controller(AdvancedController):
     @Slot(int)
     def select(self, index):
         if 0 <= index < len(self.model.rows):
+            self._geo_selected_id = ""
             self._selected = self.model.rows[index]
             self.changed.emit()
 
@@ -898,6 +957,9 @@ class Controller(AdvancedController):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--map", action="store_true", help="Open the offline threat map"
+    )
     parser.add_argument("--screenshot", type=Path)
     parser.add_argument("--language", choices=["es-419", "en-US"])
     parser.add_argument("--about", action="store_true")
@@ -989,6 +1051,8 @@ def main():
         controller.replayPcap(QUrl.fromLocalFile(str(args.pcap.resolve())))
     elif args.log:
         controller.loadLog(QUrl.fromLocalFile(str(args.log.resolve())), args.follow)
+    if args.map:
+        engine.rootObjects()[0].setProperty("page", "Mapa de amenazas")
     if args.service:
         engine.rootObjects()[0].setProperty("page", "Servicio")
         controller.manageRealService()
@@ -1001,6 +1065,7 @@ def main():
         def capture(window=engine.rootObjects()[0]):
             if (
                 controller.busy
+                or (controller._geo_visible and controller.geoMap["busy"])
                 or controller.service.get("busy")
                 or controller.service_refresh_future is not None
             ):

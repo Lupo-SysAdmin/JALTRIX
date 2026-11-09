@@ -5,24 +5,24 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-VERSION = "1.0.1"
-validation = json.loads((ROOT / "docs/evidence/1.0.1/validation.json").read_text())
+VERSION = "1.1.0"
+validation = json.loads((ROOT / "docs/evidence/1.1.0/validation.json").read_text())
 for distro in ("ubuntu", "arch", "fedora", "parrot"):
-    report = json.loads((ROOT / f"artifacts/{distro}-vm-report-v101.json").read_text())
-    assert report["tests_exit"] == report["gui_exit"] == 0, distro
-for name in ("soak-v101.json",):
+    report = json.loads((ROOT / f"artifacts/{distro}-vm-report-v110.json").read_text())
+    assert report["tests_exit"] == report["gui_exit"] == report["map_exit"] == 0, distro
+for name in ("soak-v110.json",):
     assert json.loads((ROOT / "artifacts" / name).read_text())["result"] == "PASS"
-assert "51 passed" in (ROOT / "artifacts/tests-v101.log").read_text()
-assert "command not found" not in (ROOT / "artifacts/lintian-v101.log").read_text()
+assert "55 passed" in (ROOT / "artifacts/tests-v110.log").read_text()
+assert "command not found" not in (ROOT / "artifacts/lintian-v110.log").read_text()
 assert not any(
     line.startswith("E:")
-    for line in (ROOT / "artifacts/lintian-v101.log").read_text().splitlines()
+    for line in (ROOT / "artifacts/lintian-v110.log").read_text().splitlines()
 )
 paths = [
-    DIST / "jaltrix_1.0.1-1_all.deb",
-    DIST / "jaltrix-1.0.1-1.noarch.rpm",
-    DIST / "jaltrix-1.0.1-1-any.pkg.tar.zst",
-    DIST / "jaltrix-1.0.1.tar.gz",
+    DIST / "jaltrix_1.1.0-1_all.deb",
+    DIST / "jaltrix-1.1.0-1.noarch.rpm",
+    DIST / "jaltrix-1.1.0-1-any.pkg.tar.zst",
+    DIST / "jaltrix-1.1.0.tar.gz",
 ]
 assert all(p.is_file() for p in paths)
 private_email = subprocess.run(
@@ -64,7 +64,7 @@ for source, destination in [
     ("README.en.md", "README.en.md"),
     ("LICENSE", "LICENSE"),
     ("NOTICE", "NOTICE"),
-    ("docs/evidence/1.0.1/validation.json", "VALIDATION.json"),
+    ("docs/evidence/1.1.0/validation.json", "VALIDATION.json"),
 ]:
     shutil.copyfile(ROOT / source, release / destination)
 shutil.copytree(
@@ -115,7 +115,7 @@ checks = "".join(
     if p.is_file() and p.name != "SHA256SUMS"
 )
 (release / "SHA256SUMS").write_text(checks)
-(DIST / "SHA256SUMS-1.0.1").write_text(
+(DIST / "SHA256SUMS-1.1.0").write_text(
     "".join(i["sha256"] + "  " + i["file"] + "\n" for i in manifest["artifacts"])
 )
 with zipfile.ZipFile(

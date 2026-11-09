@@ -7,7 +7,7 @@ import tarfile
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
-DEST = ROOT / "dist/jaltrix-1.0.1.tar.gz"
+DEST = ROOT / "dist/jaltrix-1.1.0.tar.gz"
 DEST.parent.mkdir(exist_ok=True)
 EPOCH = int(
     os.environ.get(
@@ -54,5 +54,5 @@ with (
     tarfile.open(fileobj=compressed, mode="w") as archive,
 ):
     for name in names:
-        archive.add(ROOT / name, arcname="jaltrix-1.0.1/" + name, filter=clean)
+        archive.add(ROOT / name, arcname="jaltrix-1.1.0/" + name, filter=clean)
 print(DEST)

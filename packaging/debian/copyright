@@ -13,6 +13,13 @@ License: upstream-notices
  installed system components. They do not bundle or relicense those components.
  Refer to the individual notices and corresponding system packages.
 
+Files: src/jaltrix/ui/world-land.svg
+Copyright: Natural Earth contributors
+License: public-domain
+ Derived from Natural Earth 1:110m land. The upstream dataset is in the public
+ domain. See https://www.naturalearthdata.com/about/terms-of-use/ and the bundled
+ NaturalEarth-NOTICE.txt for source, transformation and checksum.
+
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

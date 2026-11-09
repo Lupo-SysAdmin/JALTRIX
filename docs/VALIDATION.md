@@ -1,3 +1,18 @@
+# Validación JALTRIX 1.1.0 — 2026-11-09
+
+- **55 PASS** en Kali y Ubuntu; **52 PASS / 3 SKIP** en Arch, Fedora y Parrot (motor Snort ausente en esas tres VMs).
+- Mapa sobre toda la consulta (prueba de 1308 eventos, fuera de la primera página), países y marcadores, paginación, aislamiento de modos/fuentes, coincidencia de red más específica IPv4/IPv6 e IP privadas/desconocidas sin ubicación: PASS.
+- Interacción GUI mediante clics en país/marcador/alerta, inspector, pestañas, CSV privado persistente, ES/EN, 1080×720 y ausencia de errores QML: PASS. GUI instalada y mapa abiertos en los escritorios reales de las cuatro VMs.
+- Actualización nativa 1.0.1 → 1.1.0 con fixtures nuevas, dentro del mismo arranque: PASS en cuatro VMs; conserva identidades/checkpoints/casos/notas. Un verificador histórico del renombrado encontró dos generaciones en su antigua fixture Fedora; se conservó esa evidencia y se preparó una comparación antes/después específica de esta actualización. No se presenta como ensayo de continuidad ante cambios de dispositivo/inodo.
+- En Parrot, el primer intento gráfico no encontró la autorización X11 de KDE tras reiniciar el laboratorio. Se corrigió la detección de la sesión gráfica en el verificador y se repitieron suite y GUI satisfactoriamente; no fue una omisión de la prueba gráfica.
+- Ensayo de mapa con **100.000 alertas sintéticas**: resumen completo 0,296 s y última página de país 0,131 s en este equipo. El RSS del informe corresponde al proceso completo que también creó/ingirió el dataset, no al mapa aislado. No constituye una garantía de rendimiento.
+- Recolector: **600.000 alertas sintéticas**, 10.000/s durante 60 s, cinco rotaciones y reinicio; sin pérdidas/duplicados, SQLite OK. No mide capacidad de captura de Snort.
+- Evidencias: [resumen](evidence/1.1.0/validation.json), [mapa](evidence/1.1.0/geomap-benchmark.json), [recolector](evidence/1.1.0/soak.json) e informes de VM/actualización en ese directorio.
+
+Las integraciones privilegiadas y el ciclo de paquetes previos se documentan debajo, con sus versiones originales. El mapa es offline, requiere GeoIP local para IP reales y separa la demo. GitHub Actions remoto sigue NOT RUN. EDR permanece deshabilitado sin proveedor.
+
+## Evidencia histórica
+
 # Validación JALTRIX 1.0.1 — 2026-11-09
 
 ## Cambio de nombre y cierre nativo
