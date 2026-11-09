@@ -17,9 +17,7 @@ with (
         time.sleep(0.2)
         rows = [
             json.loads(line)
-            for line in Path("/var/log/snort-soc/alert_json.txt")
-            .read_text()
-            .splitlines()
+            for line in Path("/var/log/jaltrix/alert_json.txt").read_text().splitlines()
         ]
         hits = [
             row

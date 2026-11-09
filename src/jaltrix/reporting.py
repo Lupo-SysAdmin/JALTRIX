@@ -1,6 +1,6 @@
 """Atomic streaming exports of a consistent SQLite alert query."""
 
-import csv, hashlib, json, os, tempfile
+import csv, json, os, tempfile
 from pathlib import Path
 from .snort import AlertStore
 from .triage import TriageStore
@@ -30,8 +30,8 @@ FIELDS = [
 
 def export_query(data_dir, mode, source, filters, destination, metadata):
     path = Path(destination)
-    source_id = hashlib.sha256(f"{mode}:{Path(source).resolve()}".encode()).hexdigest()
     store = AlertStore(Path(data_dir) / mode / "alerts.sqlite3")
+    source_id = store.source_id(source, mode)
     triage = TriageStore(Path(data_dir) / mode / "triage.sqlite3")
     triage.db.execute("BEGIN")
     temp = None

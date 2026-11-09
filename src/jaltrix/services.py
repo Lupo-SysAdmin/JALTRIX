@@ -4,7 +4,7 @@
 
 import time
 
-UNITS = ("snort-soc.service",)
+UNITS = ("jaltrix-sensor.service",)
 DEST = "org.freedesktop.systemd1"
 ROOT = "/org/freedesktop/systemd1"
 MANAGER = DEST + ".Manager"

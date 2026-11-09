@@ -1,0 +1,37 @@
+[Unit]
+Description=JALTRIX managed passive sensor
+Documentation=https://www.snort.org/
+After=network-online.target
+Wants=network-online.target
+ConditionFileIsExecutable=/usr/local/lib/jaltrix-engine/bin/snort
+ConditionPathExists=/etc/jaltrix/snort.lua
+
+[Service]
+Type=simple
+User=jaltrix-sensor
+Group=jaltrix-sensor
+Environment=SNORT_CHECKSUM=all
+EnvironmentFile=/etc/jaltrix/sensor.env
+ExecStartPre=/usr/local/lib/jaltrix-engine/bin/snort -T -c /etc/jaltrix/snort.lua -R /etc/jaltrix/local.rules -l /var/log/jaltrix
+ExecStart=/usr/local/lib/jaltrix-engine/bin/snort -c /etc/jaltrix/snort.lua -R /etc/jaltrix/local.rules -i ${SNORT_INTERFACE} --daq afpacket --daq-mode passive --daq-batch-size 1 -A alert_json -l /var/log/jaltrix -U -k ${SNORT_CHECKSUM}
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0027
+LogsDirectory=jaltrix
+LogsDirectoryMode=0750
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_PACKET AF_NETLINK
+ReadWritePaths=/var/log/jaltrix
+
+[Install]
+WantedBy=multi-user.target

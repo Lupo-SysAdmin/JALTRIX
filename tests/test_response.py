@@ -1,6 +1,6 @@
 import pytest
-from snort_soc.response import ResponseStore
-from snort_soc.core import CaseStore, demo_events
+from jaltrix.response import ResponseStore
+from jaltrix.core import CaseStore, demo_events
 
 
 def test_proposals_audit_and_revoke(tmp_path):

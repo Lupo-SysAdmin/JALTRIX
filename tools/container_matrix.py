@@ -26,7 +26,7 @@ def run(item):
         "run",
         "--rm",
         "--name",
-        "snort-soc-test-" + name,
+        "jaltrix-test-" + name,
         "--cpus=2",
         "--memory=4g",
         "--pids-limit=1024",
@@ -47,7 +47,7 @@ def run(item):
             code = result.returncode
         except subprocess.TimeoutExpired:
             subprocess.run(
-                ["docker", "stop", "snort-soc-test-" + name],
+                ["docker", "stop", "jaltrix-test-" + name],
                 stdout=log,
                 stderr=subprocess.STDOUT,
             )

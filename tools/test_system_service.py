@@ -10,18 +10,15 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from snort_soc.services import ServiceManager
+from jaltrix.services import ServiceManager
 
 assert (
-    Path("/etc/snort-soc/sensor.env").read_text().splitlines()[0]
-    == "SNORT_INTERFACE=lo"
+    Path("/etc/jaltrix/sensor.env").read_text().splitlines()[0] == "SNORT_INTERFACE=lo"
 ), "Lab-only test refused"
-Path("/etc/snort-soc/sensor.env").write_text(
-    "SNORT_INTERFACE=lo\nSNORT_CHECKSUM=none\n"
-)
+Path("/etc/jaltrix/sensor.env").write_text("SNORT_INTERFACE=lo\nSNORT_CHECKSUM=none\n")
 shutil.copyfile(
-    ROOT / "packaging/systemd/snort-soc.service",
-    "/etc/systemd/system/snort-soc.service",
+    ROOT / "packaging/systemd/jaltrix-sensor.service",
+    "/etc/systemd/system/jaltrix-sensor.service",
 )
 subprocess.run(["systemctl", "daemon-reload"], check=True)
 manager = ServiceManager()
@@ -40,7 +37,7 @@ try:
     receiver.bind(("127.0.0.1", 9999))
     sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     deadline = time.monotonic() + 10
-    log = Path("/var/log/snort-soc/alert_json.txt")
+    log = Path("/var/log/jaltrix/alert_json.txt")
     matched = False
     capture_started = int(time.time())
     while time.monotonic() < deadline:
@@ -67,7 +64,7 @@ try:
         [
             "systemctl",
             "show",
-            "snort-soc.service",
+            "jaltrix-sensor.service",
             "-p",
             "User",
             "-p",
@@ -78,7 +75,7 @@ try:
         text=True,
     )
     results["service_properties"] = properties
-    assert "User=snort-soc" in properties
+    assert "User=jaltrix-sensor" in properties
     results["result"] = "PASS"
 finally:
     manager.apply("stop", manager.snapshot())

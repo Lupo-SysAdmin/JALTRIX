@@ -10,11 +10,11 @@ import threading
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from snort_soc.snort import AlertStore
+from jaltrix.snort import AlertStore
 
 results = []
 for rate in [1000, 10000]:
-    with tempfile.TemporaryDirectory(prefix="snort-soc-benchmark-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="jaltrix-benchmark-") as tmp:
         path = Path(tmp) / "alerts.txt"
         path.touch()
         duration = 5

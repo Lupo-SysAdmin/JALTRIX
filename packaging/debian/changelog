@@ -1,8 +1,7 @@
-snort-soc-desktop (1.0.0-1) unstable; urgency=medium
+jaltrix (1.0.1-1) unstable; urgency=medium
 
-  * First stable standalone desktop release.
-  * Use owner-supplied full logo and scalable shield SVG.
-  * Add private backups and verified fresh restoration.
-  * Serialize alert writers and recover collector source configuration.
+  * Rename package, launcher and desktop identity to JALTRIX.
+  * Replace the legacy package without deleting user evidence.
+  * Add explicit sensor migration and preserve ingestion checkpoints.
 
- -- Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>  Mon, 09 Nov 2026 13:00:00 -0500
+ -- Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>  Mon, 09 Nov 2026 14:00:00 -0500

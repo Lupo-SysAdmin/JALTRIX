@@ -1,8 +1,8 @@
 from pathlib import Path
 import pytest
-from snort_soc.engine import inspect_pcap, find_engine, replay
-from snort_soc.snort import AlertStore
-from snort_soc.integrations.edr import UnconfiguredEDR
+from jaltrix.engine import inspect_pcap, find_engine, replay
+from jaltrix.snort import AlertStore
+from jaltrix.integrations.edr import UnconfiguredEDR
 
 LAB = Path(__file__).parent / "fixtures/lab"
 
@@ -43,7 +43,7 @@ def test_real_snort_offline(tmp_path, capture_name):
 
 
 def test_real_rule_validation(tmp_path):
-    from snort_soc.engine import validate_draft
+    from jaltrix.engine import validate_draft
 
     if find_engine() is None:
         pytest.skip("Real Snort engine unavailable")

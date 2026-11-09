@@ -5,8 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from snort_soc.snort import AlertStore
-from snort_soc.collector import atomic_json
+from jaltrix.snort import AlertStore
+from jaltrix.collector import atomic_json
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--seconds", type=int, default=600)
@@ -26,7 +26,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-soak-") as temporary:
 
     def start():
         return subprocess.Popen(
-            [sys.executable, "-m", "snort_soc.collector", "--data-dir", str(root)],
+            [sys.executable, "-m", "jaltrix.collector", "--data-dir", str(root)],
             env=env,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,

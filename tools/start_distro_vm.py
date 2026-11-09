@@ -62,15 +62,15 @@ else:
   - mkdir -p /home/jaltrix/build
   - tar -xzf /mnt/jaltrix/source.tar.gz -C /home/jaltrix/build
   - chown -R jaltrix:jaltrix /home/jaltrix/build
-  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/snort-soc-desktop-1.0.0/packaging/arch/snort-soc-desktop-1.0.0.tar.gz
-  - chown jaltrix:jaltrix /home/jaltrix/build/snort-soc-desktop-1.0.0/packaging/arch/snort-soc-desktop-1.0.0.tar.gz
-  - su - jaltrix -c 'cd build/snort-soc-desktop-1.0.0/packaging/arch && makepkg --noconfirm'
-  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/snort-soc-desktop-1.0.0/packaging/arch/*.pkg.tar.zst'
+  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/jaltrix-1.0.1/packaging/arch/jaltrix-1.0.1.tar.gz
+  - chown jaltrix:jaltrix /home/jaltrix/build/jaltrix-1.0.1/packaging/arch/jaltrix-1.0.1.tar.gz
+  - su - jaltrix -c 'cd build/jaltrix-1.0.1/packaging/arch && makepkg --noconfirm'
+  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/jaltrix-1.0.1/packaging/arch/*.pkg.tar.zst'
 """
 common += (
     commands
     + """  - mkdir -p /home/jaltrix/.config/autostart
-  - printf '[Desktop Entry]\\nType=Application\\nName=JALTRIX validation\\nExec=env QT_QUICK_BACKEND=software snort-soc --about --language en-US\\n' > /home/jaltrix/.config/autostart/jaltrix.desktop
+  - printf '[Desktop Entry]\\nType=Application\\nName=JALTRIX validation\\nExec=env QT_QUICK_BACKEND=software jaltrix --about --language en-US\\n' > /home/jaltrix/.config/autostart/jaltrix.desktop
   - chown -R jaltrix:jaltrix /home/jaltrix/.config
   - groupadd -rf autologin
   - usermod -aG autologin jaltrix

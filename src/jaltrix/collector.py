@@ -2,7 +2,6 @@
 
 import argparse
 import fcntl
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -28,7 +27,7 @@ def atomic_json(path, value):
 
 def open_source(source, store):
     source = Path(source)
-    source_id = hashlib.sha256(f"live:{source}".encode()).hexdigest()
+    source_id = store.source_id(source, "live")
     previous = store.db.execute(
         "SELECT device,inode,offset FROM sources WHERE id=?", (source_id,)
     ).fetchone()

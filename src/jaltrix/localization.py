@@ -284,7 +284,7 @@ EN_US.update(
     {
         "Servicio": "Service",
         "Servicio del sensor": "Sensor service",
-        "Perfil administrado en /etc/snort-soc. El perfil inicial usa lo y una regla de laboratorio; no protege toda la red.": "Managed profile in /etc/snort-soc. The initial profile uses lo and a lab rule; it does not protect the entire network.",
+        "Perfil administrado en /etc/jaltrix. El perfil inicial usa lo y una regla de laboratorio; no protege toda la red.": "Managed profile in /etc/jaltrix. The initial profile uses lo and a lab rule; it does not protect the entire network.",
         "Administrar servicio real": "Manage real service",
         "Estado: ": "Status: ",
         "Arranque: ": "Startup: ",
@@ -367,7 +367,7 @@ EN_US.update(
         "Retirar bloqueo de laboratorio": "Remove lab block",
         "Revisa destino, cambios y justificación. El sistema solicitará autorización y verificará el resultado.": "Review the target, changes and justification. The system will request authorization and verify the result.",
         "Seleccionar interfaz": "Select interface",
-        "Solo modifica /etc/snort-soc. Reinicia el sensor si está activo. Valida antes de aplicar y restaura ante fallos.": "Only modifies /etc/snort-soc. Restarts the sensor if active. Validates before applying and restores on failure.",
+        "Solo modifica /etc/jaltrix. Reinicia el sensor si está activo. Valida antes de aplicar y restaura ante fallos.": "Only modifies /etc/jaltrix. Restarts the sensor if active. Validates before applying and restores on failure.",
         "Tráfico de interfaz local": "Local interface traffic",
         "Ubicaciones aproximadas; solo IP públicas. Sin consultas externas.": "Approximate locations; public IPs only. No external queries.",
         "Verificar bloqueo de laboratorio": "Verify lab block",

@@ -1,10 +1,12 @@
 # Maintainer: Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>
 # Local source build; run from an exported source tree, not submitted to AUR.
-pkgname=snort-soc-desktop
-pkgver=1.0.0
+pkgname=jaltrix
+pkgver=1.0.1
 pkgrel=1
 pkgdesc='JALTRIX bilingual Snort 3 desktop console'
 arch=('any')
+conflicts=('snort-soc-desktop')
+replaces=('snort-soc-desktop')
 url='https://github.com/Lupo-SysAdmin'
 license=('GPL-3.0-or-later')
 depends=('python-gobject' 'python>=3.11' 'pyside6' 'qt6-declarative' 'qt6-svg')
@@ -14,14 +16,14 @@ sha256sums=('SKIP') # Local source archive only; pin a checksum for a published 
 package() {
     cd "$srcdir/$pkgname-$pkgver"
     install -d "$pkgdir/usr/lib/$pkgname" "$pkgdir/usr/bin"
-    cp -r src/snort_soc "$pkgdir/usr/lib/$pkgname/"
+    cp -r src/jaltrix "$pkgdir/usr/lib/$pkgname/"
     chmod -R go-w "$pkgdir/usr/lib/$pkgname/"
-    printf '%s\n' '#!/usr/bin/python3' 'import sys' 'sys.dont_write_bytecode = True' 'sys.path.insert(0, "/usr/lib/snort-soc-desktop")' 'from snort_soc.app import main' 'main()' > "$pkgdir/usr/bin/snort-soc"
-    chmod 755 "$pkgdir/usr/bin/snort-soc"
-    install -Dm644 packaging/desktop/io.github.LupoSysAdmin.SnortSOC.desktop "$pkgdir/usr/share/applications/io.github.LupoSysAdmin.SnortSOC.desktop"
-    install -Dm644 src/snort_soc/ui/app-icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.LupoSysAdmin.SnortSOC.svg"
-    install -Dm644 src/snort_soc/ui/app-icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/io.github.LupoSysAdmin.SnortSOC.png"
-    install -Dm644 packaging/metainfo/io.github.LupoSysAdmin.SnortSOC.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.LupoSysAdmin.SnortSOC.metainfo.xml"
-    install -Dm644 packaging/man/snort-soc.1 "$pkgdir/usr/share/man/man1/snort-soc.1"
+    printf '%s\n' '#!/usr/bin/python3' 'import sys' 'sys.dont_write_bytecode = True' 'sys.path.insert(0, "/usr/lib/jaltrix")' 'from jaltrix.app import main' 'main()' > "$pkgdir/usr/bin/jaltrix"
+    chmod 755 "$pkgdir/usr/bin/jaltrix"
+    install -Dm644 packaging/desktop/io.github.LupoSysAdmin.Jaltrix.desktop "$pkgdir/usr/share/applications/io.github.LupoSysAdmin.Jaltrix.desktop"
+    install -Dm644 src/jaltrix/ui/app-icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.LupoSysAdmin.Jaltrix.svg"
+    install -Dm644 src/jaltrix/ui/app-icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/io.github.LupoSysAdmin.Jaltrix.png"
+    install -Dm644 packaging/metainfo/io.github.LupoSysAdmin.Jaltrix.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.LupoSysAdmin.Jaltrix.metainfo.xml"
+    install -Dm644 packaging/man/jaltrix.1 "$pkgdir/usr/share/man/man1/jaltrix.1"
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

@@ -1,3 +1,20 @@
+# Validación JALTRIX 1.0.1 — 2026-11-09
+
+## Cambio de nombre y cierre nativo
+
+- Suite: **51 PASS** en Kali/Ubuntu; **48 PASS / 3 SKIP** en Arch/Fedora/Parrot por ausencia de Snort en esas tres VMs. Incluye la migración y Ctrl+Q con foco en un campo de texto.
+- Sustitución real del paquete 1.0.0 por `jaltrix`: comprobada en Kali y las cuatro VMs. Comando y menú antiguos retirados; datos, eventos, checkpoints, casos, notas y favoritos conservados.
+- Sensor migrado con reglas idénticas: en Kali permaneció detenido y deshabilitado; en Ubuntu permaneció activo y habilitado. Cuenta/servicio/directorios usan JALTRIX; enlaces de compatibilidad preservan rutas antiguas.
+- Helper instalado en Ubuntu: validación real de reglas, rollback, rechazo de reglas inválidas, HOME_NET y firewall en namespaces aislados PASS. La prueba detectó una referencia de tabla incorrecta durante el cambio de nombre; se corrigió y se repitió completa satisfactoriamente. No se alteró el firewall host del propietario.
+- Backup/restauración y eliminación/reinstalación del nuevo paquete: PASS en las cuatro VMs, conservando datos y restableciendo el recolector si estaba activo.
+- Escritorio real instalado e icono de ventana: verificación en la matriz; SVG originales conservados byte por byte. Ctrl+Q utiliza `Shortcut` de Qt con Ctrl+Q explícito en todas las distribuciones y la misma ruta de cierre de la ventana.
+- Ensayo nuevo del recolector: **600.000 eventos a 10.000/s durante 60 s**, 5 rotaciones y reinicio; 600.000 almacenados/únicos, cero rechazados. Duración real 62,25 s; consultas hasta 0,030 s; SQLite OK. No mide capacidad de captura Snort.
+- Referencias de prueba actuales: `docs/evidence/1.0.1/validation.json`, informes de las cuatro VMs y soak. Las evidencias 1.0.0 siguientes son históricas, no se atribuyen de nuevo a 1.0.1.
+
+GitHub Actions remoto sigue **NOT RUN**. EDR sigue **NO CONFIGURADO** y deshabilitado. No se afirma certificación legal, soporte universal ni detección completa de amenazas. Ver [migración](MIGRATION.md) y [matriz](COMPATIBILITY_MATRIX.md).
+
+## Evidencia histórica de 1.0.0
+
 # Validación estable 1.0.0 — 2026-11-09
 
 ## Resultado actual

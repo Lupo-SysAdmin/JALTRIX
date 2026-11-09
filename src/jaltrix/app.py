@@ -6,6 +6,10 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+# Reproducible packages can retain identical mtimes across builds. Load the
+# shipped QML instead of accepting a stale timestamp-based disk cache.
+os.environ.setdefault("QML_DISABLE_DISK_CACHE", "1")
+
 from PySide6.QtCore import (
     QAbstractListModel,
     QModelIndex,
@@ -25,7 +29,7 @@ from . import __version__
 from .triage import TriageStore
 from .advanced import AdvancedController
 from . import continuous
-import hashlib
+import subprocess
 from .localization import Translator
 from .snort import AlertStore
 from .response import ResponseStore
@@ -111,7 +115,7 @@ class Controller(AdvancedController):
         self.settings = QSettings(str(data_dir / "settings.ini"), QSettings.IniFormat)
         saved_engine = self.settings.value("engine_path", "")
         if saved_engine:
-            os.environ["SNORT_SOC_ENGINE"] = saved_engine
+            os.environ["JALTRIX_ENGINE"] = saved_engine
         locale = self.settings.value("language", "es-419")
         self.translator = Translator(
             locale if locale in ("es-419", "en-US") else "es-419"
@@ -138,7 +142,7 @@ class Controller(AdvancedController):
             units[0]
             if units
             else {
-                "name": "snort-soc.service",
+                "name": "jaltrix-sensor.service",
                 "active": "unknown",
                 "boot": "unknown",
                 "load": "unknown",
@@ -214,7 +218,7 @@ class Controller(AdvancedController):
 
     @Slot()
     def followServiceLog(self):
-        self.loadLog(QUrl.fromLocalFile("/var/log/snort-soc/alert_json.txt"), True)
+        self.loadLog(QUrl.fromLocalFile("/var/log/jaltrix/alert_json.txt"), True)
 
     @Property("QVariantList", notify=changed)
     def proposals(self):
@@ -263,7 +267,7 @@ class Controller(AdvancedController):
         if path.is_file() and os.access(path, os.X_OK):
             self.settings.setValue("engine_path", str(path.resolve()))
             self.settings.sync()
-            os.environ["SNORT_SOC_ENGINE"] = str(path.resolve())
+            os.environ["JALTRIX_ENGINE"] = str(path.resolve())
             self.changed.emit()
 
     @Property("QVariantMap", notify=changed)
@@ -449,9 +453,7 @@ class Controller(AdvancedController):
                 and state.get("source") == str(Path(source).resolve())
                 and mode == "live"
             )
-            source_id = hashlib.sha256(
-                f"{mode}:{Path(source).resolve()}".encode()
-            ).hexdigest()
+            source_id = store.source_id(source, mode)
             result = (
                 store.ingest(source, mode)
                 if ingest and not independent
@@ -915,6 +917,11 @@ def main():
     )
     maintenance = parser.add_mutually_exclusive_group()
     maintenance.add_argument(
+        "--migrate-system",
+        action="store_true",
+        help="Migrate the legacy managed sensor using native administrator authentication",
+    )
+    maintenance.add_argument(
         "--backup",
         type=Path,
         help="Create a private backup ZIP without opening the GUI",
@@ -925,11 +932,22 @@ def main():
         help="Restore ZIP into a new --data-dir; never overwrites existing data",
     )
     args = parser.parse_args()
-    data_dir = (
-        args.data_dir
-        or Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
-        / "snort-soc-desktop"
-    )
+    if args.migrate_system:
+        helper = Path("/usr/lib/jaltrix/jaltrix/migration.py")
+        if not helper.is_file():
+            parser.error(
+                "Install the JALTRIX package before migrating the system sensor"
+            )
+        command = ["/usr/bin/python3", "-I", str(helper), "--system"]
+        if os.geteuid() != 0:
+            command = ["pkexec", "--disable-internal-agent", *command]
+        sys.exit(subprocess.run(command).returncode)
+    from .migration import user_data_dir
+
+    try:
+        data_dir = args.data_dir or user_data_dir()
+    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+        parser.error(str(exc))
     if args.backup or args.restore:
         from .backup import create_backup, restore_backup
 
@@ -948,16 +966,11 @@ def main():
     QQuickStyle.setStyle("Basic")
     app = QGuiApplication(sys.argv[:1])
     app.setApplicationName("JALTRIX")
-    app.setDesktopFileName("io.github.LupoSysAdmin.SnortSOC")
+    app.setDesktopFileName("io.github.LupoSysAdmin.Jaltrix")
     icon = QIcon(str(Path(__file__).parent / "ui/app-icon.svg"))
     icon.addFile(str(Path(__file__).parent / "ui/app-icon.png"))
     app.setWindowIcon(icon)
     app.setOrganizationName("Jan Herrera")
-    data_dir = (
-        args.data_dir
-        or Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
-        / "snort-soc-desktop"
-    )
     controller = Controller(data_dir)
     if args.language:
         controller.setLanguage(args.language)

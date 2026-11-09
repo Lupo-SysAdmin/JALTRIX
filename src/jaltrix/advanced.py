@@ -354,7 +354,7 @@ class AdvancedController(QObject):
                     "-o",
                     "short-iso",
                     "-u",
-                    "snort-soc.service",
+                    "jaltrix-sensor.service",
                 ],
                 capture_output=True,
                 text=True,

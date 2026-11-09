@@ -1,4 +1,4 @@
-from snort_soc.core import CaseStore, demo_events, filter_events, summarize
+from jaltrix.core import CaseStore, demo_events, filter_events, summarize
 import pytest
 
 

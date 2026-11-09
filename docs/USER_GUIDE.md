@@ -18,7 +18,7 @@ Crear una regla desde una alerta genera un borrador amplio que debe revisarse. V
 
 ## Servicio y continuidad
 
-El sensor y el recolector son independientes. Iniciar/detener y arrancar con el sistema controlan `snort-soc.service`. El recolector `jaltrix-ingest.service` pertenece al usuario, sigue el log con la ventana cerrada y arranca al iniciar sesión. Detenerlo no elimina su habilitación; usar `systemctl --user disable --now jaltrix-ingest.service` para deshabilitarlo. Revisar salud y permisos de lectura del log. La retención opcional se aplica por edad de ingesta y respeta casos.
+El sensor y el recolector son independientes. Iniciar/detener y arrancar con el sistema controlan `jaltrix-sensor.service`. El recolector `jaltrix-ingest.service` pertenece al usuario, sigue el log con la ventana cerrada y arranca al iniciar sesión. Detenerlo no elimina su habilitación; usar `systemctl --user disable --now jaltrix-ingest.service` para deshabilitarlo. Revisar salud y permisos de lectura del log. La retención opcional se aplica por edad de ingesta y respeta casos.
 
 ## Contexto y respuesta
 
@@ -32,4 +32,9 @@ Aislar/restaurar por EDR permanece deshabilitado hasta conectar y probar un prov
 
 Configuración → Guardar copia de seguridad crea un ZIP privado fuera del directorio de datos. Incluye bases mediante snapshots SQLite, preferencias, evidencia y un inventario SHA-256. No incluye configuración del sensor en `/etc`, unidades systemd ni estado del firewall. Cada base tiene consistencia individual; para preservar simultáneamente todos los almacenes, detener el recolector y cerrar otras ventanas antes de copiar. El ZIP no está cifrado.
 
-También se puede ejecutar `snort-soc --backup /ruta/copia.zip`. Para recuperar, cerrar la GUI y usar `snort-soc --restore /ruta/copia.zip --data-dir /ruta/directorio-nuevo`. El destino debe ser inexistente: la restauración rechaza sobrescrituras, rutas inseguras y hashes inválidos. Revisar después con `snort-soc --data-dir /ruta/directorio-nuevo`. Servicios y captura no se activan al restaurar. Conservar la carpeta anterior hasta comprobar casos, evidencia y ajustes.
+También se puede ejecutar `jaltrix --backup /ruta/copia.zip`. Para recuperar, cerrar la GUI y usar `jaltrix --restore /ruta/copia.zip --data-dir /ruta/directorio-nuevo`. El destino debe ser inexistente: la restauración rechaza sobrescrituras, rutas inseguras y hashes inválidos. Revisar después con `jaltrix --data-dir /ruta/directorio-nuevo`. Servicios y captura no se activan al restaurar. Conservar la carpeta anterior hasta comprobar casos, evidencia y ajustes.
+
+## Atajos de teclado
+
+- **Ctrl+Q**: cerrar JALTRIX por la misma ruta de cierre que el botón de la ventana. No detiene el sensor ni el recolector independiente.
+- **Ctrl+K**: enfocar la búsqueda.

@@ -11,7 +11,7 @@ with (out / "run-retry.log").open("w") as log:
             "run",
             "--rm",
             "--name",
-            "snort-soc-test-fedora-retry",
+            "jaltrix-test-fedora-retry",
             "--cpus=2",
             "--memory=4g",
             "-v",

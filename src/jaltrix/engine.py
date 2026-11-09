@@ -13,9 +13,9 @@ ROOT = Path(__file__).resolve().parents[2]
 def find_engine():
     # Explicit opt-in path, then system executable, then local development build.
     candidates = [
-        os.environ.get("SNORT_SOC_ENGINE"),
+        os.environ.get("JALTRIX_ENGINE") or os.environ.get("SNORT_SOC_ENGINE"),
         shutil.which("snort"),
-        Path("/usr/local/lib/snort-soc-engine/bin/snort"),
+        Path("/usr/local/lib/jaltrix-engine/bin/snort"),
         ROOT / ".runtime/snort-3.13.2.0/bin/snort",
     ]
     for candidate in candidates:

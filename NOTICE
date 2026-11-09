@@ -12,7 +12,7 @@ The design reference is user-supplied material, not a licensed application asset
 
 The GUI license does not relicense Snort (GPL-2.0-only), LibDAQ, rules or system libraries.
 Snort is a trademark of Cisco and/or its affiliates. No trademark permission is granted.
-Detailed bilingual information and upstream notices: src/snort_soc/legal/.
+Detailed bilingual information and upstream notices: src/jaltrix/legal/.
 The selected product name is JALTRIX; trademark availability has not been certified.
 The full logo and shield SVG artwork for this release were supplied by Jan Herrera.
 Their original graphics are preserved; PNG fallbacks are deterministic renders.

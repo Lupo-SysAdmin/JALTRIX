@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-backup-check-") as temp:
         ["--data-dir", str(restored), "--restore", str(archive)],
     ]:
         subprocess.run(
-            ["/usr/bin/snort-soc", *arguments],
+            ["/usr/bin/jaltrix", *arguments],
             check=True,
             capture_output=True,
             text=True,
@@ -28,7 +28,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-backup-check-") as temp:
     ).read_bytes()
     assert archive.stat().st_mode & 0o077 == 0
     rejected = subprocess.run(
-        ["/usr/bin/snort-soc", "--data-dir", str(restored), "--restore", str(archive)],
+        ["/usr/bin/jaltrix", "--data-dir", str(restored), "--restore", str(archive)],
         capture_output=True,
         text=True,
         timeout=30,

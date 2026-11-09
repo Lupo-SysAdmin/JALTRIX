@@ -1,4 +1,4 @@
-# Publicación JALTRIX 1.0.0
+# Publicación JALTRIX 1.0.1
 
 ## Alcance de la versión estable
 
@@ -15,14 +15,9 @@ EDR real permanece fuera de alcance porque el propietario no dispone de proveedo
 
 Los paquetes no incluyen Snort modificado ni dependencias Qt redistribuidas. El motor se instala por separado. Para redistribuir el build local modificado del motor se necesita su paquete independiente de fuentes/parches/avisos; no añadir `.runtime` a la release.
 
-## Actualización desde 0.4
+## Actualización y cambio de nombre
 
-1. Crear copia de datos (si se actualiza desde 0.4, cerrar la GUI y copiar el directorio XDG; 1.0 añade backup integrado).
-2. Detener el recolector del usuario antes de reemplazar los módulos. El sensor es independiente y no se borra al actualizar la GUI.
-3. Instalar el paquete 1.0, abrir JALTRIX y verificar casos, fuentes y preferencias.
-4. Si se usa recolección continua, pulsar Iniciar recolector para actualizar su unidad y cargar el código nuevo. Revisar salud antes de cerrar la ventana.
-
-Para volver atrás, conservar el instalador anterior y la copia previa. La restauración 1.0 exige una carpeta nueva y no modifica el sensor ni el firewall. No reemplazar a ciegas una base abierta.
+La versión 1.0.1 usa `jaltrix` como paquete/comando, `io.github.LupoSysAdmin.Jaltrix` como identidad gráfica y `jaltrix-sensor.service` para el sensor administrado. Los paquetes declaran el reemplazo del paquete anterior. Leer [MIGRATION.md](MIGRATION.md) antes de actualizar; documenta copias, enlaces de compatibilidad, conservación de casos y migración explícita del sensor.
 
 ## Controles de publicación
 

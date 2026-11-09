@@ -14,14 +14,14 @@ if os.geteuid() != 0:
 root = Path(__file__).resolve().parents[1]
 operator = sys.argv[1]
 pwd.getpwnam(operator)
-config = Path("/etc/snort-soc")
+config = Path("/etc/jaltrix")
 if config.exists():
-    raise SystemExit("Existing /etc/snort-soc preserved; setup refused")
+    raise SystemExit("Existing /etc/jaltrix preserved; setup refused")
 source = root / ".runtime/snort-3.13.2.0"
 if not (source / "bin/snort").is_file():
     raise SystemExit("Build the private engine first")
 try:
-    pwd.getpwnam("snort-soc")
+    pwd.getpwnam("jaltrix-sensor")
 except KeyError:
     subprocess.run(
         [
@@ -31,11 +31,11 @@ except KeyError:
             "--no-create-home",
             "--shell",
             "/usr/sbin/nologin",
-            "snort-soc",
+            "jaltrix-sensor",
         ],
         check=True,
     )
-engine = Path("/usr/local/lib/snort-soc-engine")
+engine = Path("/usr/local/lib/jaltrix-engine")
 if engine.exists():
     raise SystemExit("Existing engine preserved; setup refused")
 (engine / "bin").mkdir(parents=True, mode=0o755)
@@ -58,18 +58,19 @@ config.mkdir(mode=0o755)
 shutil.copyfile(root / "tests/fixtures/lab/local.rules", config / "local.rules")
 for path in config.iterdir():
     path.chmod(0o644)
-log = Path("/var/log/snort-soc")
+log = Path("/var/log/jaltrix")
 log.mkdir(exist_ok=True, mode=0o750)
-owner = pwd.getpwnam("snort-soc")
+owner = pwd.getpwnam("jaltrix-sensor")
 os.chown(log, owner.pw_uid, owner.pw_gid)
 subprocess.run(["setfacl", "-m", f"u:{operator}:rx", str(log)], check=True)
 subprocess.run(["setfacl", "-d", "-m", f"u:{operator}:rx", str(log)], check=True)
 shutil.copyfile(
-    root / "packaging/systemd/snort-soc.service",
-    "/etc/systemd/system/snort-soc.service",
+    root / "packaging/systemd/jaltrix-sensor.service",
+    "/etc/systemd/system/jaltrix-sensor.service",
 )
 subprocess.run(["systemctl", "daemon-reload"], check=True)
 subprocess.run(
-    ["systemd-analyze", "verify", "/etc/systemd/system/snort-soc.service"], check=True
+    ["systemd-analyze", "verify", "/etc/systemd/system/jaltrix-sensor.service"],
+    check=True,
 )
 print("Installed root-owned sensor profile on lo, stopped and disabled.")

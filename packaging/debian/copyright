@@ -6,7 +6,7 @@ Files: *
 Copyright: 2026 Jan Herrera
 License: GPL-3+
 
-Files: src/snort_soc/legal/*
+Files: src/jaltrix/legal/*
 Copyright: respective upstream authors identified in each notice
 License: upstream-notices
  These files reproduce license texts and attribution notices for separately

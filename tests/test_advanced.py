@@ -6,9 +6,9 @@ import subprocess
 import sys
 import time
 import pytest
-from snort_soc.capture import inspect, page, convert_to_pcap
-from snort_soc.snort import AlertStore
-from snort_soc.observations import InterfaceSampler, topology
+from jaltrix.capture import inspect, page, convert_to_pcap
+from jaltrix.snort import AlertStore
+from jaltrix.observations import InterfaceSampler, topology
 
 LAB = Path(__file__).parent / "fixtures/lab"
 
@@ -77,7 +77,7 @@ def test_collector_independent_restart_and_missing_source(tmp_path):
 
     def start():
         return subprocess.Popen(
-            [sys.executable, "-m", "snort_soc.collector", "--data-dir", str(tmp_path)],
+            [sys.executable, "-m", "jaltrix.collector", "--data-dir", str(tmp_path)],
             env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -152,7 +152,7 @@ def test_interface_counter_reset_and_topology(tmp_path):
 
 
 def test_analyst_mapping_revisions_and_offline_geo(tmp_path):
-    from snort_soc.enrichment import MappingStore, GeoDatabase
+    from jaltrix.enrichment import MappingStore, GeoDatabase
 
     store = MappingStore(tmp_path / "mappings.sqlite")
     store.save(
@@ -187,8 +187,8 @@ def test_analyst_mapping_revisions_and_offline_geo(tmp_path):
 
 
 def test_triage_concurrency_and_scoped_exception(tmp_path):
-    from snort_soc.triage import TriageStore
-    from snort_soc.response import ResponseStore
+    from jaltrix.triage import TriageStore
+    from jaltrix.response import ResponseStore
 
     triage = TriageStore(tmp_path / "triage.sqlite")
     triage.save("event1", 0, "false_positive", "Checked payload", ["lab"], True)
@@ -206,7 +206,7 @@ def test_triage_concurrency_and_scoped_exception(tmp_path):
 
 
 def test_privileged_validation_rejects_injection():
-    from snort_soc.privileged import profile, rules_valid, nft_command
+    from jaltrix.privileged import profile, rules_valid, nft_command
 
     with pytest.raises(ValueError):
         profile("lo;touch x", "127.0.0.0/8")
@@ -223,7 +223,7 @@ def test_privileged_validation_rejects_injection():
 
 
 def test_rotated_descriptor_and_restart_recovery(tmp_path):
-    from snort_soc.collector import open_source
+    from jaltrix.collector import open_source
 
     source = tmp_path / "alert_json.txt"
     record = lambda n: json.dumps({"rule": f"1:{n}:1", "src_addr": "192.0.2.1"}) + "\n"
@@ -254,7 +254,7 @@ def test_rotated_descriptor_and_restart_recovery(tmp_path):
 
 
 def test_complete_query_export_and_case_retention(tmp_path):
-    from snort_soc.reporting import export_query
+    from jaltrix.reporting import export_query
     import csv
 
     source = tmp_path / "alerts.json"
@@ -303,7 +303,7 @@ def test_complete_query_export_and_case_retention(tmp_path):
 
 
 def test_rotated_incomplete_fragment_and_packet_bytes(tmp_path):
-    from snort_soc.capture import packet_bytes
+    from jaltrix.capture import packet_bytes
 
     source = tmp_path / "alert.json"
     source.write_bytes(b'{"rule":"1:42:1"}\n{"rule":')

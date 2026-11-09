@@ -3,7 +3,7 @@
 import hashlib, json, os, subprocess, time
 from pathlib import Path
 
-HELPER = "/usr/lib/snort-soc-desktop/snort_soc/privileged.py"
+HELPER = "/usr/lib/jaltrix/jaltrix/privileged.py"
 
 
 def run(args, check=True):
@@ -32,7 +32,7 @@ def request(action, **kwargs):
 
 def snapshot():
     files = {
-        n: (Path("/etc/snort-soc") / n).read_text()
+        n: (Path("/etc/jaltrix") / n).read_text()
         for n in ("local.rules", "snort.lua", "sensor.env")
     }
     return files, hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()

@@ -1,0 +1,38 @@
+{
+  "version": "1.0.1",
+  "date": "2026-11-09",
+  "local_suite": {
+    "Kali": {
+      "passed": 51,
+      "skipped": 0
+    },
+    "Ubuntu": {
+      "passed": 51,
+      "skipped": 0
+    },
+    "Arch": {
+      "passed": 48,
+      "skipped": 3
+    },
+    "Fedora": {
+      "passed": 48,
+      "skipped": 3
+    },
+    "Parrot": {
+      "passed": 48,
+      "skipped": 3
+    }
+  },
+  "skip_reason": "Snort engine absent in Arch/Fedora/Parrot lab VMs",
+  "package_rename": "PASS Kali and four full-desktop VMs; old launcher/menu removed",
+  "data_migration": "PASS event identities/checkpoints/cases/triage; legacy aliases preserve evidence links",
+  "sensor_migration": "PASS Kali inactive/disabled and Ubuntu active/enabled; rules unchanged",
+  "native_quit": "Ctrl+Q via Qt application Shortcut; normal window close path",
+  "backup_restore_cli": "PASS four VMs",
+  "package_remove_reinstall": "PASS four VMs",
+  "privileged_operations": "PASS Ubuntu installed helper: rules, rollback, HOME_NET, isolated firewall block/TTL/revoke",
+  "host_firewall": "Not modified on developer host; prior host-scope test evidence retained under 1.0.0",
+  "remote_github_actions": "NOT RUN; no public repository changes",
+  "EDR": "NOT CONFIGURED; disabled by owner decision",
+  "scope": "Local Linux desktop; external Snort engine; no legal/security certification"
+}

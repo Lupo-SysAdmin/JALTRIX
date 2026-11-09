@@ -1,6 +1,6 @@
 import copy
 import pytest
-from snort_soc.services import ServiceManager, manageable, UNITS
+from jaltrix.services import ServiceManager, manageable, UNITS
 
 
 def state(active="inactive", boot="disabled", owner=":1.1"):
@@ -22,14 +22,14 @@ class FakeManager(ServiceManager):
     def call(self, owner, method, signature, args, reply, interactive=False, **kwargs):
         self.calls.append((method, args, interactive))
         if method in ("StartUnit", "StopUnit"):
-            assert args[0] == "snort-soc.service"
+            assert args[0] == "jaltrix-sensor.service"
             if not self.fail_verify:
                 self.state["units"][0]["active"] = (
                     "active" if method == "StartUnit" else "inactive"
                 )
             return ("/org/freedesktop/systemd1/job/1",)
         if method in ("EnableUnitFiles", "DisableUnitFiles"):
-            assert args[0] == ["snort-soc.service"]
+            assert args[0] == ["jaltrix-sensor.service"]
             self.state["units"][0]["boot"] = (
                 "enabled" if method == "EnableUnitFiles" else "disabled"
             )

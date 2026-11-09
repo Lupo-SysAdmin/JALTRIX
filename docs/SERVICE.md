@@ -1,8 +1,8 @@
 # Servicio del sensor — 0.4.0
 
-En Servicio, **Administrar servicio real** sale de demo. Iniciar/detener controla exclusivamente `snort-soc.service`. **Iniciar con el sistema** habilita el arranque de forma independiente: detener no deshabilita el próximo arranque. El estado se confirma después de la operación; la consulta periódica no recrea el panel ni muestra un estado de carga por cada sondeo.
+En Servicio, **Administrar servicio real** sale de demo. Iniciar/detener controla exclusivamente `jaltrix-sensor.service`. **Iniciar con el sistema** habilita el arranque de forma independiente: detener no deshabilita el próximo arranque. El estado se confirma después de la operación; la consulta periódica no recrea el panel ni muestra un estado de carga por cada sondeo.
 
-GUI no root, autorización nativa Polkit, cuenta de sensor dedicada y capacidades limitadas. El paquete gráfico no instala motor ni activa captura. `tools/install_lab_sensor.py` es un instalador de laboratorio para el motor local; rechaza sobrescribir un perfil existente. El perfil administrado usa `/usr/local/lib/snort-soc-engine`, `/etc/snort-soc` y `/var/log/snort-soc/alert_json.txt`, separado de instalaciones ajenas.
+GUI no root, autorización nativa Polkit, cuenta de sensor dedicada y capacidades limitadas. El paquete gráfico no instala motor ni activa captura. `tools/install_lab_sensor.py` es un instalador de laboratorio para el motor local; rechaza sobrescribir un perfil existente. El perfil administrado usa `/usr/local/lib/jaltrix-engine`, `/etc/jaltrix` y `/var/log/jaltrix/alert_json.txt`, separado de instalaciones ajenas.
 
 El perfil inicial captura **loopback** con DAQ `afpacket`, regla de marcador benigno y checksum deshabilitado por offload local. No protege la LAN. Configurar interfaz/HOME_NET desde la GUI muestra diferencias, valida con Snort y solicita autenticación. Revisar reglas y visibilidad de tráfico antes de usar otra interfaz.
 

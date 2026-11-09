@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 from .privileged import rules_valid, profile
 
-HELPER = Path("/usr/lib/snort-soc-desktop/snort_soc/privileged.py")
+HELPER = Path("/usr/lib/jaltrix/jaltrix/privileged.py")
 
 
 def available():
@@ -24,7 +24,7 @@ def prepare(action, reason, **parameters):
     request = dict(action=action, reason=reason, approved=True, **parameters)
     if action in ("configure", "deploy_rules", "rollback"):
         files = {
-            name: (Path("/etc/snort-soc") / name).read_text()
+            name: (Path("/etc/jaltrix") / name).read_text()
             for name in ("local.rules", "snort.lua", "sensor.env")
         }
         request["expected"] = hashlib.sha256(

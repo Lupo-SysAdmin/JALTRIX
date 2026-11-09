@@ -9,7 +9,7 @@ def run(args, check=True):
 
 
 name = platform.node().split("-")[-1]
-marker = Path.home() / ".local/share/snort-soc-desktop/lifecycle-marker"
+marker = Path.home() / ".local/share/jaltrix/lifecycle-marker"
 marker.parent.mkdir(parents=True, exist_ok=True)
 marker.write_text("preserve evidence")
 collector = (
@@ -21,34 +21,32 @@ collector = (
 if collector:
     run(["systemctl", "--user", "stop", "jaltrix-ingest.service"])
 if name in ("ubuntu", "parrot"):
-    remove = ["sudo", "dpkg", "--purge", "snort-soc-desktop"]
+    remove = ["sudo", "dpkg", "--purge", "jaltrix"]
     install = ["sudo", "dpkg", "-i", "/mnt/jaltrix/jaltrix.deb"]
 elif name == "fedora":
-    remove = ["sudo", "rpm", "-e", "snort-soc-desktop"]
+    remove = ["sudo", "rpm", "-e", "jaltrix"]
     install = ["sudo", "rpm", "-i", "/mnt/jaltrix/jaltrix.rpm"]
 else:
-    remove = ["sudo", "pacman", "-R", "--noconfirm", "snort-soc-desktop"]
+    remove = ["sudo", "pacman", "-R", "--noconfirm", "jaltrix"]
     install = [
         "sudo",
         "pacman",
         "-U",
         "--noconfirm",
-        str(Path.home() / "releasebuild/snort-soc-desktop-1.0.0-1-any.pkg.tar.zst"),
+        str(Path.home() / "renamebuild/jaltrix-1.0.1-1-any.pkg.tar.zst"),
     ]
 try:
     run(remove)
-    assert not Path("/usr/bin/snort-soc").exists()
+    assert not Path("/usr/bin/jaltrix").exists()
     assert not Path(
-        "/usr/share/applications/io.github.LupoSysAdmin.SnortSOC.desktop"
+        "/usr/share/applications/io.github.LupoSysAdmin.Jaltrix.desktop"
     ).exists()
     assert marker.read_text() == "preserve evidence"
 finally:
     run(install)
     if collector:
         run(["systemctl", "--user", "start", "jaltrix-ingest.service"])
-assert (
-    Path("/usr/bin/snort-soc").is_file() and marker.read_text() == "preserve evidence"
-)
+assert Path("/usr/bin/jaltrix").is_file() and marker.read_text() == "preserve evidence"
 marker.unlink()
 print(
     json.dumps(

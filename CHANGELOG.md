@@ -1,5 +1,14 @@
 # Cambios
 
+## 1.0.1 — 2026-11-09
+
+- Añade Ctrl+Q mediante el atajo nativo de Qt para cerrar la ventana y liberar recursos.
+- Unifica paquete, comando, módulo Python, lanzador, AppStream y servicio con la marca JALTRIX.
+- Sustituye el paquete anterior mediante las relaciones de actualización nativas de DEB/RPM/Arch.
+- Migra datos sin modificar identidades de eventos/casos; conserva rutas antiguas mediante enlaces de compatibilidad.
+- Migra explícitamente sensor, cuenta de servicio y configuración, conservando reglas y estados de arranque/ejecución, con reversión ante errores.
+- Archiva compilaciones históricas fuera de la carpeta pública de distribución.
+
 ## 1.0.0 — 2026-11-09
 
 - Nueva identidad SVG aportada por Jan Herrera: logo completo e icono escalable de escudo.

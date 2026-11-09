@@ -15,10 +15,10 @@ import sys
 import tempfile
 import time
 
-CONFIG = Path("/etc/snort-soc")
+CONFIG = Path("/etc/jaltrix")
 STATE = Path("/var/lib/jaltrix")
-ENGINE = Path("/usr/local/lib/snort-soc-engine/bin/snort")
-UNIT = "snort-soc.service"
+ENGINE = Path("/usr/local/lib/jaltrix-engine/bin/snort")
+UNIT = "jaltrix-sensor.service"
 
 
 def run(args, **kwargs):
@@ -145,7 +145,7 @@ def deploy(request):
         files = saved["files"]
     else:
         raise ValueError("Unsupported profile operation")
-    owner = pwd.getpwnam("snort-soc")
+    owner = pwd.getpwnam("jaltrix-sensor")
     with tempfile.TemporaryDirectory(prefix="validate-", dir=STATE) as temp:
         directory = Path(temp)
         os.chown(directory, owner.pw_uid, owner.pw_gid)

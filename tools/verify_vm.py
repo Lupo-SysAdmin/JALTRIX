@@ -8,11 +8,11 @@ root = Path.home() / "jaltrix-validation"
 root.mkdir(exist_ok=True)
 with tarfile.open("/mnt/jaltrix/source.tar.gz") as archive:
     archive.extractall(root, filter="data")
-source = root / "snort-soc-desktop-1.0.0"
+source = root / "jaltrix-1.0.1"
 env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software")
-engine = Path("/usr/local/lib/snort-soc-engine/bin/snort")
+engine = Path("/usr/local/lib/jaltrix-engine/bin/snort")
 if engine.exists():
-    env["SNORT_SOC_ENGINE"] = str(engine)
+    env["JALTRIX_ENGINE"] = str(engine)
 with (root / "tests.log").open("w") as log:
     tests = subprocess.run(
         ["python3", "-m", "pytest", "-q", "-ra"],
@@ -30,9 +30,9 @@ env.update(
 )
 for process in Path("/proc").glob("[0-9]*"):
     try:
-        if (
-            process.stat().st_uid == os.getuid()
-            and b"/usr/bin/snort-soc" in (process / "cmdline").read_bytes()
+        if process.stat().st_uid == os.getuid() and any(
+            name in (process / "cmdline").read_bytes()
+            for name in (b"/usr/bin/jaltrix", b"/usr/bin/snort-soc")
         ):
             values = dict(
                 part.split(b"=", 1)
@@ -48,7 +48,7 @@ for process in Path("/proc").glob("[0-9]*"):
 with (root / "gui.log").open("w") as log:
     gui = subprocess.run(
         [
-            "/usr/bin/snort-soc",
+            "/usr/bin/jaltrix",
             "--about",
             "--language",
             "en-US",

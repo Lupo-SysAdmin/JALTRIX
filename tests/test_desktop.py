@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from PySide6.QtCore import QObject, QPointF, Qt, QUrl, QEventLoop, QTimer, QEvent
-from PySide6.QtGui import QGuiApplication, QMouseEvent
+from PySide6.QtGui import QGuiApplication, QMouseEvent, QKeyEvent
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
@@ -13,8 +13,8 @@ def wait(ms):
     loop.exec()
 
 
-from snort_soc.app import Controller
-from snort_soc.core import demo_events
+from jaltrix.app import Controller
+from jaltrix.core import demo_events
 
 
 def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypatch):
@@ -29,7 +29,7 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
     engine.rootContext().setContextProperty("soc", controller)
     engine.rootContext().setContextProperty("eventModel", controller.model)
     engine.load(
-        QUrl.fromLocalFile(str(Path(__file__).parents[1] / "src/snort_soc/ui/Main.qml"))
+        QUrl.fromLocalFile(str(Path(__file__).parents[1] / "src/jaltrix/ui/Main.qml"))
     )
     assert engine.rootObjects()
     window = engine.rootObjects()[0]
@@ -163,7 +163,7 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
     assert all(event["mode"] == "replay" for event in controller.model.rows)
     assert controller.storedCount == 2
     csv_path = tmp_path / "alerts.csv"
-    from snort_soc.snort import AlertStore
+    from jaltrix.snort import AlertStore
 
     test_store = AlertStore(tmp_path / "replay" / "alerts.sqlite3")
     event = dict(controller.model.rows[0], message='=HYPERLINK("example")')
@@ -189,7 +189,7 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
     from test_services import FakeManager
 
     fake_service = FakeManager()
-    monkeypatch.setattr("snort_soc.app.ServiceManager", lambda: fake_service)
+    monkeypatch.setattr("jaltrix.app.ServiceManager", lambda: fake_service)
     controller.serviceAction("start")
     assert controller.service_future is None  # Demo must not change the host.
     controller.manageRealService()
@@ -307,7 +307,16 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
         not controller.mapping_store.latest()
     )  # Demo annotations must not leak into replay/live.
     assert not errors, errors
-    window.close()
+    # Native Quit shortcut follows the window-close path, even with text focus.
+    window.requestActivate()
+    search.forceActiveFocus()
+    wait(30)
+    app.sendEvent(window, QKeyEvent(QEvent.KeyPress, Qt.Key_Q, Qt.ControlModifier, "q"))
+    app.sendEvent(
+        window, QKeyEvent(QEvent.KeyRelease, Qt.Key_Q, Qt.ControlModifier, "q")
+    )
+    wait(30)
+    assert not window.isVisible()
     del view, nav, search, window
     del engine
     app.processEvents()

@@ -3,7 +3,7 @@
 import hashlib, json, os, subprocess, time
 from pathlib import Path
 
-HELPER = "/usr/lib/snort-soc-desktop/snort_soc/privileged.py"
+HELPER = "/usr/lib/jaltrix/jaltrix/privileged.py"
 
 
 def run(args, check=True):
@@ -32,7 +32,7 @@ def request(action, **kwargs):
 
 def snapshot():
     files = {
-        n: (Path("/etc/snort-soc") / n).read_text()
+        n: (Path("/etc/jaltrix") / n).read_text()
         for n in ("local.rules", "snort.lua", "sensor.env")
     }
     return files, hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()
@@ -45,7 +45,7 @@ original, expected = snapshot()
 if "SNORT_INTERFACE=lo\n" not in original["sensor.env"]:
     raise SystemExit("Only the loopback lab profile may be tested")
 was_active = (
-    run(["systemctl", "is-active", "snort-soc.service"], False).stdout.strip()
+    run(["systemctl", "is-active", "jaltrix-sensor.service"], False).stdout.strip()
     == "active"
 )
 try:
@@ -80,7 +80,7 @@ finally:
     if snapshot()[0] != original:
         raise RuntimeError("Profile not restored; manual review required")
     assert (
-        run(["systemctl", "is-active", "snort-soc.service"], False).stdout.strip()
+        run(["systemctl", "is-active", "jaltrix-sensor.service"], False).stdout.strip()
         == "active"
     ) == was_active
 

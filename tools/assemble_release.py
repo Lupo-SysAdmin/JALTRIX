@@ -5,23 +5,24 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-VERSION = "1.0.0"
-validation = json.loads((ROOT / "docs/evidence/1.0.0/validation.json").read_text())
+VERSION = "1.0.1"
+validation = json.loads((ROOT / "docs/evidence/1.0.1/validation.json").read_text())
 for distro in ("ubuntu", "arch", "fedora", "parrot"):
-    report = json.loads((ROOT / f"artifacts/{distro}-vm-report-v100.json").read_text())
+    report = json.loads((ROOT / f"artifacts/{distro}-vm-report-v101.json").read_text())
     assert report["tests_exit"] == report["gui_exit"] == 0, distro
-for name in ("soak-v100.json", "soak-fast-v100.json"):
+for name in ("soak-v101.json",):
     assert json.loads((ROOT / "artifacts" / name).read_text())["result"] == "PASS"
-assert "45 passed" in (ROOT / "artifacts/tests-v100.log").read_text()
+assert "51 passed" in (ROOT / "artifacts/tests-v101.log").read_text()
+assert "command not found" not in (ROOT / "artifacts/lintian-v101.log").read_text()
 assert not any(
     line.startswith("E:")
-    for line in (ROOT / "artifacts/lintian-v100.log").read_text().splitlines()
+    for line in (ROOT / "artifacts/lintian-v101.log").read_text().splitlines()
 )
 paths = [
-    DIST / "snort-soc-desktop_1.0.0-1_all.deb",
-    DIST / "snort-soc-desktop-1.0.0-1.noarch.rpm",
-    DIST / "snort-soc-desktop-1.0.0-1-any.pkg.tar.zst",
-    DIST / "snort-soc-desktop-1.0.0.tar.gz",
+    DIST / "jaltrix_1.0.1-1_all.deb",
+    DIST / "jaltrix-1.0.1-1.noarch.rpm",
+    DIST / "jaltrix-1.0.1-1-any.pkg.tar.zst",
+    DIST / "jaltrix-1.0.1.tar.gz",
 ]
 assert all(p.is_file() for p in paths)
 private_email = subprocess.run(
@@ -43,7 +44,7 @@ with tarfile.open(paths[-1]) as source:
                     "Personal git email leaked"
                 )
 release = DIST / f"JALTRIX-{VERSION}"
-release.mkdir(exist_ok=True)
+release.mkdir()
 for path in paths:
     shutil.copyfile(path, release / path.name)
 source_hash = hashlib.sha256(paths[-1].read_bytes()).hexdigest()
@@ -63,7 +64,7 @@ for source, destination in [
     ("README.en.md", "README.en.md"),
     ("LICENSE", "LICENSE"),
     ("NOTICE", "NOTICE"),
-    ("docs/evidence/1.0.0/validation.json", "VALIDATION.json"),
+    ("docs/evidence/1.0.1/validation.json", "VALIDATION.json"),
 ]:
     shutil.copyfile(ROOT / source, release / destination)
 shutil.copytree(
@@ -76,7 +77,7 @@ shutil.copytree(
     ROOT / "design/branding", release / "design/branding", dirs_exist_ok=True
 )
 shutil.copyfile(ROOT / "README.md", release / "README.md")
-components = json.loads((ROOT / "src/snort_soc/legal/components.json").read_text())
+components = json.loads((ROOT / "src/jaltrix/legal/components.json").read_text())
 (release / "COMPONENTS.json").write_text(
     json.dumps(
         {
@@ -114,7 +115,7 @@ checks = "".join(
     if p.is_file() and p.name != "SHA256SUMS"
 )
 (release / "SHA256SUMS").write_text(checks)
-(DIST / "SHA256SUMS-1.0.0").write_text(
+(DIST / "SHA256SUMS-1.0.1").write_text(
     "".join(i["sha256"] + "  " + i["file"] + "\n" for i in manifest["artifacts"])
 )
 with zipfile.ZipFile(

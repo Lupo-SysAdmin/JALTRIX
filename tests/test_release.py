@@ -3,8 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
 import zipfile
 import pytest
-from snort_soc.snort import AlertStore
-from snort_soc.backup import create_backup, restore_backup
+from jaltrix.snort import AlertStore
+from jaltrix.backup import create_backup, restore_backup
 
 
 def test_two_writers_share_checkpoint_without_duplicates(tmp_path):
@@ -93,7 +93,7 @@ def test_collector_recovers_after_invalid_source_change(tmp_path):
     import sys
     import time
     from pathlib import Path
-    from snort_soc.collector import atomic_json
+    from jaltrix.collector import atomic_json
 
     source = tmp_path / "alerts.json"
     source.write_text('{"rule":"1:1:1"}\n')
@@ -103,7 +103,7 @@ def test_collector_recovers_after_invalid_source_change(tmp_path):
     atomic_json(config, {"source": str(source)})
     env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"))
     child = subprocess.Popen(
-        [sys.executable, "-m", "snort_soc.collector", "--data-dir", str(tmp_path)],
+        [sys.executable, "-m", "jaltrix.collector", "--data-dir", str(tmp_path)],
         env=env,
         stderr=subprocess.PIPE,
     )

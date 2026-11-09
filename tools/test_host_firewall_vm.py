@@ -4,7 +4,7 @@ import json, os, socket, subprocess, time
 from pathlib import Path
 
 assert socket.gethostname().startswith("jaltrix-") and os.geteuid() == 0
-HELPER = "/usr/lib/snort-soc-desktop/snort_soc/privileged.py"
+HELPER = "/usr/lib/jaltrix/jaltrix/privileged.py"
 
 
 def run(args, check=True):
@@ -32,7 +32,7 @@ def request(action, **kwargs):
     return json.loads(result.stdout)
 
 
-policy = Path("/etc/snort-soc/response-policy.json")
+policy = Path("/etc/jaltrix/response-policy.json")
 assert not policy.exists(), "Existing policy preserved"
 assert run(["nft", "list", "table", "inet", "jaltrix"], False).returncode != 0, (
     "Existing table preserved"

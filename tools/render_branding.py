@@ -25,7 +25,7 @@ def render(source, destination, size):
 
 for name in ("icon", "logo"):
     render(
-        ROOT / f"src/snort_soc/ui/app-{name}.svg",
-        ROOT / f"src/snort_soc/ui/app-{name}.png",
+        ROOT / f"src/jaltrix/ui/app-{name}.svg",
+        ROOT / f"src/jaltrix/ui/app-{name}.png",
         512 if name == "icon" else 700,
     )

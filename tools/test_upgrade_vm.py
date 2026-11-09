@@ -4,10 +4,10 @@ from pathlib import Path
 import argparse, json, platform, sys
 
 assert platform.node().startswith("jaltrix-"), "Disposable VM only"
-sys.path.insert(0, "/usr/lib/snort-soc-desktop")
-from snort_soc.snort import AlertStore
-from snort_soc.core import CaseStore
-from snort_soc.triage import TriageStore
+sys.path.insert(0, "/usr/lib/jaltrix")
+from jaltrix.snort import AlertStore
+from jaltrix.core import CaseStore
+from jaltrix.triage import TriageStore
 
 parser = argparse.ArgumentParser()
 parser.add_argument("phase", choices=["before", "after"])

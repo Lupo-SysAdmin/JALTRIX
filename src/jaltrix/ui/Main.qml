@@ -43,6 +43,7 @@ ApplicationWindow {
     FileDialog { id: logDialog; title: win.tr("Seleccionar alertas JSON de Snort"); fileMode: FileDialog.OpenFile; nameFilters: ["Snort JSON (*.txt *.json *.jsonl)", "All files (*)"]; onAccepted: soc.loadLog(selectedFile, win.followFile) }
     FileDialog { id: csvDialog; title: win.tr("Exportar CSV"); fileMode: FileDialog.SaveFile; nameFilters: ["CSV (*.csv)"]; defaultSuffix: "csv"; onAccepted: soc.export(selectedFile) }
     Shortcut { sequence: "Ctrl+K"; onActivated: search.forceActiveFocus() }
+    Shortcut { sequence: "Ctrl+Q"; context: Qt.ApplicationShortcut; onActivated: win.close() }
     Connections { target: soc; function onCaseOpened() { caseNotes.text = soc.caseDetail.notes; caseStatus.currentIndex = ["new", "investigating", "resolved", "closed"].indexOf(soc.caseDetail.status); caseDialog.open(); } function onNotice(message) { toast.text = message; toast.visible = true; toastTimer.restart() } }
     Timer { interval: 3000; repeat: true; running: win.page === "Servicio"; onTriggered: soc.refreshService() }
     Timer { id: toastTimer; interval: 5000; onTriggered: toast.visible = false }
@@ -132,7 +133,7 @@ ApplicationWindow {
     Dialog {
         id: sensorConfigDialog; title: win.tr("Perfil de captura administrado"); modal: true; anchors.centerIn: parent; width: Math.min(650,win.width-80); background: Panel { }
         contentItem: ColumnLayout { spacing: 12
-            Txt { text: win.tr("Solo modifica /etc/snort-soc. Reinicia el sensor si está activo. Valida antes de aplicar y restaura ante fallos."); Layout.fillWidth: true; wrapMode: Text.WordWrap }
+            Txt { text: win.tr("Solo modifica /etc/jaltrix. Reinicia el sensor si está activo. Valida antes de aplicar y restaura ante fallos."); Layout.fillWidth: true; wrapMode: Text.WordWrap }
             ComboBox { id: sensorInterface; model: soc.interfaces }
             TextField { id: homeNetwork; placeholderText: "HOME_NET: 192.168.1.0/24,2001:db8::/32"; Layout.fillWidth: true }
             TextField { id: sensorReason; placeholderText: win.tr("Justificación"); Layout.fillWidth: true }
@@ -446,8 +447,8 @@ ApplicationWindow {
                     ColumnLayout {
                         width: serviceScroll.availableWidth; spacing: 16
                         Txt { text: win.tr("Servicio del sensor"); font.pixelSize: 22 }
-                        Txt { text: "snort-soc.service"; font.pixelSize: 17; color: win.accent }
-                        Txt { text: win.tr("Perfil administrado en /etc/snort-soc. El perfil inicial usa lo y una regla de laboratorio; no protege toda la red."); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
+                        Txt { text: "jaltrix-sensor.service"; font.pixelSize: 17; color: win.accent }
+                        Txt { text: win.tr("Perfil administrado en /etc/jaltrix. El perfil inicial usa lo y una regla de laboratorio; no protege toda la red."); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
                         Btn { objectName: "manage-real-service"; visible: soc.mode === "demo"; text: win.tr("Administrar servicio real"); onClicked: soc.manageRealService() }
                         Btn { text: win.tr("Configurar interfaz y HOME_NET"); enabled: soc.mode !== "demo" && soc.operationsAvailable && !soc.busy; onClicked: sensorConfigDialog.open() }
                         Txt { objectName: "service-status"; text: win.tr("Estado: ") + win.tr(soc.service.active) + " · " + win.tr("Arranque: ") + win.tr(soc.service.boot); font.pixelSize: 18 }
@@ -531,7 +532,7 @@ ApplicationWindow {
                         Txt { text: win.tr("Borrador de regla local"); font.pixelSize: 22 }
                         Txt { text: win.tr("El borrador se valida de forma aislada. Desplegar requiere previsualización y autorización; conserva copia para restaurar."); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: win.muted }
                         ScrollView { Layout.fillWidth: true; Layout.fillHeight: true; clip: true
-                            TextArea { id: ruleEditor; text: 'alert udp any any -> any 9999 (msg:"SNORT SOC benign offline lab marker"; content:"SNORT_SOC_LAB"; sid:1000001; rev:1; priority:2;)'; wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; selectByMouse: true; color: "#e4eaf5"; font.family: "monospace" }
+                            TextArea { id: ruleEditor; text: 'alert udp any any -> any 9999 (msg:"JALTRIX benign offline lab marker"; content:"SNORT_SOC_LAB"; sid:1000001; rev:1; priority:2;)'; wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; selectByMouse: true; color: "#e4eaf5"; font.family: "monospace" }
                         }
                         RowLayout {
                             Btn { text: win.tr("Guardar borrador y validar"); enabled: !soc.busy; onClicked: soc.validateRule(ruleEditor.text) }

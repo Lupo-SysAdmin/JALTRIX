@@ -2,4 +2,4 @@
 set -eu
 cd "$(dirname "$0")"
 export PYTHONPATH="$PWD/src${PYTHONPATH:+:$PYTHONPATH}"
-exec python3 -m snort_soc "$@"
+exec python3 -m jaltrix "$@"

@@ -1,6 +1,6 @@
 import json
 import pytest
-from snort_soc.snort import AlertStore, normalize
+from jaltrix.snort import AlertStore, normalize
 
 
 def record(**changes):

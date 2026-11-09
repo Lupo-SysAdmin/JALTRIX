@@ -1,8 +1,8 @@
-.TH SNORT-SOC 1 "2026-11-09" "JALTRIX 1.0.0" "User Commands"
+.TH JALTRIX 1 "2026-11-09" "JALTRIX 1.0.1" "User Commands"
 .SH NAME
-snort-soc \- JALTRIX independent Snort investigation console
+jaltrix \- JALTRIX independent Snort investigation console
 .SH SYNOPSIS
-.B snort-soc
+.B jaltrix
 .RI [ options ]
 .SH DESCRIPTION
 Native desktop console by Jan Herrera. Opens with explicitly labeled demonstration
@@ -39,10 +39,17 @@ Create a private backup, including online SQLite snapshots. Does not open the GU
 .TP
 .B --restore PATH.zip --data-dir NEW_DIRECTORY
 Verify and restore a backup into a new directory. Existing data is never overwritten.
+.TP
+.B --migrate-system
+Migrate the old managed sensor through native administrator authentication.
+Preserves rules and running/boot states; see MIGRATION.md.
+.SH KEYBOARD
+Ctrl+Q closes the desktop window. Ctrl+K focuses search.
+Independent sensor and collector services are not stopped when the GUI closes.
 .SH FILES
-Data defaults to $XDG_DATA_HOME/snort-soc-desktop or ~/.local/share/snort-soc-desktop.
+Data defaults to $XDG_DATA_HOME/jaltrix or ~/.local/share/jaltrix.
 Demo, replay and live data are separated. Capture service configuration, when
-explicitly installed, resides in /etc/snort-soc.
+explicitly installed, resides in /etc/jaltrix.
 .SH SAFETY
 Firewall response is disabled until an administrator configures an allowed-target
 policy. Each action requires explicit confirmation and verification. EDR isolation

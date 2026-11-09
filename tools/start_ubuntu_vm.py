@@ -24,8 +24,8 @@ if not key.exists():
     )
 share = ROOT / ".runtime/vms/share"
 share.mkdir(exist_ok=True)
-shutil.copyfile(ROOT / "dist/snort-soc-desktop_1.0.0-1_all.deb", share / "jaltrix.deb")
-shutil.copyfile(ROOT / "dist/snort-soc-desktop-1.0.0.tar.gz", share / "source.tar.gz")
+shutil.copyfile(ROOT / "dist/jaltrix_1.0.1-1_all.deb", share / "jaltrix.deb")
+shutil.copyfile(ROOT / "dist/jaltrix-1.0.1.tar.gz", share / "source.tar.gz")
 seed = VM / "seed"
 seed.mkdir(exist_ok=True)
 (seed / "meta-data").write_text(
@@ -55,7 +55,7 @@ runcmd:
   - mount -t 9p -o trans=virtio,ro,version=9p2000.L hostshare /mnt/jaltrix
   - apt-get install -y /mnt/jaltrix/jaltrix.deb
   - mkdir -p /home/jaltrix/.config/autostart
-  - printf '[Desktop Entry]\\nType=Application\\nName=JALTRIX validation\\nExec=env QT_QUICK_BACKEND=software snort-soc --about --language en-US\\n' > /home/jaltrix/.config/autostart/jaltrix.desktop
+  - printf '[Desktop Entry]\\nType=Application\\nName=JALTRIX validation\\nExec=env QT_QUICK_BACKEND=software jaltrix --about --language en-US\\n' > /home/jaltrix/.config/autostart/jaltrix.desktop
   - chown -R jaltrix:jaltrix /home/jaltrix/.config
   - systemctl set-default graphical.target
   - systemctl restart lightdm

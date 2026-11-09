@@ -137,6 +137,7 @@ class AlertStore:
             CREATE TABLE IF NOT EXISTS sources (
                 id TEXT PRIMARY KEY, path TEXT, mode TEXT, device INTEGER, inode INTEGER,
                 generation TEXT, offset INTEGER, tail_digest TEXT);
+            CREATE INDEX IF NOT EXISTS source_path_mode ON sources(path,mode);
             CREATE TABLE IF NOT EXISTS events (
                 id TEXT PRIMARY KEY, source_id TEXT, mode TEXT, timestamp TEXT,
                 src TEXT, dst TEXT, sid TEXT, severity TEXT, data TEXT);
@@ -156,11 +157,36 @@ class AlertStore:
         file.seek(max(0, offset - 128))
         return hashlib.sha256(file.read(min(128, offset))).hexdigest()
 
+    def source_id(self, path, mode):
+        """Retain checkpoints/event IDs when a migrated path has a legacy alias."""
+        path = Path(path).resolve()
+        known = self.db.execute(
+            "SELECT id FROM sources WHERE path=? AND mode=?", (str(path), mode)
+        ).fetchone()
+        if known:
+            return known[0]
+        matches = [
+            identity
+            for identity, previous in self.db.execute(
+                "SELECT id,path FROM sources WHERE mode=?", (mode,)
+            )
+            if Path(previous).resolve() == path
+        ]
+        if len(matches) > 1:
+            raise ValueError(
+                "Multiple source histories resolve to this file; refusing ambiguous merge"
+            )
+        return (
+            matches[0]
+            if matches
+            else hashlib.sha256(f"{mode}:{path}".encode()).hexdigest()
+        )
+
     def ingest(self, path, mode="replay", limit=2000, stream=None):
         path = Path(path).resolve(strict=stream is None)
         if stream is None and not path.is_file():
             raise ValueError("source must be a regular file")
-        source_id = hashlib.sha256(f"{mode}:{path}".encode()).hexdigest()
+        source_id = self.source_id(path, mode)
         inserted = rejected = 0
         with (
             nullcontext(stream) if stream is not None else path.open("rb") as file,

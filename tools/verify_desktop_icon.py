@@ -5,10 +5,10 @@ import hashlib, json, os, re, subprocess, tempfile, time
 
 ROOT = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix="jaltrix-icon-test-") as temporary:
-    with (ROOT / "artifacts/icon-x11-v100.log").open("w") as log:
+    with (ROOT / "artifacts/icon-x11-v101.log").open("w") as log:
         child = subprocess.Popen(
             [
-                "/usr/bin/snort-soc",
+                "/usr/bin/jaltrix",
                 "--about",
                 "--data-dir",
                 temporary,
@@ -65,7 +65,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-icon-test-") as temporary:
                     break
                 time.sleep(0.1)
             assert report, "Window icon missing"
-            (ROOT / "artifacts/icon-x11-v100.json").write_text(
+            (ROOT / "artifacts/icon-x11-v101.json").write_text(
                 json.dumps(report, indent=2)
             )
             print(json.dumps(report))

@@ -5,29 +5,31 @@ import os, shutil, subprocess, runpy
 
 assert os.geteuid() == 0 and os.environ.get("PKEXEC_UID")
 root = Path(__file__).resolve().parents[1]
-config = Path("/etc/snort-soc/sensor.env").read_text()
+config = Path("/etc/jaltrix/sensor.env").read_text()
 assert config.splitlines()[0] == "SNORT_INTERFACE=lo", (
     "Only loopback lab profiles are eligible"
 )
-engine = Path("/usr/local/lib/snort-soc-engine")
+engine = Path("/usr/local/lib/jaltrix-engine")
 assert engine.stat().st_uid == 0 and not engine.is_symlink()
 engine.chmod(0o755)
-unit = Path("/etc/systemd/system/snort-soc.service")
-assert "/usr/local/lib/snort-soc-engine/bin/snort" in unit.read_text()
+unit = Path("/etc/systemd/system/jaltrix-sensor.service")
+assert "/usr/local/lib/jaltrix-engine/bin/snort" in unit.read_text()
 active = (
     subprocess.run(
-        ["systemctl", "is-active", "snort-soc.service"], capture_output=True, text=True
+        ["systemctl", "is-active", "jaltrix-sensor.service"],
+        capture_output=True,
+        text=True,
     ).stdout.strip()
     == "active"
 )
-backup = Path("/var/lib/jaltrix/snort-soc.service.before-v040")
+backup = Path("/var/lib/jaltrix/jaltrix-sensor.service.before-v040")
 if not backup.exists():
     shutil.copyfile(unit, backup)
-shutil.copyfile(root / "packaging/systemd/snort-soc.service", unit)
+shutil.copyfile(root / "packaging/systemd/jaltrix-sensor.service", unit)
 unit.chmod(0o644)
 subprocess.run(["systemctl", "daemon-reload"], check=True)
 if active:
     subprocess.run(
-        ["systemctl", "restart", "snort-soc.service"], check=True, timeout=45
+        ["systemctl", "restart", "jaltrix-sensor.service"], check=True, timeout=45
     )
 runpy.run_path(str(root / "tools/test_advanced_admin.py"), run_name="__main__")
