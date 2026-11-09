@@ -1,0 +1,20 @@
+JALTRIX
+Copyright (C) 2026 Jan Herrera
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This application is free software under GNU GPL version 3 or any later version.
+It is provided WITHOUT ANY WARRANTY. See LICENSE.
+
+Independent interface project; not officially affiliated with Cisco, Talos,
+Snort, Kali Linux or other distributions. Snort, Qt, PySide6 and their
+components retain their respective authors, notices and licenses.
+The design reference is user-supplied material, not a licensed application asset.
+
+The GUI license does not relicense Snort (GPL-2.0-only), LibDAQ, rules or system libraries.
+Snort is a trademark of Cisco and/or its affiliates. No trademark permission is granted.
+Detailed bilingual information and upstream notices: src/snort_soc/legal/.
+The selected product name is JALTRIX; trademark availability has not been certified.
+The full logo and shield SVG artwork for this release were supplied by Jan Herrera.
+Their original graphics are preserved; PNG fallbacks are deterministic renders.
+No trademark clearance or exclusive rights certification is asserted.
+See docs/BRANDING.md for asset provenance and usage.

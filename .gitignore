@@ -1,0 +1,25 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.egg-info/
+build/
+dist/
+*.sqlite*
+artifacts/*.png
+artifacts/*.log
+.runtime/
+artifacts/lab-runs/
+artifacts/latest-lab-log.txt
+
+.build/
+artifacts/matrix/**/*.png
+artifacts/matrix/**/*.log
+
+artifacts/matrix-*/**/*.png
+artifacts/matrix-*/**/*.log
+
+# Private design/specification history and local validation workspace.
+design/reference/
+design/jaltrix-logo-master.png
+docs/MASTER_BRIEF_V2.md
+artifacts/

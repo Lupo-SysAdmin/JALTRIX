@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 25 1160 1075" role="img" aria-label="JALTRIX - Network Intrusion Detection and Response - original vector logo with transparent background">
+<title>JALTRIX — Network Intrusion Detection &amp; Response</title>
+<desc>Original vector graphic: cyber-defense shield, intrusion radar, network nodes and lock, plus JALTRIX wordmark. Transparent canvas. No bitmap data.</desc>
+
+<defs>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+    <stop offset="0" stop-color="#f9ffff"/><stop offset=".16" stop-color="#96b5db"/><stop offset=".34" stop-color="#f7ffff"/><stop offset=".52" stop-color="#91b4e5"/><stop offset=".7" stop-color="#354f9b"/><stop offset=".88" stop-color="#dceeff"/><stop offset="1" stop-color="#31e9ff"/>
+  </linearGradient>
+  <linearGradient id="chrome" x1="0" y1="0" x2=".22" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset=".23" stop-color="#d6eafa"/><stop offset=".55" stop-color="#6f90d1"/><stop offset=".81" stop-color="#f5ffff"/><stop offset="1" stop-color="#b7dbff"/>
+  </linearGradient>
+  <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#9cffff"/><stop offset=".31" stop-color="#11f3fa"/><stop offset=".76" stop-color="#00a6ec"/><stop offset="1" stop-color="#0755ce"/>
+  </linearGradient>
+  <linearGradient id="prism" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#53f5ff"/><stop offset=".31" stop-color="#247ffc"/><stop offset=".57" stop-color="#8b45ff"/><stop offset=".83" stop-color="#e928ed"/><stop offset="1" stop-color="#ff56da"/>
+  </linearGradient>
+  <linearGradient id="magenta" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#6041ef"/><stop offset=".33" stop-color="#a45bff"/><stop offset=".55" stop-color="#fefdff"/><stop offset=".72" stop-color="#b33aff"/><stop offset="1" stop-color="#e34cf8"/>
+  </linearGradient>
+  <radialGradient id="innerShield" cx="46%" cy="42%" r="74%">
+    <stop offset="0" stop-color="#09355b"/><stop offset=".48" stop-color="#031a3a"/><stop offset=".79" stop-color="#040c2b"/><stop offset="1" stop-color="#02091b"/>
+  </radialGradient>
+  <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#096a8b" stop-opacity=".55"/><stop offset=".68" stop-color="#052852" stop-opacity=".5"/><stop offset="1" stop-color="#001533" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="sweep" x1="0" y1="1" x2="1" y2="0">
+    <stop offset="0" stop-color="#04dbfa" stop-opacity="0"/><stop offset=".5" stop-color="#05efff" stop-opacity=".18"/><stop offset=".88" stop-color="#36ffff" stop-opacity=".77"/><stop offset="1" stop-color="#caffff" stop-opacity=".98"/>
+  </linearGradient>
+  <radialGradient id="redAlert" cx="43%" cy="32%" r="70%">
+    <stop offset="0" stop-color="#fff1eb"/><stop offset=".32" stop-color="#ff5b60"/><stop offset=".66" stop-color="#f31835"/><stop offset="1" stop-color="#a70023"/>
+  </radialGradient>
+  <linearGradient id="padlock" x1="0" y1="0" x2=".9" y2="1">
+    <stop offset="0" stop-color="#cbffff"/><stop offset=".23" stop-color="#2cffff"/><stop offset=".58" stop-color="#00a4ed"/><stop offset="1" stop-color="#0066c6"/>
+  </linearGradient>
+  <linearGradient id="headline" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset=".29" stop-color="#edf9ff"/><stop offset=".58" stop-color="#8299c9"/><stop offset=".78" stop-color="#e7f8ff"/><stop offset="1" stop-color="#5c7cb6"/>
+  </linearGradient>
+  <linearGradient id="accentLine" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#01dfff"/><stop offset=".4" stop-color="#3afbff"/><stop offset=".65" stop-color="#5977ff"/><stop offset="1" stop-color="#f52fee"/>
+  </linearGradient>
+  <clipPath id="insideShield"><path d="M700 145 C840 220 965 245 1052 267 L1052 565 C1052 767 891 891 700 989 C509 891 348 767 348 565 L348 267 C435 245 560 220 700 145 Z"/></clipPath>
+</defs>
+
+
+<!-- All graphic elements are native SVG vectors; no embedded raster images. -->
+<g id="network-globe" opacity=".83">
+  <path d="M195 1048 Q340 841 700 810 Q1060 841 1205 1048" fill="none" stroke="#0ab4f2" stroke-width="8" opacity=".57"/>
+  <path d="M240 1037 Q458 804 700 810 Q942 804 1160 1037" fill="none" stroke="#10d8ef" stroke-width="3" opacity=".47"/>
+  <path d="M265 1041 Q700 840 1135 1041 M370 990 Q700 829 1030 990 M510 943 Q700 830 890 943" fill="none" stroke="#1b91ff" stroke-width="3" opacity=".65"/>
+  <path d="M430 1012 Q483 858 700 810 Q917 858 970 1012 M610 1050 Q650 851 700 810 Q750 851 790 1050" fill="none" stroke="#12c6fa" stroke-width="3" opacity=".63"/>
+  <g fill="#27faff" stroke="#bdffff" stroke-width="2">
+    <circle cx="372" cy="972" r="10"/><circle cx="518" cy="900" r="13"/>
+    <circle cx="700" cy="833" r="12"/><circle cx="883" cy="901" r="13"/><circle cx="1029" cy="973" r="10"/>
+  </g>
+</g>
+<!-- Behind-the-shield orbit section -->
+<path d="M178 752 C260 653 492 620 754 598 C1038 575 1201 538 1241 506 C1285 562 1131 660 895 712 C639 769 342 831 206 812" fill="none" stroke="#3411b1" stroke-width="29" opacity=".55"/>
+<path d="M178 752 C260 653 492 620 754 598 C1038 575 1201 538 1241 506" fill="none" stroke="url(#magenta)" stroke-width="15" opacity=".86"/>
+<!-- Shield body -->
+<path id="shield-outer" d="M700 67 C836 154 1011 201 1111 232 L1111 576 C1111 826 910 967 700 1054 C490 967 289 826 289 576 L289 232 C389 201 564 154 700 67 Z" fill="url(#steel)" stroke="#bce7ff" stroke-width="6" stroke-linejoin="round"/>
+<path d="M700 93 C830 172 994 223 1081 250 L1081 564 C1081 788 897 930 700 1020 C503 930 319 788 319 564 L319 250 C406 223 570 172 700 93 Z" fill="#061d43" stroke="url(#prism)" stroke-width="11" stroke-linejoin="round"/>
+<path d="M700 145 C840 220 965 245 1052 267 L1052 565 C1052 767 891 891 700 989 C509 891 348 767 348 565 L348 267 C435 245 560 220 700 145 Z" fill="url(#innerShield)" stroke="#2ae9ff" stroke-width="5" stroke-linejoin="round"/>
+<g clip-path="url(#insideShield)">
+  <circle cx="700" cy="484" r="350" fill="url(#radarBg)"/>
+  <g fill="none" stroke="#11d9f9" stroke-width="3.6" opacity=".65">
+    <circle cx="700" cy="484" r="122"/><circle cx="700" cy="484" r="207"/><circle cx="700" cy="484" r="295"/>
+    <path d="M348 484 H1052 M700 156 V850"/>
+  </g>
+  <g fill="none" stroke="#0274bc" stroke-width="2.5" opacity=".65">
+    <path d="M454 232 L963 772 M956 238 L433 783"/><circle cx="700" cy="484" r="262"/>
+  </g>
+  <path d="M700 484 L887 198 Q1019 278 1048 393 L700 484 Z" fill="url(#sweep)" opacity=".92"/>
+  <path d="M700 484 L887 198" stroke="#80ffff" stroke-width="5" opacity=".85"/>
+  <g id="intrusion-markers">
+    <g transform="translate(554 330)"><circle r="36" fill="#e4002a" opacity=".16"/><circle r="21" fill="#ff092c" opacity=".35"/><circle r="12" fill="url(#redAlert)" stroke="#ffd6d6" stroke-width="2"/><path d="M-34 0 H-18 M18 0 H34 M0 -34 V-18 M0 18 V34" stroke="#f54b71" stroke-width="3"/></g>
+    <g transform="translate(464 488)"><circle r="36" fill="#e4002a" opacity=".15"/><circle r="19" fill="#ff092c" opacity=".36"/><circle r="12" fill="url(#redAlert)" stroke="#ffd6d6" stroke-width="2"/></g>
+    <g transform="translate(907 484)"><circle r="38" fill="#e4002a" opacity=".18"/><circle r="19" fill="#ff092c" opacity=".34"/><circle r="12" fill="url(#redAlert)" stroke="#ffd6d6" stroke-width="2"/></g>
+  </g>
+  <g id="topology" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M700 533 L524 636 M700 533 L876 636 M524 660 L524 753 M876 660 L876 753" stroke="#0a8bea" stroke-width="21" opacity=".33" fill="none"/>
+    <path d="M700 533 L524 636 M700 533 L876 636 M524 660 L524 753 M876 660 L876 753" stroke="#43fcff" stroke-width="9" fill="none"/>
+    <rect x="636" y="439" width="128" height="89" rx="14" fill="#032544" stroke="#a8ffff" stroke-width="8"/>
+    <rect x="647" y="450" width="106" height="64" rx="8" fill="#062346" stroke="#13d3ff" stroke-width="4"/>
+    <path d="M700 529 V550 M676 550 H724" stroke="#76fbff" stroke-width="10"/>
+    <rect x="482" y="601" width="84" height="62" rx="12" fill="#08345b" stroke="#6affff" stroke-width="8"/>
+    <rect x="834" y="601" width="84" height="62" rx="12" fill="#08345b" stroke="#6affff" stroke-width="8"/>
+  </g>
+</g>
+<!-- Orbital front stroke deliberately overlaps the shield (no background box) -->
+<path d="M180 752 C204 802 430 805 688 757 C971 708 1140 636 1241 506" fill="none" stroke="#3215a7" stroke-width="24" opacity=".75"/>
+<path d="M180 752 C204 802 430 805 688 757 C971 708 1140 636 1241 506" fill="none" stroke="url(#magenta)" stroke-width="13" stroke-linecap="round"/>
+<path d="M182 750 C278 819 517 786 756 745" fill="none" stroke="#f4f7ff" stroke-width="4" opacity=".78"/>
+<!-- Foreground lock -->
+<g id="lock" stroke-linejoin="round">
+  <path d="M620 737 V680 C620 626 653 596 700 596 C747 596 780 626 780 680 V737" fill="none" stroke="#0d73b7" stroke-width="49"/>
+  <path d="M620 737 V680 C620 626 653 596 700 596 C747 596 780 626 780 680 V737" fill="none" stroke="url(#padlock)" stroke-width="34"/>
+  <path d="M630 737 V676 C630 632 660 608 700 608" fill="none" stroke="#b4ffff" stroke-width="7" opacity=".76"/>
+  <path d="M601 728 Q601 713 620 713 H780 Q799 713 799 728 V862 Q799 880 783 890 L700 945 L617 890 Q601 879 601 862 Z" fill="url(#padlock)" stroke="#baffff" stroke-width="7"/>
+  <path d="M616 734 H783 V858 Q780 871 766 881 L700 925 L634 881 Q619 872 616 858 Z" fill="#1bdcf0" fill-opacity=".19"/>
+  <path d="M700 774 C677 774 669 796 676 813 Q682 824 690 828 L677 869 H723 L710 828 C733 815 729 774 700 774 Z" fill="#032344" stroke="#0a5484" stroke-width="3"/>
+  <path d="M623 744 L623 855" stroke="#b3ffff" stroke-width="6" opacity=".65"/>
+</g>
+<path d="M700 88 V119" stroke="#fcffff" stroke-width="8" stroke-linecap="round"/>
+
+</svg>

@@ -1,0 +1,51 @@
+.TH SNORT-SOC 1 "2026-11-09" "JALTRIX 1.0.0" "User Commands"
+.SH NAME
+snort-soc \- JALTRIX independent Snort investigation console
+.SH SYNOPSIS
+.B snort-soc
+.RI [ options ]
+.SH DESCRIPTION
+Native desktop console by Jan Herrera. Opens with explicitly labeled demonstration
+alerts. Snort is a separate program; the graphical interface runs without root.
+.SH OPTIONS
+.TP
+.B --language es-419|en-US
+Select Latin American Spanish or American English.
+.TP
+.B --log PATH
+Import a local Snort alert_json file.
+.TP
+.B --follow
+Follow the file supplied with --log. Independent collection can be enabled
+explicitly in the service panel.
+.TP
+.B --pcap PATH --rules PATH
+Validate rules and replay a local PCAP or supported PCAPNG in an isolated profile.
+.TP
+.B --service
+Open managed sensor controls without starting or changing the service.
+.TP
+.B --about
+Show developer and licensing information.
+.TP
+.B --legal
+Show component notices and licenses.
+.TP
+.B --data-dir PATH
+Use a separate data directory, including cases and settings.
+.TP
+.B --backup PATH.zip
+Create a private backup, including online SQLite snapshots. Does not open the GUI.
+.TP
+.B --restore PATH.zip --data-dir NEW_DIRECTORY
+Verify and restore a backup into a new directory. Existing data is never overwritten.
+.SH FILES
+Data defaults to $XDG_DATA_HOME/snort-soc-desktop or ~/.local/share/snort-soc-desktop.
+Demo, replay and live data are separated. Capture service configuration, when
+explicitly installed, resides in /etc/snort-soc.
+.SH SAFETY
+Firewall response is disabled until an administrator configures an allowed-target
+policy. Each action requires explicit confirmation and verification. EDR isolation
+is disabled without a tested provider. Consult the included security documentation.
+.SH LICENSE
+GNU General Public License version 3 or later. No warranty.

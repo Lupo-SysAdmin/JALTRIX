@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.LupoSysAdmin.SnortSOC</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>JALTRIX</name>
+  <summary>Investigate Snort alerts and manage a Linux sensor</summary>
+  <summary xml:lang="es">Investiga alertas de Snort y administra un sensor Linux</summary>
+  <developer id="io.github.lupo-sysadmin"><name>Jan Herrera</name></developer>
+  <description>
+    <p>Independent native desktop console for Snort 3 with American English and Latin American Spanish interfaces.</p>
+    <p>Investigate JSON alerts, PCAP and PCAPNG evidence, manage cases and analyst mappings, and control an explicitly configured sensor. Demonstration data is isolated from real alerts. Snort is installed separately.</p>
+    <p>Privileged changes require a preview and administrator authorization. Endpoint isolation is unavailable without a configured and tested EDR provider.</p>
+  </description>
+  <launchable type="desktop-id">io.github.LupoSysAdmin.SnortSOC.desktop</launchable>
+  <provides><binary>snort-soc</binary></provides>
+  <url type="homepage">https://github.com/Lupo-SysAdmin</url>
+  <categories><category>System</category><category>Security</category></categories>
+  <supports><control>pointing</control><control>keyboard</control></supports>
+  <content_rating type="oars-1.1"/>
+  <releases><release version="1.0.0" date="2026-11-09" type="stable"/></releases>
+</component>

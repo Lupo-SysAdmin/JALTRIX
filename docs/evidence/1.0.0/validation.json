@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "date": "2026-11-09",
+  "local_suite": {
+    "Kali": {
+      "passed": 45,
+      "skipped": 0
+    },
+    "Ubuntu": {
+      "passed": 45,
+      "skipped": 0
+    },
+    "Arch": {
+      "passed": 42,
+      "skipped": 3
+    },
+    "Fedora": {
+      "passed": 42,
+      "skipped": 3
+    },
+    "Parrot": {
+      "passed": 42,
+      "skipped": 3
+    }
+  },
+  "skip_reason": "Snort engine absent in Arch/Fedora/Parrot lab VMs",
+  "real_desktop_gui": "PASS on all five tested platforms",
+  "upgrade_0_4_to_1_0": "PASS in Ubuntu/Arch/Fedora/Parrot VMs; events, checkpoints, cases and triage preserved",
+  "backup_restore_cli": "PASS in all four VMs",
+  "package_remove_reinstall": "PASS in all four VMs",
+  "privileged_sensor_and_namespace_firewall": "PASS Kali and Ubuntu",
+  "host_firewall": "PASS only in disposable Ubuntu VM; disabled on developer host",
+  "static_checks": "Ruff F/E9 and format PASS",
+  "package_checks": "desktop/AppStream PASS; lintian 0 errors, expected independent-initial-upload warning",
+  "remote_github_actions": "NOT RUN; no repository publication authorized in this task",
+  "EDR": "NOT CONFIGURED; disabled by owner decision",
+  "engine": "Snort 3.13.2.0 with documented local build patches",
+  "scope": "Local desktop release, not multiuser SIEM or remote EDR"
+}

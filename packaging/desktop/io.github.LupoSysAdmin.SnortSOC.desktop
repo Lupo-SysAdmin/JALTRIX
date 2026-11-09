@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=JALTRIX
+Comment=Investigate Snort 3 alerts
+Comment[es]=Investiga alertas de Snort 3
+Exec=snort-soc
+Icon=io.github.LupoSysAdmin.SnortSOC
+Terminal=false
+Categories=System;Security;
+StartupNotify=true
+StartupWMClass=JALTRIX

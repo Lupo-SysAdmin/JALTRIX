@@ -1,0 +1,12 @@
+--- a/cmake/platforms.cmake
++++ b/cmake/platforms.cmake
+@@ -9,7 +9,8 @@
+     set(CMAKE_MACOSX_RPATH OFF)
+ endif()
+ 
+-set (CMAKE_SKIP_RPATH ON)
++# Respect the build configuration for isolated runtime dependencies.
++set (CMAKE_SKIP_RPATH OFF)
+ 
+ # the Clang compiler on MacOS X may need the c++ library explicitly specified
+ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "JALTRIX GUI / Jan Herrera",
+    "license": "GPL-3.0-or-later",
+    "file": "GPL-3.0.txt",
+    "url": "https://github.com/Lupo-SysAdmin"
+  },
+  {
+    "name": "Snort 3.13.2.0 \u00b7 Cisco / contributors",
+    "license": "GPL-2.0-only",
+    "file": "Snort-LICENSE.txt",
+    "url": "https://github.com/snort3/snort3/tree/3.13.2.0"
+  },
+  {
+    "name": "LibDAQ 3.0.29 \u00b7 Cisco / contributors",
+    "license": "GPL-2.0-only",
+    "file": "LibDAQ-LICENSE.txt",
+    "url": "https://github.com/snort3/libdaq"
+  },
+  {
+    "name": "Qt \u00b7 The Qt Company / contributors",
+    "license": "LGPL-3.0 / GPL; module-specific notices",
+    "file": "Qt-NOTICES.txt",
+    "url": "https://doc.qt.io/qt-6/licensing.html"
+  },
+  {
+    "name": "PySide6 / Shiboken \u00b7 The Qt Company / contributors",
+    "license": "LGPL-3.0 / GPL; component-specific notices",
+    "file": "PySide6-NOTICES.txt",
+    "url": "https://doc.qt.io/qtforpython-6/licenses.html"
+  },
+  {
+    "name": "PyGObject \u00b7 GNOME / contributors",
+    "license": "LGPL-2.1-or-later + component notices",
+    "file": "PyGObject-NOTICES.txt",
+    "url": "https://pygobject.gnome.org/"
+  },
+  {
+    "name": "Python \u00b7 Python Software Foundation / contributors",
+    "license": "PSF + component notices",
+    "file": "Python-NOTICES.txt",
+    "url": "https://docs.python.org/3/license.html"
+  },
+  {
+    "name": "SQLite \u00b7 SQLite authors",
+    "license": "Public domain",
+    "file": "SQLite-NOTICE.txt",
+    "url": "https://www.sqlite.org/copyright.html"
+  },
+  {
+    "name": "Community / Registered / Subscriber Rules",
+    "license": "Separate licenses / acuerdos separados",
+    "file": "Rules-NOTICE.txt",
+    "url": "https://www.snort.org/snort_license"
+  },
+  {
+    "name": "GPL v2",
+    "license": "GPL-2.0",
+    "file": "GPL-2.0.txt",
+    "url": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+  },
+  {
+    "name": "LGPL v3",
+    "license": "LGPL-3.0",
+    "file": "LGPL-3.0.txt",
+    "url": "https://www.gnu.org/licenses/lgpl-3.0.html"
+  },
+  {
+    "name": "LGPL v2.1",
+    "license": "LGPL-2.1",
+    "file": "LGPL-2.1.txt",
+    "url": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+  }
+]

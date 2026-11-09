@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+if [ "$1" = configure ]; then
+    # Older builds copied group-write bits from the development checkout.
+    chmod 0755 /usr/lib/snort-soc-desktop /usr/lib/snort-soc-desktop/snort_soc
+fi

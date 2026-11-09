@@ -1,0 +1,4 @@
+Community Rules: GPLv2. Registered/Subscriber: separate agreement; attribution is not permission to redistribute.
+Community Rules: GPLv2. Registered/Subscriber: acuerdo separado; los créditos no autorizan su redistribución.
+These rulesets are not bundled / Estos conjuntos no se incluyen.
+Official agreement / Acuerdo oficial: https://www.snort.org/snort_license

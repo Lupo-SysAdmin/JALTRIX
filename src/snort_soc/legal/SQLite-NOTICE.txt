@@ -1,0 +1,3 @@
+SQLite is in the public domain. / SQLite es de dominio público.
+Official statement / Declaración oficial: https://www.sqlite.org/copyright.html
+Provided by the system Python SQLite module; not bundled by this GUI.

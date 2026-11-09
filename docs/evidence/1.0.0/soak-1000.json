@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "duration_seconds": 603.64,
+  "scheduled_seconds": 600,
+  "rate": 1000,
+  "written": 600000,
+  "stored": 600000,
+  "unique_packet_numbers": 600000,
+  "rejected": 0,
+  "rotations": 59,
+  "restart": true,
+  "collector_peak_sampled_rss_kib": 26732,
+  "query_max_seconds": 10.182,
+  "sqlite": "ok",
+  "scope": "Synthetic file ingestion; real collector subprocess, rotation, restart and concurrent bounded SQL query; no capture engine or GUI"
+}
