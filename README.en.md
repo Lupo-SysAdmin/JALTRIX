@@ -1,5 +1,7 @@
 # JALTRIX
 
+[Download 1.2.0](https://github.com/Lupo-SysAdmin/JALTRIX/releases/tag/v1.2.0) · [Kali and Parrot video tutorials (Spanish)](docs/TUTORIALS.md) · [GitHub Actions](https://github.com/Lupo-SysAdmin/JALTRIX/actions)
+
 New installations open the **setup assistant**: detect Snort 3, follow official installation instructions, and connect existing alerts or create a dedicated service. Demo is an explicit choice. [First run](docs/SETUP.md#english).
 
 <img src="design/branding/jaltrix-logo.svg" alt="JALTRIX" width="220">

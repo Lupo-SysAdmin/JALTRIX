@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "version": "1.2.0",
+  "scope": "New installations in owner VMs; actual local UDP detection; independent collector; subsequent boot verification. Not a rerun of the full automated matrix.",
+  "systems": {
+    "kali": {
+      "os": "Kali Linux 2026.3",
+      "snort": "3.12.2.0",
+      "installation": "PASS",
+      "polkit": "Native prompts completed by operator",
+      "interface": "lo",
+      "home_net": "127.0.0.0/8",
+      "initial_alerts": 4,
+      "gui_close_reopen": "PASS",
+      "after_power_cycle": {
+        "sensor": "active/enabled",
+        "user_collector": "active/enabled after login",
+        "new_udp_alerts": 2,
+        "stored_events": 6,
+        "sqlite_quick_check": "ok"
+      }
+    },
+    "parrot": {
+      "os": "Parrot Security 7.4",
+      "snort": "3.1.82.0",
+      "installation": "PASS",
+      "polkit": "Native prompts completed by operator",
+      "interface": "lo",
+      "home_net": "127.0.0.0/8",
+      "initial_alerts": 4,
+      "gui_close_reopen": "PASS",
+      "after_power_cycle": {
+        "sensor": "active/enabled",
+        "user_collector": "active/enabled after login",
+        "new_udp_alerts": 2,
+        "stored_events": 6,
+        "sqlite_quick_check": "ok"
+      }
+    }
+  }
+}

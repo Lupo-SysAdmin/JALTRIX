@@ -96,7 +96,7 @@ manifest = {
     "license": "GPL-3.0-or-later",
     "date": "2026-11-09",
     "validation": validation,
-    "publication": "Prepared locally; remote GitHub Actions not run; no public repository changes",
+    "publication": "https://github.com/Lupo-SysAdmin/JALTRIX — see Actions for exact commit checks",
     "artifacts": [
         {
             "file": p.name,

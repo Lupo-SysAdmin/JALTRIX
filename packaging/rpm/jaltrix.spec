@@ -4,7 +4,7 @@ Release: 1%{?dist}
 Summary: JALTRIX bilingual desktop console for Snort 3
 License: GPL-3.0-or-later
 Packager: Jan Herrera <281252544+Lupo-SysAdmin@users.noreply.github.com>
-URL: https://github.com/Lupo-SysAdmin
+URL: https://github.com/Lupo-SysAdmin/JALTRIX
 Source0: %{name}-%{version}.tar.gz
 BuildArch: noarch
 Obsoletes: snort-soc-desktop < 1.2.0

@@ -717,7 +717,9 @@ class Controller(AdvancedController):
 
     @Slot()
     def openGithub(self):
-        if not QDesktopServices.openUrl(QUrl("https://github.com/Lupo-SysAdmin")):
+        if not QDesktopServices.openUrl(
+            QUrl("https://github.com/Lupo-SysAdmin/JALTRIX")
+        ):
             self.notice.emit(self.translate("No se pudo abrir el navegador."))
 
     @Property("QVariantMap", notify=changed)

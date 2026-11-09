@@ -22,7 +22,7 @@ Retención opcional por tiempo de ingesta, preservando eventos vinculados a caso
 
 Las operaciones administrativas registran actor autenticado, solicitud y resultado en `/var/lib/jaltrix/audit.jsonl`. Historias locales y cadena hash de propuestas ayudan a detectar modificaciones parciales; no protegen contra root o un atacante capaz de reescribir toda la base. No hay ancla externa ni identidad multiusuario.
 
-Antes de publicación pública debe habilitarse un canal privado de reporte en el repositorio. La política de mantenimiento de la serie 1.x se describe a continuación. El repositorio público no se ha creado/publicado en esta sesión. No enviar vulnerabilidades con datos sensibles en issues públicos. Esta versión requiere revisión de seguridad adicional antes de un despliegue de respuesta de producción.
+Reporta vulnerabilidades mediante [GitHub Private Vulnerability Reporting](https://github.com/Lupo-SysAdmin/JALTRIX/security/advisories/new). La política de mantenimiento de la serie 1.x se describe a continuación. No enviar vulnerabilidades con datos sensibles en issues públicos. Esta versión requiere revisión de seguridad adicional antes de un despliegue de respuesta de producción.
 
 ## Serie estable 1.x
 
@@ -30,4 +30,4 @@ El alcance estable es una consola local con autenticación del sistema para camb
 
 Los backups de usuario son privados (0600), sin cifrado integrado. SQLite se copia mediante su API de backup; se verifica integridad al restaurar. La restauración requiere un destino nuevo y valida rutas, tamaño e inventario SHA-256. No restablece políticas del firewall ni activa servicios. El hash verifica integridad, no autenticidad frente a quien pueda reescribir el backup y su manifiesto.
 
-Al publicar el repositorio, habilitar GitHub Private Vulnerability Reporting y utilizar su pestaña Security para reportes sensibles. La dirección noreply del mantenedor sólo identifica la cuenta; no es un buzón de soporte. No se anuncia un canal privado como operativo antes de habilitarlo.
+Utiliza la pestaña Security del repositorio para reportes sensibles. La dirección noreply del mantenedor sólo identifica la cuenta; no es un buzón de soporte. No se anuncia un canal privado como operativo antes de habilitarlo.

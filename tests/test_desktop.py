@@ -257,7 +257,7 @@ def test_desktop_navigation_filter_export_and_virtualization(tmp_path, monkeypat
         QDesktopServices, "openUrl", lambda url: opened.append(url.toString()) or True
     )
     controller.openGithub()
-    assert opened == ["https://github.com/Lupo-SysAdmin"]
+    assert opened == ["https://github.com/Lupo-SysAdmin/JALTRIX"]
     controller.setLanguage("es-419")
     assert nav.property("text") == "Investigación / Casos"
 

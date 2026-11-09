@@ -64,7 +64,7 @@ Depends: libqt6svg6, python3 (>= 3.11), python3-gi, python3-pyside6.qtcore (>= 6
 Conflicts: snort-soc-desktop
 Replaces: snort-soc-desktop
 Suggests: snort, nftables, pkexec, iproute2
-Homepage: https://github.com/Lupo-SysAdmin
+Homepage: https://github.com/Lupo-SysAdmin/JALTRIX
 Description: independent desktop console for Snort 3
  Bilingual es-419/en-US investigation console with isolated demo data,
  read-only alert_json ingestion and offline PCAP replay.

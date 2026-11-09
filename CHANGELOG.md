@@ -2,6 +2,8 @@
 
 ## 1.2.0 — 2026-11-09
 
+- Public repository links, edited Kali/Parrot tutorials and native setup/power-cycle validation evidence.
+
 - First-run assistant in es-419/en-US; demo is explicit, live connections persist.
 - Snort 3 version detection and official installation guidance; existing sensor logs can be connected without a local engine.
 - Optional isolated sensor creation with rule validation and native authorization; no service auto-start and no overwrites.

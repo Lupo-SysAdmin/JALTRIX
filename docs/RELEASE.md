@@ -10,7 +10,7 @@ EDR real permanece fuera de alcance porque el propietario no dispone de proveedo
 
 Asistente de primer inicio ES/EN, detección de Snort 3, guía oficial para instalarlo si falta, conexión a sensores existentes y creación opcional de un servicio propio con validación de reglas. La conexión LIVE y la elección de demo se recuerdan. La instalación del motor sigue siendo manual; no se descarga ni ejecuta automáticamente. Ver [SETUP.md](SETUP.md).
 
-La creación nueva del sensor se probó con Snort real en Ubuntu: reglas inválidas rechazadas, perfil existente conservado, creación detenida/deshabilitada y alerta UDP benigna legible por el operador. El paquete no activa el servicio durante instalación o actualización.
+La creación nueva del sensor se probó con Snort real en Ubuntu: reglas inválidas rechazadas, perfil existente conservado, creación detenida/deshabilitada y alerta UDP benigna legible por el operador. El paquete no activa el servicio durante instalación o actualización. Además se completaron instalaciones nuevas con autorizaciones nativas y pruebas posteriores al encendido en Kali y Parrot; ver [validación](VALIDATION.md) y [tutoriales](TUTORIALS.md).
 
 ## Funciones incorporadas en 1.1.0
 
@@ -37,6 +37,6 @@ Ejecutar pytest con motor real donde esté disponible; revisión Ruff y formato;
 
 ## Paso público del propietario
 
-El código está preparado localmente; no se publica ni se crea un repositorio externo automáticamente. Al elegir el repositorio de GitHub: activar Issues y Private Vulnerability Reporting, subir fuentes y ejecutar Actions, corregir cualquier fallo remoto antes de marcar la release pública, y adjuntar paquetes, fuentes, hashes y notas. No afirmar que el CI remoto pasó antes de observar su resultado. No subir claves, imágenes de VM, `.runtime`, bases, capturas privadas ni todo el directorio `artifacts` indiscriminadamente.
+Repositorio del proyecto: [Lupo-SysAdmin/JALTRIX](https://github.com/Lupo-SysAdmin/JALTRIX). Para cada publicación: activar Issues y Private Vulnerability Reporting, subir fuentes y ejecutar Actions, corregir cualquier fallo remoto antes de marcar la release pública, y adjuntar paquetes, fuentes, hashes y notas. No afirmar que el CI remoto pasó antes de observar su resultado. No subir claves, imágenes de VM, `.runtime`, bases, capturas privadas ni todo el directorio `artifacts` indiscriminadamente.
 
-Mantenedor: Jan Herrera. Identidad pública de paquete: `281252544+Lupo-SysAdmin@users.noreply.github.com`, elegida por el propietario para no exponer correo personal. No es un buzón de soporte. El botón GitHub apunta al perfil verificado hasta tener la URL final del repositorio; actualizar esa URL en la próxima revisión cuando exista.
+Mantenedor: Jan Herrera. Identidad pública de paquete: `281252544+Lupo-SysAdmin@users.noreply.github.com`, elegida por el propietario para no exponer correo personal. No es un buzón de soporte. El botón GitHub y los metadatos de los paquetes apuntan al repositorio del proyecto.

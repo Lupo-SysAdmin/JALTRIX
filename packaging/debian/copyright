@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: JALTRIX
-Source: https://github.com/Lupo-SysAdmin
+Source: https://github.com/Lupo-SysAdmin/JALTRIX
 
 Files: *
 Copyright: 2026 Jan Herrera

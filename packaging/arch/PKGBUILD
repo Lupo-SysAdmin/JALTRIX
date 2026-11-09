@@ -7,7 +7,7 @@ pkgdesc='JALTRIX bilingual Snort 3 desktop console'
 arch=('any')
 conflicts=('snort-soc-desktop')
 replaces=('snort-soc-desktop')
-url='https://github.com/Lupo-SysAdmin'
+url='https://github.com/Lupo-SysAdmin/JALTRIX'
 license=('GPL-3.0-or-later')
 depends=('python-gobject' 'python>=3.11' 'pyside6' 'qt6-declarative' 'qt6-svg')
 optdepends=('snort: detection engine for offline replay and live sensors' 'nftables: optional active response' 'polkit: administrator authorization' 'iproute2: interface and response validation')

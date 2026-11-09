@@ -1,5 +1,15 @@
 # Validación 1.2.0 — 2026-11-09
 
+## Cierre de publicación: instalaciones nuevas y encendido posterior
+
+- Kali 2026.3 (VM del propietario, Snort 3.12.2.0 / DAQ 3.0.24) y Parrot Security 7.4 (VM del propietario, Snort 3.1.82.0 / DAQ 3.0.22): instalación del DEB, motor separado, alta del sensor y autorizaciones nativas Polkit completadas por el operador: PASS.
+- Sensor en `lo`, HOME_NET `127.0.0.0/8`, regla UDP benigna: cuatro alertas reales por VM durante el tutorial. Cierre con Ctrl+Q, recolección independiente y reapertura LIVE: PASS. No se ejecutó toda la suite automática en estas dos VM; estos resultados no sustituyen los contadores de la matriz anterior.
+- Tras apagar y volver a encender ambas VM, `jaltrix-sensor.service` estaba activo/habilitado y el recolector de usuario activo/habilitado al iniciar sesión. Un nuevo envío local produjo dos alertas adicionales: seis eventos en cada base, `PRAGMA quick_check=ok`. No fue necesario iniciar manualmente los servicios: PASS.
+- En Parrot se seleccionó `/usr/sbin/snort` desde el asistente. El servicio `snort.service` que acababa de habilitar el paquete de la distro se deshabilitó para usar únicamente el sensor de JALTRIX. Esto no es una instrucción para detener sensores preexistentes en uso.
+- [Evidencia resumida sin datos privados](evidence/1.2.0/commissioning.json) y [tutoriales editados](TUTORIALS.md). El encendido posterior se verificó aparte y no forma parte de la grabación original.
+
+## Matriz automática anterior al cierre
+
 - Kali y Ubuntu: 61 pruebas aprobadas. Arch/Fedora/Parrot: 58 aprobadas, 3 omitidas por ausencia del motor real.
 - Primer inicio sin demo implícita, motor ausente/3/2/inválido, persistencia LIVE, recuperación ante archivo perdido, ES/EN y geometría 1080×720.
 - GUI instalada, mapa y asistente en ES/EN en los cuatro escritorios de VM.

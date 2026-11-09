@@ -6,6 +6,8 @@ Una instalación nueva abre el **asistente de configuración**: detecta Snort 3,
 
 [English](README.en.md) · Español
 
+[Descargar JALTRIX 1.2.0](https://github.com/Lupo-SysAdmin/JALTRIX/releases/tag/v1.2.0) · [Tutoriales de instalación en Kali y Parrot](docs/TUTORIALS.md) · [Comprobaciones de GitHub Actions](https://github.com/Lupo-SysAdmin/JALTRIX/actions)
+
 Consola nativa Linux de investigación y respuesta para Snort 3, desarrollada por **Jan Herrera**. [GitHub del desarrollador](https://github.com/Lupo-SysAdmin). Versión **1.2.0**, GPL-3.0-or-later.
 
 Interfaz **ES (español latinoamericano) / EN (inglés estadounidense)** con preferencia persistente, modo demo separado, icono propio y Acerca de con autoría, licencia y componentes. JALTRIX es independiente de Snort/Cisco/Talos. Su disponibilidad como marca no está certificada; [procedencia del emblema](docs/BRANDING.md).
@@ -42,7 +44,7 @@ Datos en `$XDG_DATA_HOME/jaltrix/` (por defecto `~/.local/share/jaltrix/`), sepa
 
 ## Validación y límites
 
-[Resultados](docs/VALIDATION.md) · [Matriz de plataformas](docs/COMPATIBILITY_MATRIX.md) · [Seguridad](SECURITY.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Cambios](CHANGELOG.md) · [Publicación 1.0](docs/RELEASE.md).
+[Resultados](docs/VALIDATION.md) · [Matriz de plataformas](docs/COMPATIBILITY_MATRIX.md) · [Seguridad](SECURITY.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Cambios](CHANGELOG.md) · [Publicación 1.2.0](docs/RELEASE.md).
 
 Se ha probado el escritorio en Kali y en VMs KVM de Ubuntu, Parrot, Fedora y Arch. Las pruebas de motor y respuesta tienen un alcance distinto del lanzamiento de la GUI; la matriz distingue PASS, SKIP y lo no ejecutado.
 

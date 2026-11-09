@@ -30,6 +30,7 @@
   "authentication": "Native pkexec channel reused; privileged new setup tested under sudo in disposable VM, not by automating the new Polkit dialog",
   "engine_installation": "Manual with official installation guide; no engine downloaded or bundled automatically",
   "historical_evidence": "1.1.0 ingestion/load/firewall and other tests retained; not claimed rerun in 1.2.0",
-  "publication": "Not published; GitHub Actions not run",
-  "EDR": "Unconfigured and disabled by owner decision"
+  "publication": "See repository Actions and release for remote validation; historical matrix predates publication.",
+  "EDR": "Unconfigured and disabled by owner decision",
+  "additional_commissioning": "PASS: owner Kali/Parrot VMs, native Polkit, loopback alerts, subsequent power cycle and collector after login; see commissioning.json. Original matrix counts unchanged."
 }
