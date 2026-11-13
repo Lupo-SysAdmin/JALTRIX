@@ -21,6 +21,7 @@ from PySide6.QtCore import (
     QUrl,
     QSettings,
     QLocale,
+    QObject,
 )
 from PySide6.QtGui import QGuiApplication, QDesktopServices, QIcon, QImageReader
 from PySide6.QtQml import QQmlApplicationEngine
@@ -37,6 +38,7 @@ from .services import ServiceManager, manageable
 from .integrations.edr import UnconfiguredEDR
 from .engine import find_engine, replay, validate_draft
 from .core import CaseStore, demo_events, filter_events, summarize
+from .host_ui import HostController
 
 
 class EventModel(QAbstractListModel):
@@ -136,8 +138,15 @@ class Controller(AdvancedController):
         )
         self.initAdvanced()
         self.initSetup()
+        self._host = HostController(self)
+        self._host.notice.connect(self.notice.emit)
+        self._host.caseCreated.connect(self.openCase)
         self.setupChanged.connect(self.changed.emit)
         self.refresh()
+
+    @Property(QObject, constant=True)
+    def host(self):
+        return self._host
 
     @Property("QVariantMap", notify=serviceChanged)
     def service(self):
@@ -302,6 +311,7 @@ class Controller(AdvancedController):
         self._case_detail = next(
             (c for c in self.store.list() if c["id"] == case_id), {}
         )
+        self._host.openCaseEvidence(self._case_detail.get("event_id", ""))
         self.changed.emit()
         if self._case_detail:
             self.caseOpened.emit()
@@ -411,6 +421,8 @@ class Controller(AdvancedController):
 
         self.mapping_store = MappingStore(self.data_dir / mode / "mappings.sqlite3")
         self._mode = mode
+        self._case_detail = {}
+        self._host.modeChanged()
         self._paged = False
         self._page_offset = 0
         self._matched = 0
@@ -622,6 +634,7 @@ class Controller(AdvancedController):
             self.notice.emit(self.translate(self._status) + ": " + str(exc))
 
     def close(self):
+        self._host.close()
         self._geo_visible = False
         self._geo_executor.shutdown(wait=True, cancel_futures=True)
         self.advanced_timer.stop()
