@@ -22,6 +22,7 @@ from PySide6.QtCore import (
     QEventLoop,
     QMetaObject,
     QObject,
+    QPointF,
     QTimer,
     QUrl,
 )
@@ -40,6 +41,7 @@ app = QGuiApplication([])
 QQuickStyle.setStyle("Basic")
 assert QQuickStyle.name() == "Basic"
 app.setApplicationName("JALTRIX — synthetic validation")
+rendered_sizes = set()
 
 
 def wait_for(predicate, seconds=15):
@@ -64,15 +66,44 @@ def visual(item, name):
 
 
 def verify_host_visible(window, view):
-    wait_for(lambda: view.isVisible() and view.width() > 0 and view.height() > 0)
+    # An obscured Xwayland window may not receive an initial render tick.
+    # Render our own test window before inspecting the polished layout.
+    frame = window.grabWindow()
+    assert not frame.isNull(), (
+        "The supplied desktop/display could not render the test window"
+    )
+    try:
+        wait_for(lambda: view.isVisible() and view.width() > 0 and view.height() > 0)
+    except AssertionError:
+        raise AssertionError(
+            dict(
+                page=window.property("page"),
+                window=[window.width(), window.height()],
+                window_visible=window.isVisible(),
+                view=[view.width(), view.height()],
+                view_visible=view.isVisible(),
+            )
+        ) from None
     geometry = dict(
         page=window.property("page"),
         window=[window.width(), window.height()],
+        content=[
+            window.property("contentItem").width(),
+            window.property("contentItem").height(),
+        ],
+        window_root=[window.contentItem().width(), window.contentItem().height()],
         view=[view.width(), view.height()],
         visible=view.isVisible(),
+        font_pixels=window.property("font").pixelSize(),
+        pixel_ratio=window.devicePixelRatio(),
     )
+    corner = view.mapToScene(QPointF(view.width(), view.height()))
+    geometry["view_right_bottom"] = [corner.x(), corner.y()]
     assert geometry["page"] == "Eventos del sistema", geometry
     assert view.width() >= 800 and view.height() >= 300, geometry
+    assert geometry["content"] == geometry["window"], geometry
+    assert corner.x() <= window.width() and corner.y() <= window.height(), geometry
+    rendered_sizes.add((window.width(), window.height(), frame.width(), frame.height()))
 
 
 with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as directory:
@@ -83,10 +114,11 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
     engine.warnings.connect(lambda rows: warnings.extend(w.toString() for w in rows))
     engine.rootContext().setContextProperty("soc", controller)
     engine.rootContext().setContextProperty("eventModel", controller.model)
+    # Establish the small native window before Xwayland's initial configure.
+    engine.setInitialProperties({"width": 1080, "height": 720})
     engine.load(QUrl.fromLocalFile(str(Path(jaltrix.__file__).parent / "ui/Main.qml")))
     assert engine.rootObjects(), warnings
     window = engine.rootObjects()[0]
-    window.resize(1080, 720)
     try:
         assert not (root / "live/host-events.sqlite3").exists()
         controller.changeMode("live")
@@ -158,7 +190,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
                 "initially empty",
                 "sources disabled",
                 "ES/EN",
-                "1080x720",
+                "requested 1080x720; actual rendered sizes recorded",
                 "all host tabs",
                 "correlation",
                 "existing case timeline",
@@ -167,6 +199,11 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
                 "Basic style after platform initialization",
             ],
             qt_quick_style=QQuickStyle.name(),
+            requested_window_size=[1080, 720],
+            rendered_sizes=[
+                dict(window=[width, height], image=[image_width, image_height])
+                for width, height, image_width, image_height in sorted(rendered_sizes)
+            ],
         )
     finally:
         window.close()

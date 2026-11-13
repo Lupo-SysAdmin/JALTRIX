@@ -9,6 +9,9 @@
 - Bilingual system-event, local-host and source views, connected to existing cases
   through retained evidence timelines.
 - Snort alert IDs, checkpoints, notes and existing case data remain compatible.
+- Preserve the explicit Qt style on KDE; verify installed host views at 1080×720.
+- Display a clean in-app shield while preserving the original repository logo.
+- Verify exact journal cursor continuity and expose historical source backlog.
 - Build helpers read the release version from project metadata.
 
 ## 1.2.0 — 2026-11-09

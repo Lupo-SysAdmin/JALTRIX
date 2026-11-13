@@ -116,7 +116,7 @@ def test_journal_persistent_cursor_and_stale_cursor_not_reset():
 
     events, same, status = sources.read_journal(cursor, HOST, stale)
     assert not events and same == cursor and status["state"] == "cursor_unavailable"
-    assert "--after-cursor=s=cursor" in calls[1]
+    assert "--cursor=s=cursor" in calls[1]
 
 
 def test_bounded_subprocess_retains_complete_lines():
@@ -312,3 +312,51 @@ def test_fedora_sshd_session_executable_is_recognized():
         journal(_EXE="/usr/libexec/openssh/sshd-session", _COMM="sshd-session"), HOST
     )
     assert event["kind"] == "auth_success" and event["service"] == "sshd"
+
+
+def test_journal_resume_verifies_anchor_and_skips_only_that_event():
+    original = {"cursor": "s=cursor", "initial_scope": "previous_15_minutes"}
+    calls = []
+
+    def runner(arguments):
+        calls.append(arguments)
+        return dict(
+            lines=[
+                json.dumps(journal()).encode(),
+                json.dumps(journal(__CURSOR="next-cursor")).encode(),
+            ],
+            stderr="",
+            returncode=0,
+            limited=False,
+        )
+
+    events, checkpoint, status = sources.read_journal(original, HOST, runner)
+    assert "--cursor=s=cursor" in calls[0]
+    assert [event["original_id"] for event in events] == ["next-cursor"]
+    assert checkpoint["cursor"] == "next-cursor" and status["examined"] == 1
+
+    def idle(arguments):
+        return dict(
+            lines=[json.dumps(journal()).encode()],
+            stderr="",
+            returncode=0,
+            limited=False,
+        )
+
+    events, checkpoint, status = sources.read_journal(original, HOST, idle)
+    assert not events and checkpoint == original and status["state"] == "following"
+    assert status["examined"] == 0
+
+
+@pytest.mark.parametrize(
+    "lines", [[json.dumps(journal(__CURSOR="nearest-retained-entry")).encode()], []]
+)
+def test_journal_vacuum_fallback_with_zero_exit_never_advances_checkpoint(lines):
+    original = {"cursor": "well-formed-but-vacuumed-entry"}
+
+    def nearest(arguments):
+        return dict(lines=lines, stderr="", returncode=0, limited=False)
+
+    events, checkpoint, status = sources.read_journal(original, HOST, nearest)
+    assert events == [] and checkpoint == original
+    assert status["state"] == "cursor_unavailable" and "retained" in status["error"]

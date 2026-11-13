@@ -252,7 +252,9 @@ def read_journal(checkpoint=None, host=None, runner=bounded_command):
         "--no-tail",
     ]
     if checkpoint.get("cursor"):
-        arguments.append("--after-cursor=" + checkpoint["cursor"])
+        # systemd may return the nearest retained entry after vacuuming, with rc=0.
+        # Include the saved entry so its identity can be verified before advancing.
+        arguments.append("--cursor=" + checkpoint["cursor"])
     else:
         arguments.append("--since=-15min")
     arguments += [
@@ -273,7 +275,8 @@ def read_journal(checkpoint=None, host=None, runner=bounded_command):
         )
         return [], checkpoint, dict(state=state, error=error or "journalctl failed")
     events, cursor, rejected = [], checkpoint.get("cursor"), 0
-    for line in result["lines"]:
+    anchor_verified = not bool(cursor)
+    for index, line in enumerate(result["lines"]):
         try:
             record = json.loads(line)
         except (ValueError, UnicodeDecodeError):
@@ -295,12 +298,34 @@ def read_journal(checkpoint=None, host=None, runner=bounded_command):
                     error="Missing journal cursor; cursor retained",
                 ),
             )
+        if index == 0 and checkpoint.get("cursor"):
+            if record["__CURSOR"] != checkpoint["cursor"]:
+                return (
+                    [],
+                    checkpoint,
+                    dict(
+                        state="cursor_unavailable",
+                        error="Saved journal entry is unavailable (possibly vacuumed or inaccessible); cursor retained, no automatic history skip",
+                    ),
+                )
+            anchor_verified = True
+            continue
         cursor = record["__CURSOR"]
         event = journal_event(record, host)
         if event:
             events.append(event)
         else:
             rejected += 1
+    if not anchor_verified:
+        return (
+            [],
+            checkpoint,
+            dict(
+                state="cursor_unavailable",
+                error="Saved journal entry could not be verified; cursor retained, restore journal access/history before retrying",
+            ),
+        )
+    examined = len(result["lines"]) - int(bool(checkpoint.get("cursor")))
     checkpoint = {
         **checkpoint,
         "cursor": cursor,
@@ -312,7 +337,7 @@ def read_journal(checkpoint=None, host=None, runner=bounded_command):
         dict(
             state="partial_access" if error else "following",
             error=error,
-            examined=len(result["lines"]),
+            examined=examined,
             ignored=rejected,
             backlog=result["limited"],
             initial_scope="previous_15_minutes",
