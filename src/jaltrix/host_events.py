@@ -117,7 +117,11 @@ def normalize_event(value):
         raise ValueError("Invalid original evidence")
     event.setdefault("raw_record", {})
     timestamp, epoch = _time(event.get("timestamp"))
-    if event.get("timestamp_confidence") == "unknown":
+    if event.get("timestamp_confidence") not in (
+        None,
+        "explicit_timezone",
+        "epoch_seconds",
+    ):
         timestamp = epoch = None
     event.setdefault("original_timestamp", event.get("timestamp"))
     event["timestamp"] = timestamp
@@ -166,6 +170,7 @@ class HostEventStore:
                 CREATE INDEX IF NOT EXISTS host_event_kind ON host_events(kind,event_time);
                 CREATE INDEX IF NOT EXISTS host_event_src ON host_events(host_id,kind,src_ip,event_time);
                 CREATE INDEX IF NOT EXISTS host_event_ingested ON host_events(ingested_at,id);
+                CREATE INDEX IF NOT EXISTS host_event_recent ON host_events(coalesce(timestamp,ingested_at) DESC,id);
                 CREATE TABLE IF NOT EXISTS host_checkpoints (key TEXT PRIMARY KEY, value TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS host_quarantine (
                     id INTEGER PRIMARY KEY, observed_at TEXT NOT NULL, reason TEXT NOT NULL,
@@ -446,6 +451,40 @@ class HostEventStore:
             self.db.execute("ROLLBACK")
             raise
         return self.get_correlation(correlation_id)
+
+    def create_case(self, correlation_id, case_store, language="es-419"):
+        """Pin evidence while calling the existing case store under a writer lock.
+
+        Retention cannot remove the selected correlation between the lookup and
+        the pin. This is not a distributed transaction across the two databases.
+        """
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            correlation = self.get_correlation(correlation_id)
+            if correlation is None:
+                raise ValueError("Unknown correlation")
+            title = (
+                correlation["title_en"]
+                if language.startswith("en")
+                else correlation["title"]
+            )
+            case_id = case_store.create(
+                {
+                    "event_id": "host-correlation:" + correlation_id,
+                    "mode": "live",
+                    "message": title,
+                }
+            )
+            _text(case_id, "case ID", 256, True)
+            self.db.execute(
+                "INSERT OR IGNORE INTO host_case_pins VALUES (?,?)",
+                (correlation_id, case_id),
+            )
+            self.db.execute("COMMIT")
+        except Exception:
+            self.db.execute("ROLLBACK")
+            raise
+        return case_id
 
     def retain(self, days, max_events):
         if (

@@ -286,3 +286,43 @@ def test_corrupt_or_newer_database_is_not_reinitialized(tmp_path):
     with pytest.raises(ValueError, match="newer"):
         HostEventStore(future)
     assert future.read_bytes() == before
+
+
+def test_create_case_pins_under_writer_lock_and_reuses_existing_case_store(
+    tmp_path, monkeypatch
+):
+    path = tmp_path / "live/host-events.sqlite3"
+    store = HostEventStore(path)
+    store.ingest(sequence())
+    correlation = store.correlations()[0]
+    cases = CaseStore(tmp_path / "live/cases.sqlite3", "live")
+    contender = HostEventStore(path)
+    contender.db.execute("PRAGMA busy_timeout=1")
+    create = cases.create
+
+    def create_during_retention_attempt(observation):
+        with pytest.raises(sqlite3.OperationalError, match="locked"):
+            contender.retain(0, 1)
+        return create(observation)
+
+    monkeypatch.setattr(cases, "create", create_during_retention_attempt)
+    case_id = store.create_case(correlation["id"], cases, language="en-US")
+    assert store.get_correlation(correlation["id"])["case_ids"] == [case_id]
+    assert cases.list()[0]["title"] == correlation["title_en"]
+    assert store.create_case(correlation["id"], cases) == case_id
+    assert contender.retain(0, 1)["preserved"] == 6
+    assert len(cases.list()) == 1
+    contender.close()
+    store.close()
+    cases.db.close()
+
+
+def test_unknown_correlation_cannot_create_orphan_case(tmp_path):
+    store = HostEventStore(tmp_path / "host.sqlite3")
+    cases = CaseStore(tmp_path / "cases.sqlite3", "live")
+    with pytest.raises(ValueError, match="Unknown correlation"):
+        store.create_case("missing", cases)
+    assert cases.list() == []
+    assert store.retain(0, 1)["removed"] == 0  # Writer lock was released.
+    store.close()
+    cases.db.close()

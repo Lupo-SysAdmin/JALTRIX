@@ -115,6 +115,7 @@ def test_three_rules_have_explainable_immutable_original_evidence(store):
         {"timestamp": None},
         {"timestamp": "2026-11-12T12:00:00"},
         {"timestamp_confidence": "unknown"},
+        {"timestamp_confidence": "inferred_timezone"},
     ],
 )
 def test_failures_require_five_matching_known_ssh_observations(store, changes):
