@@ -1,31 +1,46 @@
 """Assemble the reviewed local release, with sources, hashes and explicit limits."""
 
 import hashlib, json, re, shutil, subprocess, tarfile, zipfile
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from release_meta import ROOT, VERSION, RELEASE_DATE, source_fingerprint
+
 DIST = ROOT / "dist"
-VERSION = "1.2.0"
-validation = json.loads((ROOT / "docs/evidence/1.2.0/validation.json").read_text())
-for distro in ("ubuntu", "arch", "fedora", "parrot"):
-    report = json.loads((ROOT / f"artifacts/{distro}-vm-report-v120.json").read_text())
-    assert report["tests_exit"] == report["gui_exit"] == report["map_exit"] == 0, distro
-    assert all(code == 0 for code in report["setup_exit"].values()), distro
-for name in ("setup-sensor-v120.json",):
-    assert json.loads((ROOT / "artifacts" / name).read_text())["result"] == "PASS"
-assert "61 passed" in (ROOT / "artifacts/tests-v120.log").read_text()
-assert "command not found" not in (ROOT / "artifacts/lintian-v120.log").read_text()
-assert not any(
-    line.startswith("E:")
-    for line in (ROOT / "artifacts/lintian-v120.log").read_text().splitlines()
-)
+validation = json.loads((ROOT / f"docs/evidence/{VERSION}/validation.json").read_text())
+gates = json.loads((ROOT / "artifacts" / f"release-gates-{VERSION}.json").read_text())
+required = {
+    "regression_engine",
+    "lint",
+    "metadata",
+    "upgrade",
+    "real_sources",
+    "installed_matrix",
+    "remote_ci",
+}
+if gates.get("version") != VERSION or validation.get("version") != VERSION:
+    raise SystemExit("Release evidence belongs to a different version")
+if gates.get("source_fingerprint") != source_fingerprint():
+    raise SystemExit(
+        "Source changed after validation; repeat affected checks before assembling"
+    )
+checks = gates.get("checks", {})
+if not required <= checks.keys() or any(
+    checks[name].get("result") != "PASS" for name in required
+):
+    raise SystemExit("Required release checks are missing or unsuccessful")
 paths = [
-    DIST / "jaltrix_1.2.0-1_all.deb",
-    DIST / "jaltrix-1.2.0-1.noarch.rpm",
-    DIST / "jaltrix-1.2.0-1-any.pkg.tar.zst",
-    DIST / "jaltrix-1.2.0.tar.gz",
+    DIST / f"jaltrix_{VERSION}-1_all.deb",
+    DIST / f"jaltrix-{VERSION}-1.noarch.rpm",
+    DIST / f"jaltrix-{VERSION}-1-any.pkg.tar.zst",
+    DIST / f"jaltrix-{VERSION}.tar.gz",
 ]
-assert all(p.is_file() for p in paths)
+for path in paths:
+    if not path.is_file():
+        raise SystemExit(f"Missing release artifact: {path.name}")
+    if (
+        gates.get("artifacts", {}).get(path.name)
+        != hashlib.sha256(path.read_bytes()).hexdigest()
+    ):
+        raise SystemExit(f"Artifact was not verified after its last build: {path.name}")
 private_email = subprocess.run(
     ["git", "config", "--get", "user.email"], cwd=ROOT, capture_output=True, text=True
 ).stdout.strip()
@@ -65,7 +80,7 @@ for source, destination in [
     ("README.en.md", "README.en.md"),
     ("LICENSE", "LICENSE"),
     ("NOTICE", "NOTICE"),
-    ("docs/evidence/1.2.0/validation.json", "VALIDATION.json"),
+    (f"docs/evidence/{VERSION}/validation.json", "VALIDATION.json"),
 ]:
     shutil.copyfile(ROOT / source, release / destination)
 shutil.copytree(
@@ -94,8 +109,10 @@ manifest = {
     "developer": "Jan Herrera",
     "maintainer": "281252544+Lupo-SysAdmin@users.noreply.github.com",
     "license": "GPL-3.0-or-later",
-    "date": "2026-11-09",
+    "date": RELEASE_DATE,
     "validation": validation,
+    "source_fingerprint": gates["source_fingerprint"],
+    "checks": checks,
     "publication": "https://github.com/Lupo-SysAdmin/JALTRIX — see Actions for exact commit checks",
     "artifacts": [
         {
@@ -116,7 +133,7 @@ checks = "".join(
     if p.is_file() and p.name != "SHA256SUMS"
 )
 (release / "SHA256SUMS").write_text(checks)
-(DIST / "SHA256SUMS-1.2.0").write_text(
+(DIST / f"SHA256SUMS-{VERSION}").write_text(
     "".join(i["sha256"] + "  " + i["file"] + "\n" for i in manifest["artifacts"])
 )
 with zipfile.ZipFile(

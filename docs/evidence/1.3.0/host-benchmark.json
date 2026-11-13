@@ -1,0 +1,62 @@
+{
+  "scope": "Synthetic normalized host observations in a temporary database; no GUI, real host capture, Snort packet capture, or throughput guarantee.",
+  "fixture_distribution": "Eight synthetic hosts with mixed journal/audit/snort observations plus a ninth host for a late SSH correlation. Snort records are synthetic and not bound to real hosts.",
+  "created_at_utc": "2026-11-13T00:44:37.912481+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.14.8"
+  },
+  "observations": 100000,
+  "batch_size": 5000,
+  "batches": 20,
+  "inserted": 100000,
+  "rejected": 0,
+  "ingestion_elapsed_seconds": 11.037798,
+  "max_ingest_batch_seconds": 0.761804,
+  "peak_pending_time_buckets": 42,
+  "drain_passes": 75,
+  "drain_elapsed_seconds": 29.953697,
+  "max_drain_pass_seconds": 0.682035,
+  "final_pending": 0,
+  "restart_checkpoint_verified": true,
+  "duplicate_replay_count": 5000,
+  "duplicate_replay_seconds": 0.202215,
+  "late_correlations": 1,
+  "query_max_seconds": {
+    "recent_200": 0.001295,
+    "filtered_200": 0.01091,
+    "search_200": 0.001342,
+    "count": 0.003948,
+    "hosts": 0.175582,
+    "correlations": 0.000145,
+    "evidence": 8.9e-05
+  },
+  "database_and_wal_bytes_before_retention": 198633456,
+  "retention": {
+    "removed": 99994,
+    "preserved": 6,
+    "stored": 6,
+    "pinned_over_limit": true
+  },
+  "retention_seconds": 1.189641,
+  "backup_restore_seconds": 1.092149,
+  "backup_files": 2,
+  "restored_files": 2,
+  "restored_case_evidence_and_checkpoint_verified": true,
+  "integrity_check": "ok",
+  "foreign_key_check": "ok",
+  "peak_process_rss_kib": 47480,
+  "memory_measurement": "Linux /proc/self/status VmHWM; ru_maxrss only as a fallback",
+  "memory_stages_peak_rss_kib": {
+    "start": 24536,
+    "after_ingest": 39632,
+    "after_drain": 39700,
+    "after_queries": 39956,
+    "after_integrity": 39956,
+    "after_retention": 44632,
+    "after_backup": 47480,
+    "after_restore": 47480
+  },
+  "total_elapsed_seconds": 44.626721
+}

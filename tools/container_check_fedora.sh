@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 kind="$1"
+version=$(sed -n 's/^version = "\([^" ]*\)"/\1/p' /source/pyproject.toml)
 mkdir -p /work
 cp -r /source/src /source/tests /source/pyproject.toml /work/
 cp /source/packaging/desktop/io.github.LupoSysAdmin.Jaltrix.desktop /work/
@@ -9,15 +10,15 @@ cat /etc/os-release
 if [ "$kind" = ubuntu ] || [ "$kind" = parrot ]; then
     export DEBIAN_FRONTEND=noninteractive
     apt-get update -qq
-    apt-get install -y --no-install-recommends /source/dist/jaltrix_1.2.0-1_all.deb python3-pytest xvfb xauth x11-utils libgl1
+    apt-get install -y --no-install-recommends /source/dist/jaltrix_${version}-1_all.deb python3-pytest xvfb xauth x11-utils libgl1
 elif [ "$kind" = fedora ]; then
     dnf install -y python3-pyside6 python3-pytest python3-gobject-base qt6-qtdeclarative xorg-x11-server-Xvfb xauth xdpyinfo mesa-libGL
-    dnf install -y /source/dist/jaltrix-1.2.0-1.noarch.rpm
+    dnf install -y /source/dist/jaltrix-${version}-1.noarch.rpm
 elif [ "$kind" = arch ]; then
     pacman -Syu --noconfirm --needed base-devel python pyside6 python-gobject python-pytest xorg-server-xvfb xorg-xauth xorg-xdpyinfo
     useradd -m builder
     mkdir /work/pkg
-    cp /source/packaging/arch/PKGBUILD /source/dist/jaltrix-1.2.0.tar.gz /work/pkg/
+    cp /source/packaging/arch/PKGBUILD /source/dist/jaltrix-${version}.tar.gz /work/pkg/
     chown -R builder:builder /work/pkg
     su builder -c 'cd /work/pkg && makepkg --noconfirm'
     pacman -U --noconfirm /work/pkg/*.pkg.tar.zst
@@ -35,10 +36,10 @@ jaltrix --language es-419 --screenshot /result/dashboard-es.png --data-dir /work
 # Local user data must survive removal/purge; no test writes to host data.
 echo preserved > /work/data/preservation-marker
 if [ "$kind" = ubuntu ] || [ "$kind" = parrot ]; then
-    apt-get install -y --reinstall /source/dist/jaltrix_1.2.0-1_all.deb
+    apt-get install -y --reinstall /source/dist/jaltrix_${version}-1_all.deb
     apt-get purge -y jaltrix
 elif [ "$kind" = fedora ]; then
-    dnf reinstall -y /source/dist/jaltrix-1.2.0-1.noarch.rpm
+    dnf reinstall -y /source/dist/jaltrix-${version}-1.noarch.rpm
     rpm -e jaltrix
 else
     pacman -U --noconfirm /work/pkg/*.pkg.tar.zst

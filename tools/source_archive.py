@@ -1,20 +1,11 @@
 """Reproducible corresponding-source archive; excludes private lab/runtime data."""
 
 import gzip
-import os
-from pathlib import Path
 import tarfile
-from datetime import datetime, timezone
+from release_meta import EPOCH, ROOT, VERSION
 
-ROOT = Path(__file__).resolve().parents[1]
-DEST = ROOT / "dist/jaltrix-1.2.0.tar.gz"
+DEST = ROOT / f"dist/jaltrix-{VERSION}.tar.gz"
 DEST.parent.mkdir(exist_ok=True)
-EPOCH = int(
-    os.environ.get(
-        "SOURCE_DATE_EPOCH",
-        str(int(datetime(2026, 11, 9, tzinfo=timezone.utc).timestamp())),
-    )
-)
 names = [
     ".github",
     ".gitignore",
@@ -54,5 +45,5 @@ with (
     tarfile.open(fileobj=compressed, mode="w") as archive,
 ):
     for name in names:
-        archive.add(ROOT / name, arcname="jaltrix-1.2.0/" + name, filter=clean)
+        archive.add(ROOT / name, arcname=f"jaltrix-{VERSION}/" + name, filter=clean)
 print(DEST)

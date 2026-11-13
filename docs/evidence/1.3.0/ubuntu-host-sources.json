@@ -1,0 +1,41 @@
+{
+  "result": "PASS",
+  "platform": "PRETTY_NAME=\"Ubuntu 26.04.1 LTS\"",
+  "timestamp": "2026-11-13T00:56:55.959132+00:00",
+  "actual_sources": [
+    "journald",
+    "auditd"
+  ],
+  "journal_auth_verified": true,
+  "sudo_rs_verified": true,
+  "audit_actor_verified": true,
+  "real_correlation": "ssh_then_authorized_keys",
+  "automated_response": false,
+  "historical_catchup": {
+    "seconds": 78.8,
+    "initial_audit_bytes": 946634,
+    "stored_events": 1737,
+    "skipped_records": 0,
+    "checkpoint_seeded": false
+  },
+  "journal_auth_events": 27,
+  "journal_sudo_events": 9,
+  "watched_file_events": 2,
+  "case_pin_verified": true,
+  "pinned_retention_verified": true,
+  "user_service_started": true,
+  "user_service_restarted": true,
+  "user_service_fresh": true,
+  "service_sources": {
+    "journal": "following",
+    "audit": "reading_existing_log",
+    "snort": "disabled"
+  },
+  "backup_restore_verified": true,
+  "restored_health_stale": true,
+  "user_service_stopped": true,
+  "authorized_keys_restored": true,
+  "audit_watch_removed": true,
+  "user_unit_removed": true,
+  "cleanup_errors": []
+}

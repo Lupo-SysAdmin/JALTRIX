@@ -101,15 +101,36 @@ ApplicationWindow {
         }
     }
     Dialog {
-        id: caseDialog; anchors.centerIn: parent; width: Math.min(680, win.width-80); height: 500; modal: true
+        id: caseDialog; anchors.centerIn: parent; width: Math.min(760, win.width-80); height: Math.min(620,win.height-80); modal: true
         title: soc.caseDetail.id || ""; background: Panel { }
         contentItem: ColumnLayout {
             Txt { text: soc.caseDetail.title || ""; Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 18 }
             ComboBox { id: caseStatus; model: ["new", "investigating", "resolved", "closed"]; displayText: win.tr(currentText); delegate: ItemDelegate { required property string modelData; text: win.tr(modelData) } }
+            Txt { visible:soc.host.caseHasEvidence; text:win.tr("Evidencias conservadas del caso · UTC"); font.bold:true }
+            ListView {
+                objectName:"case-host-timeline"; visible:soc.host.caseHasEvidence; Layout.fillWidth:true; Layout.preferredHeight:180; clip:true; model:soc.host.caseTimeline
+                ScrollBar.vertical:ScrollBar {}
+                delegate:ItemDelegate {
+                    required property var modelData; width:ListView.view.width; height:66
+                    contentItem:Txt { text:hostView.eventLine(modelData)+"\n"+(modelData.message || ""); wrapMode:Text.WordWrap; maximumLineCount:3; font.pixelSize:11 }
+                    onClicked: { caseEvidence.detail=soc.host.eventDetails(modelData); caseEvidence.open(); }
+                }
+                Txt { anchors.centerIn:parent; width:parent.width-20; wrapMode:Text.WordWrap; visible:parent.count===0; text:soc.host.caseEvidenceError || win.tr("Leyendo evidencias conservadas…") }
+            }
             ScrollView { Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                 TextArea { id: caseNotes; placeholderText: win.tr("Notas de investigación"); wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; selectByMouse: true; color: "#e4eaf5" }
             }
             RowLayout { Btn { text: win.tr("Guardar"); onClicked: { soc.saveCase(caseNotes.text, caseStatus.currentText); caseDialog.close(); } } Btn { text: win.tr("Cerrar"); onClicked: caseDialog.close() } }
+        }
+    }
+    Dialog {
+        id:caseEvidence; anchors.centerIn:parent; width:Math.min(780,win.width-60); height:Math.min(600,win.height-60); modal:true; title:win.tr("Evidencia original")
+        property string detail:""
+        contentItem:ColumnLayout {
+            ScrollView { Layout.fillWidth:true; Layout.fillHeight:true; clip:true
+                TextArea { text:caseEvidence.detail; readOnly:true; textFormat:TextEdit.PlainText; wrapMode:TextEdit.WrapAnywhere; selectByMouse:true; color:"#e4eaf5" }
+            }
+            Btn { text:win.tr("Cerrar"); onClicked:caseEvidence.close() }
         }
     }
     Dialog {
@@ -120,7 +141,7 @@ ApplicationWindow {
             spacing: 18
             RowLayout {
                 spacing: 14
-                Image { source: soc.logoAsset; Layout.preferredWidth: 140; Layout.preferredHeight: 140; fillMode: Image.PreserveAspectFit; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
+                Image { source: soc.logoAsset; Layout.preferredWidth: 140; Layout.preferredHeight: 140; fillMode: Image.PreserveAspectFit; onStatusChanged: if (status === Image.Error) source = "app-emblem.png" }
                 Txt { text: "JALTRIX · " + soc.version; font.pixelSize: 24; font.bold: true }
             }
             Txt { text: win.tr("Desarrollador") + ": Jan Herrera"; font.pixelSize: 18; color: win.accent }
@@ -203,21 +224,26 @@ ApplicationWindow {
                 Layout.preferredWidth: 194; Layout.fillHeight: true; color: "#0d1422"
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 12; spacing: 5
-                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 100 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
+                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 100 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-emblem.png" }
+                    ScrollView {
+                        id:navigationScroll; Layout.fillWidth:true; Layout.fillHeight:true; contentWidth:availableWidth; clip:true
+                        ColumnLayout { width:navigationScroll.availableWidth; spacing:5
                     Repeater {
-                        model: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "PCAP", "Reglas", "Mapa de amenazas", "Topología", "Correlación MITRE", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"]
+                        model: ["Dashboard", "Alertas", "Investigación / Casos", "Eventos del sistema", "Tráfico", "PCAP", "Reglas", "Mapa de amenazas", "Topología", "Correlación MITRE", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"]
                         delegate: Button {
                             required property string modelData
-                            property bool ready: ["Dashboard", "Alertas", "Investigación / Casos", "Tráfico", "Mapa de amenazas", "Topología", "Correlación MITRE", "PCAP", "Reglas", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"].indexOf(modelData) >= 0
+                            property bool ready: ["Dashboard", "Alertas", "Investigación / Casos", "Eventos del sistema", "Tráfico", "Mapa de amenazas", "Topología", "Correlación MITRE", "PCAP", "Reglas", "Respuesta / Firewall", "EDR / Endpoints", "Reportes", "Servicio", "Configuración"].indexOf(modelData) >= 0
                             Layout.fillWidth: true; implicitHeight: win.height < 830 ? 24 : 31; enabled: ready
                             text: win.tr(modelData); objectName: "nav-" + modelData; hoverEnabled: true
                             background: Rectangle { radius: 7; color: win.page === modelData ? "#53308b" : parent.hovered ? "#1c2940" : "transparent" }
                             contentItem: Txt { text: parent.text; leftPadding: 10; verticalAlignment: Text.AlignVCenter; opacity: parent.enabled ? 1 : .35; font.pixelSize: 12 }
                             ToolTip.visible: hovered; ToolTip.text: ready ? win.tr(modelData) : win.tr("Pendiente de implementación; no disponible en este hito")
+                            onActiveFocusChanged: if (activeFocus) { const viewport=navigationScroll.contentItem; if (y<viewport.contentY) viewport.contentY=y; else if (y+height>viewport.contentY+viewport.height) viewport.contentY=y+height-viewport.height; }
                             onClicked: { win.page = modelData; if (modelData === "Servicio") soc.refreshService(); }
                         }
                     }
-                    Item { Layout.fillHeight: true }
+                        }
+                    }
                     Panel { Layout.fillWidth: true; implicitHeight: 78; ColumnLayout { anchors.fill: parent; anchors.margins: 12; Txt { text: soc.mode === "demo" ? win.tr("●  MODO DEMO") : "●  " + soc.mode.toUpperCase(); color: "#c29aff" } Txt { text: soc.mode === "demo" ? win.tr("Datos simulados") : win.tr(soc.service.active); color: win.muted; font.pixelSize: 11 } Txt { text: soc.mode === "demo" ? win.tr("Sin alertas reales") : win.tr("Servicio del sensor"); color: win.muted; font.pixelSize: 11 } } }
                 }
             }
@@ -254,6 +280,9 @@ ApplicationWindow {
                     onProfileRequested:sensorConfigDialog.open()
                     onRulesRequested:win.page="Reglas"
                     onDashboardRequested:win.page="Dashboard"
+                }
+                HostView {
+                    id:hostView; controller:soc; visible:win.page==="Eventos del sistema"; Layout.fillWidth:true; Layout.fillHeight:true
                 }
                 ColumnLayout {
                     visible: win.page === "Dashboard" || win.page === "Alertas"

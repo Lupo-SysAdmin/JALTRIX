@@ -31,3 +31,11 @@ El alcance estable es una consola local con autenticación del sistema para camb
 Los backups de usuario son privados (0600), sin cifrado integrado. SQLite se copia mediante su API de backup; se verifica integridad al restaurar. La restauración requiere un destino nuevo y valida rutas, tamaño e inventario SHA-256. No restablece políticas del firewall ni activa servicios. El hash verifica integridad, no autenticidad frente a quien pueda reescribir el backup y su manifiesto.
 
 Utiliza la pestaña Security del repositorio para reportes sensibles. La dirección noreply del mantenedor sólo identifica la cuenta; no es un buzón de soporte. No se anuncia un canal privado como operativo antes de habilitarlo.
+
+## Evidencia local de Linux (1.3)
+
+Las fuentes journald/auditd son optativas y funcionan con los permisos del usuario. Los mensajes no se clasifican como SSH/sudo sólo porque declaren un identificador de syslog: se comprueban metadatos del ejecutable aportados por el journal. Los registros originales se conservan como datos de texto plano. La identidad de máquina es local; no constituye autenticación de un agente remoto. No protege frente a un administrador root que falsifique o borre los registros.
+
+Para correlacionar una fuente Snort con el host se requiere asociación explícita. No utilizar un sensor de tráfico de otros equipos como si fuera evidencia del host local. La lectura de un archivo audit no certifica que haya reglas de auditoría suficientes ni prueba cambios de contenido a partir de una simple apertura de escritura. Las correlaciones no ejecutan acciones. Revisión manual y registros originales siguen siendo necesarios.
+
+La base adicional tiene límites de lote, checkpoints transaccionales, retención y protección de evidencia fijada por casos. Los casos y las evidencias viven en bases distintas: las copias son consistentes por base, sin prometer una transacción distribuida de toda la aplicación. Si falta acceso, se expone el diagnóstico; el programa no eleva privilegios ni concede lectura global de logs por su cuenta.

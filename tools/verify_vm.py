@@ -1,16 +1,27 @@
 """Run source tests and installed GUI on an existing full-desktop disposable VM."""
 
 from pathlib import Path
-import json, os, platform, subprocess, tarfile
+import argparse, json, os, platform, subprocess, tarfile, tomllib
 
-assert platform.node().startswith("jaltrix-"), "Disposable VM only"
-root = Path.home() / "jaltrix-validation"
-root.mkdir(exist_ok=True)
-with tarfile.open("/mnt/jaltrix/source.tar.gz") as archive:
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--archive", type=Path, default=Path("/mnt/jaltrix/source.tar.gz"))
+parser.add_argument("--output", type=Path, default=Path.home() / "jaltrix-validation")
+args = parser.parse_args()
+root = args.output.resolve()
+root.mkdir(parents=True, exist_ok=True)
+with tarfile.open(args.archive) as archive:
+    metadata = next(
+        m for m in archive.getmembers() if m.name.endswith("/pyproject.toml")
+    )
+    version = tomllib.loads(archive.extractfile(metadata).read().decode())["project"][
+        "version"
+    ]
     archive.extractall(root, filter="data")
-source = root / "jaltrix-1.2.0"
+source = root / f"jaltrix-{version}"
 env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software")
-engine = Path("/usr/local/lib/jaltrix-engine/bin/snort")
+engine = Path(
+    os.environ.get("JALTRIX_ENGINE", "/usr/local/lib/jaltrix-engine/bin/snort")
+)
 if engine.exists():
     env["JALTRIX_ENGINE"] = str(engine)
 with (root / "tests.log").open("w") as log:
@@ -24,9 +35,9 @@ with (root / "tests.log").open("w") as log:
     )
 env.update(
     QT_QPA_PLATFORM="xcb",
-    DISPLAY=":0",
-    XAUTHORITY=str(Path.home() / ".Xauthority"),
-    XDG_RUNTIME_DIR="/run/user/" + str(os.getuid()),
+    DISPLAY=os.environ.get("DISPLAY", ":0"),
+    XAUTHORITY=os.environ.get("XAUTHORITY", str(Path.home() / ".Xauthority")),
+    XDG_RUNTIME_DIR=os.environ.get("XDG_RUNTIME_DIR", "/run/user/" + str(os.getuid())),
 )
 for process in Path("/proc").glob("[0-9]*"):
     try:
@@ -104,21 +115,40 @@ for language in ("es-419", "en-US"):
             stderr=subprocess.STDOUT,
             timeout=30,
         ).returncode
+with (root / "host-ui.log").open("w") as log:
+    host_ui = subprocess.run(
+        [
+            "python3",
+            str(source / "tools/verify_installed_host_ui.py"),
+            "--output",
+            str(root / "host-ui"),
+            "--expected-version",
+            version,
+        ],
+        env=env,
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        timeout=90,
+    )
 report = dict(
     hostname=platform.node(),
     os=Path("/etc/os-release").read_text(),
     kernel=platform.release(),
     python=platform.python_version(),
+    version=version,
     tests_exit=tests.returncode,
+    host_ui_exit=host_ui.returncode,
     gui_exit=gui.returncode,
     map_exit=mapped.returncode,
     setup_exit=setup_results,
-    scope="KVM with full desktop; source suite offscreen plus installed GUI on real desktop display",
+    scope="Source suite offscreen plus installed GUI using supplied X11 desktop/display; see platform report for physical vs virtual display",
     engine=str(engine) if engine.exists() else None,
 )
 (root / "report.json").write_text(json.dumps(report, indent=2))
 print(json.dumps(report, indent=2))
 print((root / "tests.log").read_text()[-2000:])
-assert tests.returncode == gui.returncode == mapped.returncode == 0
+assert (
+    tests.returncode == gui.returncode == mapped.returncode == host_ui.returncode == 0
+)
 
 assert all(code == 0 for code in setup_results.values())

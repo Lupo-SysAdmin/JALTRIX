@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "scope": "Read-only actual Ubuntu journal resume plus syntactically valid missing-cursor simulation; no journal deletion or source enablement",
+  "first_events": 26,
+  "resumed_events": 0,
+  "resume_state": "following",
+  "duplicate_event_ids": 0,
+  "missing_cursor_returncode": 0,
+  "missing_cursor_state": "cursor_unavailable",
+  "checkpoint_preserved": true,
+  "system_modified": false
+}
