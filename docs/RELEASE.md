@@ -1,4 +1,4 @@
-# Publicación JALTRIX 1.2.0
+# Publicación JALTRIX 1.3.0
 
 ## Alcance de la versión estable
 
@@ -6,7 +6,15 @@ Consola **local, nativa y de un operador Linux**, con demo separada, investigaci
 
 EDR real permanece fuera de alcance porque el propietario no dispone de proveedor. No se anuncia multiusuario/RBAC empresarial, aislamiento remoto, auditoría remota inmutable, cifrado propio, feed comercial de reglas ni soporte universal de distribuciones. MITRE es mapeo explícito del analista; GeoIP necesita un archivo local del operador. Estas capacidades se presentan con sus límites en UI y documentación.
 
-## Novedades 1.2.0
+## Novedades 1.3.0
+
+Observabilidad local opcional: lectura de journald y registros existentes de auditd, una base adicional versionada y un servicio de usuario independiente. Las fuentes se habilitan de manera explícita y respetan los permisos del operador. El software no instala auditd, cambia sus reglas ni concede acceso administrativo automáticamente.
+
+La vista **Eventos del sistema** incorpora eventos paginados, equipos observados, configuración de fuentes y tres correlaciones SSH explicables. Permite abrir casos existentes con una cronología de evidencia protegida frente a la retención. Las coincidencias son hipótesis para investigar, con identidad y ventanas de tiempo verificables; no activan respuestas. Para cruzar Snort y el host se exige asociar expresamente la fuente local seleccionada. Ver [guía ES/EN](LOCAL_OBSERVABILITY.md).
+
+La actualización conserva las bases y checkpoints de Snort, los casos, las notas y la configuración anterior. Los paquetes llevan la misma identidad JALTRIX de la versión previa. Se comprueban las fuentes reales en laboratorio y se distinguen las pruebas sintéticas, las pruebas de paquetes y las del motor; resultados exactos en [VALIDATION.md](VALIDATION.md).
+
+## Funciones incorporadas en 1.2.0
 
 Asistente de primer inicio ES/EN, detección de Snort 3, guía oficial para instalarlo si falta, conexión a sensores existentes y creación opcional de un servicio propio con validación de reglas. La conexión LIVE y la elección de demo se recuerdan. La instalación del motor sigue siendo manual; no se descarga ni ejecuta automáticamente. Ver [SETUP.md](SETUP.md).
 

@@ -61,3 +61,11 @@ Orden: PCAP y casos; excepciones de triage y reglas en borrador; nftables en lab
 7. Paquetes DEB/RPM/PKGBUILD y pruebas por distribución; publicación GitHub con evidencia.
 
 El proyecto completo y los gates de la especificación no están completados por este primer incremento.
+
+## Local Linux evidence (1.3.0)
+
+`host_events.py` stores normalized local observations in `live/host-events.sqlite3`, independently of the existing Snort schema. `linux_sources.py` parses trusted journal metadata and multipart audit records; `host_collector.py` commits observations and source checkpoints together. `host_service.py` controls the optional `jaltrix-host-events.service` user unit. Sources start disabled and operate with the user's existing read permissions.
+
+`correlation.py` uses a durable, bounded host/time work queue, including late arrivals, to produce three explainable temporal associations. Retention protects evidence pinned to cases. `host_ui.py` performs reads and source operations outside the GUI thread; `HostView.qml` consumes separate model signals so a periodic health refresh does not rebuild unchanged event lists. Existing `CaseStore` and backups are reused. No additional privileged helper, remote agent, automatic response or cloud service is introduced.
+
+This single-user service model supports one active data directory per user collector unit. Starting a collector for another `--data-dir` changes the directory followed by that unit. Separate Linux user accounts are required for independent concurrent service instances.

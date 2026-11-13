@@ -1,6 +1,7 @@
 """Rootless Fedora/Arch cloud image validation with a complete Xfce desktop."""
 
 from pathlib import Path
+from release_meta import VERSION
 import argparse, hashlib, json, re, shutil, subprocess
 
 parser = argparse.ArgumentParser()
@@ -62,13 +63,13 @@ else:
   - mkdir -p /home/jaltrix/build
   - tar -xzf /mnt/jaltrix/source.tar.gz -C /home/jaltrix/build
   - chown -R jaltrix:jaltrix /home/jaltrix/build
-  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/jaltrix-1.2.0.tar.gz
-  - chown jaltrix:jaltrix /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/jaltrix-1.2.0.tar.gz
-  - su - jaltrix -c 'cd build/jaltrix-1.2.0/packaging/arch && makepkg --noconfirm'
-  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/jaltrix-1.2.0/packaging/arch/*.pkg.tar.zst'
+  - cp /mnt/jaltrix/source.tar.gz /home/jaltrix/build/jaltrix-RELEASE_VERSION/packaging/arch/jaltrix-RELEASE_VERSION.tar.gz
+  - chown jaltrix:jaltrix /home/jaltrix/build/jaltrix-RELEASE_VERSION/packaging/arch/jaltrix-RELEASE_VERSION.tar.gz
+  - su - jaltrix -c 'cd build/jaltrix-RELEASE_VERSION/packaging/arch && makepkg --noconfirm'
+  - sh -c 'pacman -U --noconfirm /home/jaltrix/build/jaltrix-RELEASE_VERSION/packaging/arch/*.pkg.tar.zst'
 """
 common += (
-    commands
+    commands.replace("RELEASE_VERSION", VERSION)
     + """  - mkdir -p /home/jaltrix/.config/autostart
   - printf '[Desktop Entry]\\nType=Application\\nName=JALTRIX validation\\nExec=env QT_QUICK_BACKEND=software jaltrix --about --language en-US\\n' > /home/jaltrix/.config/autostart/jaltrix.desktop
   - chown -R jaltrix:jaltrix /home/jaltrix/.config

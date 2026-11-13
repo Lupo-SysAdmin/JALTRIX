@@ -1,6 +1,7 @@
 """Rootless KVM GUI validation VM, official image + SHA256, no host network changes."""
 
 from pathlib import Path
+from release_meta import VERSION
 import hashlib, json, shutil, subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,8 +25,8 @@ if not key.exists():
     )
 share = ROOT / ".runtime/vms/share"
 share.mkdir(exist_ok=True)
-shutil.copyfile(ROOT / "dist/jaltrix_1.2.0-1_all.deb", share / "jaltrix.deb")
-shutil.copyfile(ROOT / "dist/jaltrix-1.2.0.tar.gz", share / "source.tar.gz")
+shutil.copyfile(ROOT / f"dist/jaltrix_{VERSION}-1_all.deb", share / "jaltrix.deb")
+shutil.copyfile(ROOT / f"dist/jaltrix-{VERSION}.tar.gz", share / "source.tar.gz")
 seed = VM / "seed"
 seed.mkdir(exist_ok=True)
 (seed / "meta-data").write_text(

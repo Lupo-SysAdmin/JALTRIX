@@ -1,5 +1,5 @@
 Name: jaltrix
-Version: 1.2.0
+Version: 1.3.0
 Release: 1%{?dist}
 Summary: JALTRIX bilingual desktop console for Snort 3
 License: GPL-3.0-or-later

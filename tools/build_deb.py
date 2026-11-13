@@ -6,9 +6,8 @@ import subprocess
 import tempfile
 import gzip
 import os
-from datetime import datetime, timezone
+from release_meta import EPOCH, ROOT, VERSION
 
-ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dist"
 OUT.mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix="jaltrix-deb-") as temp:
@@ -54,8 +53,8 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-deb-") as temp:
     )
     control = stage / "DEBIAN/control"
     control.parent.mkdir()
-    control.write_text("""Package: jaltrix
-Version: 1.2.0-1
+    control.write_text(f"""Package: jaltrix
+Version: {VERSION}-1
 Section: net
 Priority: optional
 Architecture: all
@@ -88,12 +87,7 @@ Description: independent desktop console for Snort 3
             if item.is_dir() or item == launcher or item == stage / "DEBIAN/postinst"
             else 0o644
         )
-    epoch = int(
-        os.environ.get(
-            "SOURCE_DATE_EPOCH",
-            str(int(datetime(2026, 11, 9, tzinfo=timezone.utc).timestamp())),
-        )
-    )
+    epoch = EPOCH
     for item in [stage, *stage.rglob("*")]:
         os.utime(item, (epoch, epoch))
     subprocess.run(
@@ -102,7 +96,7 @@ Description: independent desktop console for Snort 3
             "--root-owner-group",
             "--build",
             str(stage),
-            str(OUT / "jaltrix_1.2.0-1_all.deb"),
+            str(OUT / f"jaltrix_{VERSION}-1_all.deb"),
         ],
         check=True,
         env=dict(os.environ, SOURCE_DATE_EPOCH=str(epoch)),
