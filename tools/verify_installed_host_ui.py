@@ -16,7 +16,15 @@ sys.path.insert(0, "/usr/lib/jaltrix")
 import jaltrix
 from jaltrix.app import Controller
 from jaltrix.host_events import HostEventStore
-from PySide6.QtCore import QEventLoop, QObject, QTimer, QUrl
+from PySide6.QtCore import (
+    QCoreApplication,
+    QEvent,
+    QEventLoop,
+    QMetaObject,
+    QObject,
+    QTimer,
+    QUrl,
+)
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
@@ -28,8 +36,9 @@ args = parser.parse_args()
 assert jaltrix.__version__ == args.expected_version
 assert Path(jaltrix.__file__).is_relative_to("/usr/lib/jaltrix")
 args.output.mkdir(parents=True, exist_ok=True)
-QQuickStyle.setStyle("Basic")
 app = QGuiApplication([])
+QQuickStyle.setStyle("Basic")
+assert QQuickStyle.name() == "Basic"
 app.setApplicationName("JALTRIX — synthetic validation")
 
 
@@ -42,6 +51,28 @@ def wait_for(predicate, seconds=15):
         if predicate():
             return
     raise AssertionError("Installed UI did not reach the expected state")
+
+
+def visual(item, name):
+    if item.objectName() == name:
+        return item
+    for child in item.childItems():
+        found = visual(child, name)
+        if found is not None:
+            return found
+    return None
+
+
+def verify_host_visible(window, view):
+    wait_for(lambda: view.isVisible() and view.width() > 0 and view.height() > 0)
+    geometry = dict(
+        page=window.property("page"),
+        window=[window.width(), window.height()],
+        view=[view.width(), view.height()],
+        visible=view.isVisible(),
+    )
+    assert geometry["page"] == "Eventos del sistema", geometry
+    assert view.width() >= 800 and view.height() >= 300, geometry
 
 
 with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as directory:
@@ -59,7 +90,9 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
     try:
         assert not (root / "live/host-events.sqlite3").exists()
         controller.changeMode("live")
-        window.setProperty("page", "Eventos del sistema")
+        navigation = visual(window.contentItem(), "nav-Eventos del sistema")
+        assert navigation is not None
+        assert QMetaObject.invokeMethod(navigation, "clicked")
         wait_for(lambda: controller.host.ready)
         assert controller.host.pagination["total"] == 0
         assert not any(
@@ -73,6 +106,7 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
             for tab in range(4):
                 view.setProperty("tab", tab)
                 wait_for(lambda: True)
+                verify_host_visible(window, view)
                 assert window.grabWindow().save(
                     str(args.output / f"host-{language}-{tab}.png")
                 )
@@ -107,14 +141,15 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
         wait_for(lambda: len(controller.host.timeline) == 6)
         view.setProperty("tab", 1)
         wait_for(lambda: True)
+        verify_host_visible(window, view)
         assert window.grabWindow().save(str(args.output / "host-correlations-en.png"))
         controller.host.createCase(correlation["id"])
         wait_for(lambda: len(controller.host.caseTimeline) == 6)
         assert len(controller.cases) == 1
+        verify_host_visible(window, view)
         assert window.grabWindow().save(str(args.output / "host-case-en.png"))
         controller.useDemo()
         assert controller.host.events == [] and controller.host.caseTimeline == []
-        assert not warnings, warnings
         report = dict(
             result="PASS",
             version=jaltrix.__version__,
@@ -128,15 +163,18 @@ with tempfile.TemporaryDirectory(prefix="jaltrix-installed-host-check-") as dire
                 "correlation",
                 "existing case timeline",
                 "demo separation",
+                "visible host navigation preserved across language changes",
+                "Basic style after platform initialization",
             ],
-            warnings=warnings,
+            qt_quick_style=QQuickStyle.name(),
         )
-        (args.output / "installed-host-ui.json").write_text(
-            json.dumps(report, indent=2)
-        )
-        print(json.dumps(report))
     finally:
         window.close()
         engine.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
         app.processEvents()
         controller.close()
+    assert not warnings, warnings[:20]
+    report["warnings"] = warnings
+    (args.output / "installed-host-ui.json").write_text(json.dumps(report, indent=2))
+    print(json.dumps(report))

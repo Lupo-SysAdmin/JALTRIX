@@ -1060,8 +1060,10 @@ def main():
         except Exception as exc:
             parser.error(str(exc))
         return
-    QQuickStyle.setStyle("Basic")
     app = QGuiApplication(sys.argv[:1])
+    # KDE's platform integration can select Breeze during application creation.
+    # Apply our explicit style afterward, before loading any QML controls.
+    QQuickStyle.setStyle("Basic")
     app.setApplicationName("JALTRIX")
     app.setDesktopFileName("io.github.LupoSysAdmin.Jaltrix")
     icon = QIcon(str(Path(__file__).parent / "ui/app-icon.svg"))

@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "platform": "NAME=\"Fedora Linux\"",
+  "timestamp": "2026-11-13T00:44:48.413225+00:00",
+  "scope": "Read-only real Fedora journald and unreadable audit.log diagnostics; no audit rules or permission changes",
+  "overall_state": "degraded",
+  "journal_state": "following",
+  "audit_state": "permission_denied",
+  "auditd_active": true,
+  "audit_readable": false,
+  "ssh_daemon_path": "/usr/libexec/openssh/sshd-session",
+  "configuration": "Isolated temporary directory only",
+  "service_started": false,
+  "permissions_changed": false,
+  "counts": {
+    "journal_events": 11,
+    "ssh_auth_events": 5,
+    "audit_events": 0
+  }
+}

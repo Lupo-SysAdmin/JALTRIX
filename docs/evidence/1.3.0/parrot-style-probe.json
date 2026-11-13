@@ -1,0 +1,8 @@
+{
+  "scope": "Read-only process-local probe as UID1000 on owner Parrot KDE desktop via existing Xwayland display",
+  "before_application": "Basic",
+  "after_application": "org.kde.breeze",
+  "after_reapply": "Basic",
+  "stderr": "",
+  "exit": 0
+}
