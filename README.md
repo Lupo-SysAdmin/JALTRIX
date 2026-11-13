@@ -1,5 +1,7 @@
 # JALTRIX
 
+**JALTRIX es una aplicación de escritorio para Linux que reúne alertas de Snort 3 y eventos locales del sistema en una consola gráfica de investigación y respuesta.** Permite explorar actividad sospechosa, relacionar evidencias, gestionar casos y administrar el sensor desde una interfaz en español latinoamericano e inglés estadounidense. Está pensada para analistas de seguridad, administradores de sistemas y laboratorios de aprendizaje.
+
 Una instalación nueva abre el **asistente de configuración**: detecta Snort 3, enlaza su instalación oficial y permite conectar alertas existentes o crear un servicio propio. El modo demo se elige explícitamente. [Primer inicio](docs/SETUP.md).
 
 <img src="design/branding/jaltrix-logo.svg" alt="JALTRIX" width="220">

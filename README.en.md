@@ -1,5 +1,7 @@
 # JALTRIX
 
+**JALTRIX is a Linux desktop application that brings Snort 3 alerts and local system events together in a graphical investigation and response console.** It lets users explore suspicious activity, correlate evidence, manage cases, and administer the sensor through an interface available in Latin American Spanish and American English. It is designed for security analysts, system administrators, and learning labs.
+
 [Download 1.3.0](https://github.com/Lupo-SysAdmin/JALTRIX/releases/tag/v1.3.0) · [Kali and Parrot video tutorials (Spanish)](docs/TUTORIALS.md) · [GitHub Actions](https://github.com/Lupo-SysAdmin/JALTRIX/actions)
 
 New installations open the **setup assistant**: detect Snort 3, follow official installation instructions, and connect existing alerts or create a dedicated service. Demo is an explicit choice. [First run](docs/SETUP.md#english).
