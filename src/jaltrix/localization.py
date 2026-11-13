@@ -631,6 +631,7 @@ EN_US.update(
         "Acceso parcial": "Partial access",
         "Seguimiento activo": "Following logs",
         "Leyendo registro existente": "Reading existing log",
+        "Procesando historial pendiente": "Processing pending history",
         "Posición del registro no disponible": "Log cursor unavailable",
         "Registros no válidos": "Invalid records",
         "Una o más fuentes tienen problemas": "One or more sources have problems",

@@ -98,6 +98,58 @@ def main():
             root = Path(temporary)
             data = root / "data"
             save_config(data, dict(journal_enabled=True, audit_enabled=True))
+            # Exercise production historical catch-up before adding the watched operation.
+            # No cursor is seeded and no existing record is skipped to shorten the test.
+            started = time.monotonic()
+            progress_at = started
+            initial_bytes = Path("/var/log/audit/audit.log").stat().st_size
+            while True:
+                caught_up = collect_once(data)
+                audit_status = caught_up["sources"]["audit"]
+                elapsed = time.monotonic() - started
+                if audit_status["state"] not in (
+                    "reading_existing_log",
+                    "invalid_records",
+                ):
+                    raise AssertionError(
+                        "Audit source could not read existing history: "
+                        + audit_status["state"]
+                    )
+                if not audit_status.get("backlog") and not audit_status.get("pending"):
+                    summary["historical_catchup"] = dict(
+                        seconds=round(elapsed, 2),
+                        initial_audit_bytes=initial_bytes,
+                        stored_events=caught_up["stored"],
+                        skipped_records=0,
+                        checkpoint_seeded=False,
+                    )
+                    break
+                if elapsed >= 300:
+                    summary["historical_catchup"] = dict(
+                        seconds=round(elapsed, 2),
+                        result="TIMEOUT",
+                        initial_audit_bytes=initial_bytes,
+                    )
+                    raise AssertionError(
+                        "Production audit catch-up exceeded the 300-second lab budget"
+                    )
+                if time.monotonic() - progress_at >= 15:
+                    print(
+                        json.dumps(
+                            dict(
+                                stage="historical_audit_catchup",
+                                elapsed_seconds=round(elapsed, 1),
+                                pending=audit_status.get("pending"),
+                                backlog=audit_status.get("backlog"),
+                            )
+                        ),
+                        flush=True,
+                    )
+                    progress_at = time.monotonic()
+                if not audit_status.get("examined") and not audit_status.get(
+                    "inserted"
+                ):
+                    time.sleep(min(3.1, 300 - elapsed))
             run(["sudo", "-n", "auditctl", "-w", str(target), "-p", "wa", "-k", key])
             watch_added = True
             run(["sudo", "-n", "/usr/bin/true"])
@@ -147,6 +199,14 @@ def main():
                         and event["auid"] == os.getuid()
                         and any(key in line for line in event["raw_record"])
                     ]
+                    summary.update(
+                        journal_auth_verified=bool(auth),
+                        sudo_rs_verified=bool(sudo),
+                        audit_actor_verified=bool(own_audit),
+                        journal_auth_events=len(auth),
+                        journal_sudo_events=len(sudo),
+                        watched_file_events=len(own_audit),
+                    )
                     if found and own_audit and auth and sudo:
                         break
                 finally:

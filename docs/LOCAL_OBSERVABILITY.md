@@ -59,3 +59,7 @@ No new root helper, automatic audit rules, broad permission grants, cloud upload
 La vista muestra hasta 100 correlaciones recientes; los eventos originales se consultan por páginas de 100. La regla que enlaza red, SSH y sudo evalúa como máximo los 64 accesos SSH más recientes del usuario dentro de su ventana de diez minutos, para limitar el trabajo ante ráfagas. Las tres reglas no cubren todas las técnicas ni sustituyen una revisión manual. El trabajo pendiente de correlación se conserva y continúa en los siguientes ciclos del recolector.
 
 The UI lists up to 100 recent correlations and pages original observations by 100. The network/SSH/sudo rule considers at most the most recent 64 matching SSH logins in its ten-minute window. This is a bounded investigation aid, not complete detection coverage. Pending correlation work persists across collector cycles and restarts.
+
+Al seleccionar un archivo audit con historial, la primera carga puede tardar varios ciclos. El estado «Procesando historial pendiente» refleja ese trabajo (`backlog`); mientras alcance el final no debe interpretarse como seguimiento en tiempo real. El journal se inicia con una ventana de 15 minutos, mientras que audit lee desde el principio del archivo seleccionado.
+
+An existing audit log is read from its beginning, so initial historical catch-up can take multiple bounded cycles. A backlog means the collector has not yet reached the current end of that source; do not treat it as fully caught-up live monitoring.

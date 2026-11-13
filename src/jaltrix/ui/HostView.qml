@@ -36,6 +36,7 @@ Rectangle {
         if (source.state === "permission_denied" || source.state === "error") return stateLabel(source.state);
         if (host.status.state === "stopped") return tr("Detenido");
         if (host.status.fresh === false && host.status.state !== "stopped") return tr("Sin actualización reciente");
+        if (source.backlog) return tr("Procesando historial pendiente");
         return stateLabel(source.state);
     }
     function loadConfig() {
