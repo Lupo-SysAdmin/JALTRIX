@@ -1,3 +1,20 @@
+# Validación 1.3.0 — 2026-11-12
+
+- **179 pruebas aprobadas** con motor real en Kali, Ubuntu y Parrot; **176 aprobadas / 3 omitidas** en Arch y Fedora por ausencia de Snort. La suite del Kali anfitrión también obtuvo 179 PASS con Snort 3.13.2.0.
+- Actualización nativa desde datos de 1.2.0: identificadores, checkpoints, casos, historial, notas, favoritos y copias/restauración conservados. El estado y configuración del sensor no cambian al actualizar.
+- Interfaz instalada ES/EN: asistente, mapa, cuatro pestañas de eventos locales y cronología de casos. Ventanas de 1080×720 verificadas con sus límites visibles y capturas reales; cero advertencias QML. Kali VM usa Xvfb explícito porque su sesión está en el greeter; Parrot usa KDE/Xwayland y las otras VM sus escritorios Xfce.
+- Ubuntu real: SSH, sudo-rs y auditd generan evidencia; una operación sobre el archivo vigilado produce la correlación SSH→authorized_keys. Fijación de evidencia, retención, backup/restauración y servicio de usuario inicio/reinicio/parada PASS. El historial audit de 946.634 bytes requirió 78,8 s para alcanzar el final en esta prueba; no se sembró un cursor ni se omitieron registros. La vigilancia temporal y el archivo se restauraron.
+- Fedora: journal SSH real y diagnóstico correcto de audit.log sin permisos, sin conceder privilegios. Continuidad de cursor real comprobada en Ubuntu, Fedora y Arch. Un cursor inexistente que journalctl resuelve con salida 0 se detecta y no avanza el checkpoint.
+- 100.000 observaciones sintéticas: cero rechazos, recuperación tras reinicio, eventos tardíos, duplicados y evidencia protegida PASS. Pico RSS del proceso ~46 MiB; no mide captura Snort ni garantiza rendimiento. [Mediciones completas](evidence/1.3.0/host-benchmark.json).
+- Ruff, formato, desktop/AppStream y lintian PASS. Ubuntu/Fedora emiten una advertencia de deprecación de PyGI/GLib en la suite, sin fallo; AppStream conserva un aviso pedante. No se presentan esos avisos como errores de la aplicación.
+- GitHub Actions pasó en Python 3.11–3.14 para el código funcional; [ejecución](https://github.com/Lupo-SysAdmin/JALTRIX/actions/runs/43343261748). La publicación y los cambios finales de documentación conservan la huella del código probado y se comprueban en Actions.
+
+La revisión detectó y corrigió la selección de Breeze impuesta por KDE al crear la aplicación y dos fallos del verificador de capturas: navegación restablecida al cambiar idioma y redimensionado anterior al mapeo de Xwayland. Se repitieron las capturas con navegación y límites reales comprobados; las capturas iniciales no son evidencia del PASS final. El primer ensayo instalado de audit agotó su tiempo antes de procesar el historial; el ensayo corregido espera la recuperación real sin saltar datos.
+
+El emblema interior usa la variante limpia solicitada; el logo completo original permanece para el repositorio. Las fuentes nuevas siguen apagadas inicialmente. El alcance estable y los límites están en [RELEASE.md](RELEASE.md), [matriz](COMPATIBILITY_MATRIX.md) y [guía de fuentes](LOCAL_OBSERVABILITY.md). [Evidencias estructuradas](evidence/1.3.0/validation.json).
+
+## Evidencia histórica (no representa pruebas nuevas de 1.3)
+
 # Validación 1.2.0 — 2026-11-09
 
 ## Cierre de publicación: instalaciones nuevas y encendido posterior

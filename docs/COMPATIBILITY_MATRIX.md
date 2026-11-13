@@ -1,27 +1,17 @@
-# Compatibilidad 1.2.0 — 2026-11-09
+# Compatibilidad 1.3.0 — 2026-11-12
 
-La tabla describe la matriz automática original. Posteriormente se completaron instalaciones nuevas con Snort real y encendido posterior en dos VM adicionales: Kali 2026.3 / Snort 3.12.2.0 y Parrot Security 7.4 / Snort 3.1.82.0. Sensor, recolección y alertas posteriores al arranque: PASS. La suite completa del cierre obtuvo **61 PASS en cada una de esas dos VM adicionales**, con Snort instalado. Los SKIP históricos de las VM originales de abajo conservan su significado. Ver [validación adicional](VALIDATION.md) y [tutoriales](TUTORIALS.md).
+| Plataforma amd64 | Paquete / escritorio probado | Suite final | GUI y actualización |
+|---|---|---|---|
+| Kali 2026.3 | DEB; VM con Xvfb explícito como usuario | 179 PASS, Snort 3.12.2.0 | PASS: ES/EN, 1080×720, datos y sensor conservados |
+| Ubuntu 26.04.1 LTS | DEB; KVM, Xfce/Xorg | 179 PASS, motor real | PASS; journald/auditd y servicio independiente reales |
+| Parrot Security 7.4 | DEB; VM del propietario, KDE/Wayland mediante Xwayland | 179 PASS, Snort 3.1.82.0 | PASS; estilo Qt, ES/EN, 1080×720 y sensor conservado |
+| Arch rolling | paquete pacman .pkg.tar.zst construido con makepkg; KVM, Xfce | 176 PASS / 3 SKIP | PASS; sin motor, SKIP explícito de sus tres pruebas |
+| Fedora 44 Cloud | RPM; KVM, Xfce/Xorg | 176 PASS / 3 SKIP | PASS; sin motor; denegación de lectura audit correctamente diagnosticada |
 
-| Plataforma amd64 | Entorno | Suite | GUI instalada + mapa + asistente | Motor / sistema |
-|---|---|---|---|---|
-| Kali 2026.3 rolling | Host real, DEB, Wayland | 61 PASS | PASS; ES/EN e icono propio | Snort 3.13.2.0, migración nativa del sensor sin cambiar reglas/estado |
-| Ubuntu 26.04.1 LTS | KVM, Xfce/Xorg, DEB | 61 PASS | PASS | Snort real, migración del sensor activo, reglas/rollback y firewall aislado |
-| Arch rolling, imagen 20261101 y actualización 2026-11-09 | KVM, Xfce/Xorg, makepkg | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
-| Fedora 44 Cloud 1.7 | KVM, Xfce/Xorg, RPM | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
-| Parrot 7.4 Home | KVM, KDE, DEB | 58 PASS / 3 SKIP | PASS | Sin motor; SKIP explícito de integración Snort |
+La suite local del Kali anfitrión obtuvo 179 PASS con Snort 3.13.2.0. Los datos de 1.2.0 se compararon antes y después de instalar el paquete nuevo; los casos, checkpoints, notas y configuración del sensor se conservaron. Además se compararon los archivos de aplicación instalados con las fuentes verificadas byte por byte. Las versiones y capturas detalladas están en [evidencia 1.3.0](evidence/1.3.0/validation.json).
 
-Evidencia: `artifacts/<distro>-vm-tests-v120.log`, screenshots `*-installed-v120.png` y resultados de ciclo de paquete. Las pruebas automáticas de la fuente usan offscreen; además el ejecutable instalado se abre en un escritorio gráfico real. No confundir estas dos verificaciones.
+El DEB no es universal: exige las versiones Python/Qt/PySide declaradas. No se certifican arm64, Ubuntu 24.04, Fedora 45 ni distribuciones no probadas. En Arch el archivo `.pkg.tar.zst` es el paquete nativo que instala pacman; el PKGBUILD publicado fija el hash del tarball correspondiente. No se ha publicado en AUR.
 
-Las imágenes proceden de servidores oficiales y se verificaron contra SHA-256 publicados: Ubuntu cloud-images.ubuntu.com, Arch geo.mirror.pkgbuild.com/images, Fedora dl.fedoraproject.org y Parrot deb.parrot.sh/parrot/iso/7.4. Eso no es una auditoría de la cadena de suministro ni una certificación de distribución.
+Python de las VM: Kali 3.14.8, Ubuntu 3.14.4, Arch 3.14.9, Fedora 3.14.3 y Parrot 3.13.5. GitHub Actions añade Python 3.11–3.14, pero no sustituye las pruebas de distribuciones ni de Snort real. Las fuentes Linux requieren permisos del operador y, para auditd, registros y reglas existentes; una GUI que abre correctamente no prueba cobertura de detección.
 
-Versiones Python de laboratorio: Kali 3.14.8, Ubuntu 3.14.4, Arch 3.14.9, Fedora 3.14.3; Parrot 3.13.5. El DEB no es universal: depende de las versiones Qt/PySide/Python declaradas. No se probó arm64, Ubuntu 24.04 ni Fedora 45. Kali se probó como host, no como VM ni reiniciando el equipo del propietario.
-
-Las pruebas históricas 0.3.0 en contenedores constan en `artifacts/matrix`. Para 0.4.0, el socket Docker no era accesible; el intento `matrix-v040` no es PASS. Los nuevos resultados son KVM. No hay publicación AUR ni resultados de GitHub Actions todavía.
-
-Parrot: la suspensión automática de la VM interrumpió el montaje 9p del laboratorio. Se reinició el entorno, se deshabilitó suspensión sólo en esa VM y se transfirieron paquetes por SSH. Después pasaron suite y GUI; no se presenta como prueba de suspensión/reanudación de captura.
-
-El arranque tras reboot y el firewall host dentro de Ubuntu VM se verificaron en 1.0.0; en 1.0.1 se repitieron la migración y las comprobaciones indicadas arriba. Ctrl+Q está incluido en la suite gráfica.
-
-1.1.0: el mapa se abrió desde el paquete instalado en las cuatro VMs. La prueba de actualización usa fixtures nuevas en el mismo arranque; no se atribuye cobertura nueva de cambios de dispositivo/inodo ni de reinicio del sensor.
-
-1.2.0: asistente instalado ES/EN en las cuatro VMs; creación real del nuevo sensor validada en Ubuntu. Las otras tres VMs conservan los tres SKIP por motor ausente. La instalación de Snort se guía con documentación oficial, no con instalación automática universal.
+Las imágenes originales de laboratorio se verificaron con hashes de los proveedores. Las evidencias de versiones anteriores se conservan en [VALIDATION.md](VALIDATION.md) y el historial Git; no se atribuyen a esta entrega pruebas antiguas de firewall, reinicio del host o larga duración que no se hayan repetido.

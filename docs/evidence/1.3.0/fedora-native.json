@@ -1,0 +1,48 @@
+{
+  "result": "PASS",
+  "version": "1.3.0",
+  "scope": "Final packaged payload equals source byte-for-byte; existing migration fixture; installed ES/EN GUI + visible host fixture on actual Xfce desktop",
+  "source_sha256": "e22093f412391899618bb5e3f02f48a59222c789a2d057c63eff895576f613e8",
+  "source_tests_exit": 0,
+  "source_tests_summary": "176 passed, 3 skipped, 1 warning in 18.65s",
+  "journal_resume": "PASS: actual installed read-only cursor continuity",
+  "payload_files": 61,
+  "payload_sha256": "d2cb86cd57c9bf6ed53394a86e879c37392ff77c5554484c395b0914eae69807",
+  "service_state_preserved": true,
+  "host_ui": {
+    "result": "PASS",
+    "version": "1.3.0",
+    "scope": "Installed package UI; synthetic fixtures; no sources or services enabled",
+    "checks": [
+      "initially empty",
+      "sources disabled",
+      "ES/EN",
+      "requested 1080x720; actual rendered sizes recorded",
+      "all host tabs",
+      "correlation",
+      "existing case timeline",
+      "demo separation",
+      "visible host navigation preserved across language changes",
+      "Basic style after platform initialization"
+    ],
+    "qt_quick_style": "Basic",
+    "requested_window_size": [
+      1080,
+      720
+    ],
+    "rendered_sizes": [
+      {
+        "window": [
+          1080,
+          720
+        ],
+        "image": [
+          1080,
+          720
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  "distribution": "fedora"
+}
