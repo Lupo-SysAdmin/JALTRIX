@@ -19,7 +19,9 @@ with tarfile.open(args.archive) as archive:
     archive.extractall(root, filter="data")
 source = root / f"jaltrix-{version}"
 env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software")
-engine = Path("/usr/local/lib/jaltrix-engine/bin/snort")
+engine = Path(
+    os.environ.get("JALTRIX_ENGINE", "/usr/local/lib/jaltrix-engine/bin/snort")
+)
 if engine.exists():
     env["JALTRIX_ENGINE"] = str(engine)
 with (root / "tests.log").open("w") as log:

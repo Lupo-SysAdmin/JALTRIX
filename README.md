@@ -58,3 +58,7 @@ Copyright © 2026 Jan Herrera. [LICENSE](LICENSE) · [NOTICE](NOTICE) · [AUTHOR
 ![JALTRIX — DEMO](docs/screenshots/dashboard-es.png)
 
 ![Mapa de amenazas JALTRIX — DEMO](docs/screenshots/map-es.png)
+
+Ejemplo de eventos del sistema con **evidencia sintética de laboratorio**:
+
+![Eventos del sistema de JALTRIX — laboratorio sintético](docs/screenshots/host-events-es.png)

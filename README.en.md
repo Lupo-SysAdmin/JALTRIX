@@ -51,3 +51,7 @@ Keyboard: **Ctrl+Q** quits the desktop window using the native Qt Quit shortcut;
 The map and classification counters cover the complete filtered source query. Real locations require a local GeoIP CSV; demo locations are explicitly simulated. The status strip distinguishes service state, configured interface, collector health and last source alert. It does not claim verified packet capture.
 
 ![JALTRIX threat map — DEMO](docs/screenshots/map-en.png)
+
+Correlation investigation with **explicitly synthetic laboratory evidence**:
+
+![JALTRIX correlations — synthetic laboratory](docs/screenshots/host-correlations-en.png)
