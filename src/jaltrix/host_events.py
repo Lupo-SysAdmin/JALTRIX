@@ -76,6 +76,11 @@ def normalize_event(value):
     if not isinstance(value, dict):
         raise ValueError("Expected an event object")
     _json(value, MAX_EVENT_BYTES)
+    if value.get("adapter_rejection") is not None:
+        # Providers can report an oversized/unreadable source row using only its
+        # identity and a bounded preview, without loading its full payload here.
+        reason = _text(value["adapter_rejection"], "adapter rejection", 1024, True)
+        raise ValueError("Provider rejected observation: " + reason)
     event = dict(value)
     for key in ("event_id", "source", "host_id", "original_id"):
         _text(event.get(key), key, 2048 if key == "original_id" else 256, True)

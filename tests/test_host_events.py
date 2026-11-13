@@ -326,3 +326,26 @@ def test_unknown_correlation_cannot_create_orphan_case(tmp_path):
     assert store.retain(0, 1)["removed"] == 0  # Writer lock was released.
     store.close()
     cases.db.close()
+
+
+def test_bounded_adapter_rejection_retains_identity_reason_and_checkpoint(tmp_path):
+    store = HostEventStore(tmp_path / "host.sqlite3")
+    rejected = {
+        "event_id": "snort-oversized",
+        "original_id": "provider-original-42",
+        "source": "snort",
+        "host_id": "host-a",
+        "adapter_rejection": "Source record exceeds the normalized JSON byte limit",
+        "raw_record": "bounded prefix of the oversized source record",
+    }
+    result = store.ingest([rejected, event("next")], "snort-source", {"rowid": 43})
+    assert result["rejected"] == result["inserted"] == 1
+    assert store.checkpoint("snort-source") == {"rowid": 43}
+    assert store.get_event("snort-oversized") is None
+    reason, preview = store.db.execute(
+        "SELECT reason,preview FROM host_quarantine"
+    ).fetchone()
+    assert reason == "Provider rejected observation: " + rejected["adapter_rejection"]
+    assert "provider-original-42" in preview and "bounded prefix" in preview
+    assert len(preview) <= 2048
+    store.close()

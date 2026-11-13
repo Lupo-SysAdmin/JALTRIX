@@ -21,8 +21,12 @@ def _utc_now():
     return datetime.now(timezone.utc).isoformat()
 
 
+MAX_SNORT_RECORD_BYTES = 60000
+MAX_SNORT_BATCH_BYTES = 1024 * 1024
+
+
 def _snort_events(data_dir, config, checkpoint, host):
-    """Only the operator-selected LIVE source is associated with this local host."""
+    """Stream one bound live source, without materializing oversized source JSON."""
     if not config["snort_host_binding"] or not config["snort_source_id"]:
         raise ValueError(
             "Snort requires explicit binding of one live source to this host"
@@ -35,7 +39,9 @@ def _snort_events(data_dir, config, checkpoint, host):
         if checkpoint.get("database") == database_identity
         else 0
     )
-    # URI quoting preserves literal filename delimiters. mode=ro never creates or writes the database.
+    events, consumed, rejected, backlog = [], 0, 0, False
+    last_id = checkpoint.get("last_id")
+    # URI quoting preserves literal delimiters. mode=ro never creates or writes the DB.
     with sqlite3.connect(
         path.resolve().as_uri() + "?mode=ro", uri=True, timeout=3
     ) as database:
@@ -48,43 +54,79 @@ def _snort_events(data_dir, config, checkpoint, host):
             prior = database.execute(
                 "SELECT id FROM events WHERE rowid=?", (rowid,)
             ).fetchone()
-            if not prior or prior[0] != checkpoint.get("last_id"):
-                rowid = 0  # Retention/rebuild may reuse SQLite implicit rowids; event IDs deduplicate.
+            if not prior or prior[0] != last_id:
+                rowid = 0  # Retention can reuse implicit rowids; stable event IDs deduplicate.
         rows = database.execute(
-            "SELECT rowid,id,data FROM events WHERE source_id=? AND mode='live' AND rowid>? ORDER BY rowid LIMIT 500",
-            (config["snort_source_id"], rowid),
-        ).fetchall()
-    events = []
-    for sequence, original_id, raw in rows:
-        original = json.loads(raw)
-        events.append(
-            {
-                **original,
-                "event_id": original_id,
-                "original_id": original_id,
-                "source": "snort",
-                "kind": "network_alert",
-                "host_id": host["host_id"],
-                "hostname": host["hostname"],
-                "host_bound": True,
-                "src_ip": original.get("src"),
-                "dst_ip": original.get("dst"),
-                "raw_record": original,
-                "binding_source_id": config["snort_source_id"],
-            }
+            "SELECT rowid,id,length(CAST(data AS BLOB)),"
+            "CASE WHEN length(CAST(data AS BLOB))>? THEN substr(CAST(data AS BLOB),1,1024) "
+            "ELSE CAST(data AS BLOB) END FROM events "
+            "WHERE source_id=? AND mode='live' AND rowid>? ORDER BY rowid LIMIT 501",
+            (MAX_SNORT_RECORD_BYTES, config["snort_source_id"], rowid),
         )
-        rowid = sequence
+        for sequence, original_id, length, raw in rows:
+            cost = len(raw or b"")
+            if events and (
+                len(events) >= 500 or consumed + cost > MAX_SNORT_BATCH_BYTES
+            ):
+                backlog = True
+                break  # This row remains beyond the committed checkpoint for the next batch.
+            identity = dict(
+                event_id=original_id,
+                original_id=original_id,
+                source="snort",
+                kind="network_alert",
+                host_id=host["host_id"],
+                hostname=host["hostname"],
+                host_bound=True,
+                binding_source_id=config["snort_source_id"],
+            )
+            reason = ""
+            original = None
+            if length is None or raw is None:
+                reason = "Snort bridge: source record is null"
+            elif length > MAX_SNORT_RECORD_BYTES:
+                reason = f"Snort bridge: source record exceeds {MAX_SNORT_RECORD_BYTES} bytes"
+            else:
+                try:
+                    original = json.loads(raw)
+                    if not isinstance(original, dict):
+                        reason = "Snort bridge: source record is not a JSON object"
+                except (ValueError, UnicodeError):
+                    reason = "Snort bridge: malformed source JSON"
+            if reason:
+                rejected += 1
+                # Store quarantines this bounded diagnostic atomically with the next checkpoint.
+                event = {
+                    **identity,
+                    "adapter_rejection": reason,
+                    "raw_record": {
+                        "bytes": length,
+                        "prefix": (raw or b"").decode("utf-8", "replace")[:1024],
+                    },
+                }
+            else:
+                event = {
+                    **original,
+                    **identity,
+                    "src_ip": original.get("src"),
+                    "dst_ip": original.get("dst"),
+                    "raw_record": original,
+                }
+            events.append(event)
+            consumed += cost
+            rowid, last_id = sequence, original_id
     return (
         events,
-        dict(
-            rowid=rowid,
-            database=database_identity,
-            last_id=rows[-1][1] if rows else checkpoint.get("last_id"),
-        ),
+        dict(rowid=rowid, database=database_identity, last_id=last_id),
         dict(
             state="following",
-            examined=len(rows),
-            backlog=len(rows) == 500,
+            examined=len(events),
+            backlog=backlog,
+            read_bytes=consumed,
+            rejected_source_records=rejected,
+            error=f"{rejected} Snort source records quarantined by the bounded bridge"
+            if rejected
+            else "",
             binding_source_id=config["snort_source_id"],
             host_bound=True,
         ),

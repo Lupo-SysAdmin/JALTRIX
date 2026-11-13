@@ -37,7 +37,7 @@ env.update(
     QT_QPA_PLATFORM="xcb",
     DISPLAY=os.environ.get("DISPLAY", ":0"),
     XAUTHORITY=os.environ.get("XAUTHORITY", str(Path.home() / ".Xauthority")),
-    XDG_RUNTIME_DIR="/run/user/" + str(os.getuid()),
+    XDG_RUNTIME_DIR=os.environ.get("XDG_RUNTIME_DIR", "/run/user/" + str(os.getuid())),
 )
 for process in Path("/proc").glob("[0-9]*"):
     try:

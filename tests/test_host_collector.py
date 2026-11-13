@@ -247,3 +247,70 @@ def test_user_service_refuses_to_replace_or_stop_another_data_directory(
     assert calls == previous_calls
     host_service.control(tmp_path / "first", action="stop")
     host_service.control(tmp_path / "second", config={"journal_enabled": True})
+
+
+def test_snort_bridge_byte_budget_continues_without_gaps(tmp_path, monkeypatch):
+    database = make_snort_database(tmp_path / "live/alerts.sqlite3")
+    database.execute("DELETE FROM events")
+    for number in range(8):
+        database.execute(
+            "INSERT INTO events VALUES(?,?,?,?)",
+            (
+                f"bounded-{number}",
+                "local",
+                "live",
+                json.dumps(dict(message="x" * 200, src="192.0.2.4")),
+            ),
+        )
+    database.commit()
+    database.close()
+    monkeypatch.setattr(host_collector, "MAX_SNORT_BATCH_BYTES", 600)
+    config = dict(snort_enabled=True, snort_host_binding=True, snort_source_id="local")
+    inserted, saw_backlog = 0, False
+    for _ in range(8):
+        result = host_collector.collect_once(tmp_path, config)
+        status = result["sources"]["snort"]
+        assert status["read_bytes"] <= 600
+        inserted += status["inserted"]
+        saw_backlog |= status["backlog"]
+        if not status["backlog"]:
+            break
+    assert saw_backlog and inserted == 8
+    store = HostEventStore(tmp_path / "live/host-events.sqlite3")
+    assert {event["event_id"] for event in store.events()} == {
+        f"bounded-{n}" for n in range(8)
+    }
+    store.close()
+
+
+def test_oversized_snort_record_is_quarantined_without_losing_next_id(tmp_path):
+    database = make_snort_database(tmp_path / "live/alerts.sqlite3")
+    database.execute("DELETE FROM events")
+    database.execute(
+        "INSERT INTO events VALUES(?,?,?,?)",
+        ("oversize", "local", "live", json.dumps(dict(message="z" * 2000000))),
+    )
+    database.execute(
+        "INSERT INTO events VALUES(?,?,?,?)",
+        (
+            "following-id",
+            "local",
+            "live",
+            json.dumps(dict(message="normal", src="192.0.2.4")),
+        ),
+    )
+    database.commit()
+    database.close()
+    config = dict(snort_enabled=True, snort_host_binding=True, snort_source_id="local")
+    result = host_collector.collect_once(tmp_path, config)
+    status = result["sources"]["snort"]
+    assert status["inserted"] == 1 and status["rejected"] == 1
+    assert status["read_bytes"] < 5000 and status["rejected_source_records"] == 1
+    assert result["state"] == "degraded" and "quarantined" in status["error"]
+    store = HostEventStore(tmp_path / "live/host-events.sqlite3")
+    assert store.events()[0]["event_id"] == "following-id"
+    reason = store.db.execute("SELECT reason FROM host_quarantine").fetchone()[0]
+    assert "Snort bridge" in reason and "exceeds" in reason
+    store.close()
+    again = host_collector.collect_once(tmp_path, config)
+    assert again["sources"]["snort"]["examined"] == 0
