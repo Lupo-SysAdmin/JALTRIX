@@ -141,7 +141,7 @@ ApplicationWindow {
             spacing: 18
             RowLayout {
                 spacing: 14
-                Image { source: soc.logoAsset; Layout.preferredWidth: 140; Layout.preferredHeight: 140; fillMode: Image.PreserveAspectFit; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
+                Image { source: soc.logoAsset; Layout.preferredWidth: 140; Layout.preferredHeight: 140; fillMode: Image.PreserveAspectFit; onStatusChanged: if (status === Image.Error) source = "app-emblem.png" }
                 Txt { text: "JALTRIX · " + soc.version; font.pixelSize: 24; font.bold: true }
             }
             Txt { text: win.tr("Desarrollador") + ": Jan Herrera"; font.pixelSize: 18; color: win.accent }
@@ -224,7 +224,7 @@ ApplicationWindow {
                 Layout.preferredWidth: 194; Layout.fillHeight: true; color: "#0d1422"
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: 12; spacing: 5
-                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 100 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-logo.png" }
+                    Image { objectName: "main-brand-logo"; source: soc.logoAsset; Layout.fillWidth: true; Layout.preferredHeight: win.height < 830 ? 100 : 156; fillMode: Image.PreserveAspectFit; Accessible.name: "JALTRIX"; onStatusChanged: if (status === Image.Error) source = "app-emblem.png" }
                     ScrollView {
                         id:navigationScroll; Layout.fillWidth:true; Layout.fillHeight:true; contentWidth:availableWidth; clip:true
                         ColumnLayout { width:navigationScroll.availableWidth; spacing:5

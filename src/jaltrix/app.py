@@ -390,9 +390,9 @@ class Controller(AdvancedController):
     @Property(str, constant=True)
     def logoAsset(self):
         return (
-            "app-logo.svg"
+            "app-emblem.svg"
             if b"svg" in QImageReader.supportedImageFormats()
-            else "app-logo.png"
+            else "app-emblem.png"
         )
 
     @Property(str, constant=True)

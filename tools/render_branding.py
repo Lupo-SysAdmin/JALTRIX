@@ -23,7 +23,7 @@ def render(source, destination, size):
     surface.write_to_png(str(destination))
 
 
-for name in ("icon", "logo"):
+for name in ("icon", "logo", "emblem"):
     render(
         ROOT / f"src/jaltrix/ui/app-{name}.svg",
         ROOT / f"src/jaltrix/ui/app-{name}.png",
